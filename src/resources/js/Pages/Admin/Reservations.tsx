@@ -1471,13 +1471,6 @@ export default function Reservations({
                                                             </div>
                                                             <span className="text-xs font-semibold text-gray-600 shrink-0">
                                                                 {exp.priceNote}
-                                                                {exp.pricingType ===
-                                                                    "per_person" && (
-                                                                    <span className="text-gray-400 font-normal">
-                                                                        {" "}
-                                                                        /人
-                                                                    </span>
-                                                                )}
                                                             </span>
                                                         </label>
                                                     );
@@ -2620,13 +2613,6 @@ export default function Reservations({
                                                             </div>
                                                             <span className="text-xs font-semibold text-gray-600 shrink-0">
                                                                 {exp.priceNote}
-                                                                {exp.pricingType ===
-                                                                    "per_person" && (
-                                                                    <span className="text-gray-400 font-normal">
-                                                                        {" "}
-                                                                        /人
-                                                                    </span>
-                                                                )}
                                                             </span>
                                                         </label>
                                                     );

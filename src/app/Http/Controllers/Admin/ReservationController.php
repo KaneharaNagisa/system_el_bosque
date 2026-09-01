@@ -99,8 +99,8 @@ class ReservationController extends Controller
             ->map(fn($e) => [
                 'label'       => $e->name,
                 'seasonTag'   => $e->season_tag ?? '通年',
-                'periodStart' => $e->period_start?->format('Y-m-d'),
-                'periodEnd'   => $e->period_end?->format('Y-m-d'),
+                'periodStart' => $e->period_start,
+                'periodEnd'   => $e->period_end,
                 'price'       => $e->price,
                 'priceNote'   => $e->price_note,
                 'pricingType' => $e->pricing_type ?? 'per_group',
