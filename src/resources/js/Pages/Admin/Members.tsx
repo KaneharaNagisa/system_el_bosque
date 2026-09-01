@@ -4,6 +4,7 @@ import AdminLayout from "../../Components/Admin/Layout";
 import {
     FaUsers,
     FaSearch,
+    FaUserPlus,
     FaTrashAlt,
     FaFilter,
     FaSortAmountDown,
@@ -13,12 +14,19 @@ import {
     FaChevronRight,
     FaTimes,
     FaEye,
+    FaUser,
+    FaPaw,
+    FaMapMarkerAlt,
+    FaCalendarAlt,
 } from "react-icons/fa";
 
 interface Member {
     id: string;
     dbId: number;
-    name: string;
+    lastName: string;
+    firstName: string;
+    lastNameKana: string;
+    firstNameKana: string;
     email: string;
     phone?: string;
     address?: string;
@@ -48,6 +56,23 @@ const familyLabels: Record<string, string> = {
     family: "ご家族（お子さんあり）",
 };
 
+const emptyNewForm = {
+    lastName: "",
+    firstName: "",
+    lastNameKana: "",
+    firstNameKana: "",
+    email: "",
+    phone: "",
+    address: "",
+    birthDate: "",
+    hasPet: "none",
+    petBreed: "",
+    petBreed2: "",
+    hasFamily: "individual",
+    howFound: "",
+    status: "active",
+};
+
 export default function Members({
     members: initialMembers,
 }: {
@@ -64,11 +89,28 @@ export default function Members({
     const [currentPage, setCurrentPage] = useState(1);
     const perPage = 20;
 
+    const [isNewOpen, setIsNewOpen] = useState(false);
+    const [newForm, setNewForm] = useState(emptyNewForm);
+    const [newErrors, setNewErrors] = useState<
+        Partial<Record<keyof typeof emptyNewForm, string>>
+    >({});
+
+    const setNF = <K extends keyof typeof emptyNewForm,>(
+        key: K,
+        val: (typeof emptyNewForm)[K],
+    ) => {
+        setNewForm((f) => ({ ...f, [key]: val }));
+        setNewErrors((e) => ({ ...e, [key]: undefined }));
+    };
+
     const filtered = useMemo(() => {
         return initialMembers.filter((m) => {
+            const fullName = `${m.lastName}${m.firstName}`;
+            const fullKana = `${m.lastNameKana}${m.firstNameKana}`;
             const matchSearch =
                 !searchQuery ||
-                m.name.includes(searchQuery) ||
+                fullName.includes(searchQuery) ||
+                fullKana.includes(searchQuery) ||
                 m.email.includes(searchQuery) ||
                 m.id.includes(searchQuery);
             const matchStatus =
@@ -126,6 +168,50 @@ export default function Members({
         }
     };
 
+    const validateNew = () => {
+        const errs: typeof newErrors = {};
+        if (!newForm.lastName.trim()) errs.lastName = "姓は必須です";
+        if (!newForm.firstName.trim()) errs.firstName = "名は必須です";
+        if (!newForm.lastNameKana.trim()) errs.lastNameKana = "姓（ふりがな）は必須です";
+        if (!newForm.firstNameKana.trim()) errs.firstNameKana = "名（ふりがな）は必須です";
+        if (!newForm.email.trim()) errs.email = "メールアドレスは必須です";
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newForm.email))
+            errs.email = "正しいメールアドレスを入力してください";
+        if (!newForm.phone.trim()) errs.phone = "電話番号は必須です";
+        setNewErrors(errs);
+        return Object.keys(errs).length === 0;
+    };
+
+    const handleNewSave = () => {
+        if (!validateNew()) return;
+        router.post(
+            "/admin/members",
+            {
+                last_name: newForm.lastName.trim(),
+                first_name: newForm.firstName.trim(),
+                last_name_kana: newForm.lastNameKana.trim(),
+                first_name_kana: newForm.firstNameKana.trim(),
+                email: newForm.email.trim(),
+                phone: newForm.phone.trim(),
+                address: newForm.address.trim() || null,
+                birth_date: newForm.birthDate || null,
+                has_pet: newForm.hasPet,
+                pet_breed: newForm.petBreed.trim() || null,
+                pet_breed2: newForm.petBreed2.trim() || null,
+                family_type: newForm.hasFamily,
+                how_found: newForm.howFound.trim() || null,
+                status: newForm.status,
+            },
+            {
+                onSuccess: () => {
+                    setIsNewOpen(false);
+                    setNewForm(emptyNewForm);
+                    setNewErrors({});
+                },
+            },
+        );
+    };
+
     return (
         <AdminLayout currentPage="members" title="会員管理">
             <div className="max-w-7xl mx-auto">
@@ -149,14 +235,21 @@ export default function Members({
                                     </p>
                                 </div>
                             </div>
+                            <button
+                                onClick={() => setIsNewOpen(true)}
+                                className="flex items-center gap-2 px-4 py-2 bg-[#0a2105] text-white rounded-lg text-sm hover:bg-[#071a04] transition-colors"
+                            >
+                                <FaUserPlus className="w-3.5 h-3.5" /> 新規会員追加
+                            </button>
                         </div>
+                    </div>
 
                         <div className="space-y-3">
                             <div className="relative">
                                 <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                                 <input
                                     type="text"
-                                    placeholder="名前、メール、IDで検索"
+                                    placeholder="名前、ふりがな、メール、IDで検索"
                                     value={searchQuery}
                                     onChange={(e) => {
                                         setSearchQuery(e.target.value);
@@ -286,17 +379,15 @@ export default function Members({
                                         <td className="px-4 py-3 text-xs text-gray-500">
                                             {m.id}
                                         </td>
-                                        <td className="px-4 py-3 text-sm text-gray-900">
-                                            {m.name}
+                                        <td className="px-4 py-3">
+                                            <div className="text-sm text-gray-900">{m.lastName} {m.firstName}</div>
+                                            <div className="text-xs text-gray-400">{m.lastNameKana} {m.firstNameKana}</div>
                                         </td>
                                         <td className="px-4 py-3 text-sm text-gray-600">
                                             {m.email}
                                         </td>
                                         <td className="px-4 py-3 text-sm text-gray-600">
-                                            {m.hasFamily
-                                                ? familyLabels[m.hasFamily] ||
-                                                  m.hasFamily
-                                                : "−"}
+                                            {familyLabels[m.hasFamily ?? ""] || m.hasFamily || "−"}
                                         </td>
                                         <td className="px-4 py-3 text-sm text-gray-600">
                                             {petLabels[m.hasPet] || m.hasPet}
@@ -414,7 +505,8 @@ export default function Members({
                                 {(
                                     [
                                         ["ID", selectedMember.id],
-                                        ["名前", selectedMember.name],
+                                        ["氏名", `${selectedMember.lastName} ${selectedMember.firstName}`],
+                                        ["ふりがな", `${selectedMember.lastNameKana} ${selectedMember.firstNameKana}`],
                                         ["メール", selectedMember.email],
                                         ["電話", selectedMember.phone || "−"],
                                         ["住所", selectedMember.address || "−"],
@@ -422,14 +514,7 @@ export default function Members({
                                             "生年月日",
                                             selectedMember.birthDate || "−",
                                         ],
-                                        [
-                                            "宿泊形態",
-                                            selectedMember.hasFamily
-                                                ? familyLabels[
-                                                      selectedMember.hasFamily
-                                                  ] || selectedMember.hasFamily
-                                                : "−",
-                                        ],
+                                        ["宿泊形態", familyLabels[selectedMember.hasFamily ?? ""] || selectedMember.hasFamily || "−"],
                                         [
                                             "ペット同伴",
                                             petLabels[selectedMember.hasPet] ||
@@ -477,6 +562,172 @@ export default function Members({
                                         </span>
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {/* 新規会員追加モーダル */}
+                {isNewOpen && (
+                    <div
+                        className="fixed inset-0 bg-black/50 flex items-start justify-center z-50 p-4 overflow-y-auto"
+                        onClick={() => setIsNewOpen(false)}
+                    >
+                        <div
+                            className="bg-white rounded-xl w-full max-w-xl my-8"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white rounded-t-xl z-10">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 bg-[#e8f5e9] rounded-lg flex items-center justify-center">
+                                        <FaUserPlus className="w-3.5 h-3.5 text-[#0a2105]" />
+                                    </div>
+                                    <h3 className="text-base text-gray-900">新規会員追加</h3>
+                                </div>
+                                <button onClick={() => setIsNewOpen(false)} className="text-gray-400 hover:text-gray-600 p-1">
+                                    <FaTimes className="w-4 h-4" />
+                                </button>
+                            </div>
+                            <div className="px-6 py-5 space-y-6">
+                                {/* 基本情報 */}
+                                <section>
+                                    <h4 className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                                        <FaUser className="w-3 h-3" /> 基本情報
+                                    </h4>
+                                    <div className="space-y-3">
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label className="block text-xs text-gray-600 mb-1">姓 <span className="text-red-500">*</span></label>
+                                                <input type="text" value={newForm.lastName} onChange={(e) => setNF("lastName", e.target.value)} placeholder="例: 山田"
+                                                    className={`w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105] ${newErrors.lastName ? "border-red-400 bg-red-50" : "border-gray-300"}`} />
+                                                {newErrors.lastName && <p className="text-xs text-red-500 mt-1">{newErrors.lastName}</p>}
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs text-gray-600 mb-1">名 <span className="text-red-500">*</span></label>
+                                                <input type="text" value={newForm.firstName} onChange={(e) => setNF("firstName", e.target.value)} placeholder="例: 太郎"
+                                                    className={`w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105] ${newErrors.firstName ? "border-red-400 bg-red-50" : "border-gray-300"}`} />
+                                                {newErrors.firstName && <p className="text-xs text-red-500 mt-1">{newErrors.firstName}</p>}
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label className="block text-xs text-gray-600 mb-1">姓（ふりがな） <span className="text-red-500">*</span></label>
+                                                <input type="text" value={newForm.lastNameKana} onChange={(e) => setNF("lastNameKana", e.target.value)} placeholder="例: やまだ"
+                                                    className={`w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105] ${newErrors.lastNameKana ? "border-red-400 bg-red-50" : "border-gray-300"}`} />
+                                                {newErrors.lastNameKana && <p className="text-xs text-red-500 mt-1">{newErrors.lastNameKana}</p>}
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs text-gray-600 mb-1">名（ふりがな） <span className="text-red-500">*</span></label>
+                                                <input type="text" value={newForm.firstNameKana} onChange={(e) => setNF("firstNameKana", e.target.value)} placeholder="例: たろう"
+                                                    className={`w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105] ${newErrors.firstNameKana ? "border-red-400 bg-red-50" : "border-gray-300"}`} />
+                                                {newErrors.firstNameKana && <p className="text-xs text-red-500 mt-1">{newErrors.firstNameKana}</p>}
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label className="block text-xs text-gray-600 mb-1">メールアドレス <span className="text-red-500">*</span></label>
+                                                <input type="email" value={newForm.email} onChange={(e) => setNF("email", e.target.value)} placeholder="例: xxx@example.com"
+                                                    className={`w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105] ${newErrors.email ? "border-red-400 bg-red-50" : "border-gray-300"}`} />
+                                                {newErrors.email && <p className="text-xs text-red-500 mt-1">{newErrors.email}</p>}
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs text-gray-600 mb-1">電話番号 <span className="text-red-500">*</span></label>
+                                                <input type="tel" value={newForm.phone} onChange={(e) => setNF("phone", e.target.value)} placeholder="例: 090-1234-5678"
+                                                    className={`w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105] ${newErrors.phone ? "border-red-400 bg-red-50" : "border-gray-300"}`} />
+                                                {newErrors.phone && <p className="text-xs text-red-500 mt-1">{newErrors.phone}</p>}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                {/* 住所・生年月日 */}
+                                <section>
+                                    <h4 className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                                        <FaMapMarkerAlt className="w-3 h-3" /> 住所・生年月日
+                                    </h4>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="col-span-2">
+                                            <label className="block text-xs text-gray-600 mb-1">住所</label>
+                                            <input type="text" value={newForm.address} onChange={(e) => setNF("address", e.target.value)} placeholder="例: 東京都新宿区西新宿1-1-1"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105]" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs text-gray-600 mb-1"><FaCalendarAlt className="inline w-2.5 h-2.5 mr-1" />生年月日</label>
+                                            <input type="date" value={newForm.birthDate} onChange={(e) => setNF("birthDate", e.target.value)}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105]" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs text-gray-600 mb-1">宿泊形態</label>
+                                            <select value={newForm.hasFamily} onChange={(e) => setNF("hasFamily", e.target.value)}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white outline-none focus:ring-2 focus:ring-[#0a2105]">
+                                                <option value="individual">個人</option>
+                                                <option value="friends">友人</option>
+                                                <option value="couple">カップル</option>
+                                                <option value="married">ご夫婦</option>
+                                                <option value="family">ご家族（お子さんあり）</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                {/* ペット */}
+                                <section>
+                                    <h4 className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                                        <FaPaw className="w-3 h-3" /> ペット情報
+                                    </h4>
+                                    <div className="space-y-3">
+                                        <select value={newForm.hasPet} onChange={(e) => { setNF("hasPet", e.target.value); if (e.target.value === "none") { setNF("petBreed", ""); setNF("petBreed2", ""); } else if (e.target.value !== "small2" && e.target.value !== "large2") { setNF("petBreed2", ""); } }}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white outline-none focus:ring-2 focus:ring-[#0a2105]">
+                                            <option value="none">なし</option>
+                                            <option value="small1">小型犬1頭</option>
+                                            <option value="small2">小型犬2頭</option>
+                                            <option value="large1">大型犬1頭</option>
+                                            <option value="large2">大型犬2頭</option>
+                                        </select>
+                                        {newForm.hasPet !== "none" && (
+                                            <div className={`grid gap-3 ${newForm.hasPet === "small2" || newForm.hasPet === "large2" ? "grid-cols-2" : "grid-cols-1"}`}>
+                                                <div>
+                                                    <label className="block text-xs text-gray-600 mb-1">犬種{newForm.hasPet === "small2" || newForm.hasPet === "large2" ? "①" : ""}</label>
+                                                    <input type="text" value={newForm.petBreed} onChange={(e) => setNF("petBreed", e.target.value)} placeholder="例: トイプードル"
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105]" />
+                                                </div>
+                                                {(newForm.hasPet === "small2" || newForm.hasPet === "large2") && (
+                                                    <div>
+                                                        <label className="block text-xs text-gray-600 mb-1">犬種②</label>
+                                                        <input type="text" value={newForm.petBreed2} onChange={(e) => setNF("petBreed2", e.target.value)} placeholder="例: チワワ"
+                                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105]" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                </section>
+
+                                {/* その他 */}
+                                <section>
+                                    <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">その他</h4>
+                                    <div className="space-y-3">
+                                        <div>
+                                            <label className="block text-xs text-gray-600 mb-1">知ったきっかけ</label>
+                                            <input type="text" value={newForm.howFound} onChange={(e) => setNF("howFound", e.target.value)} placeholder="例: インターネット検索、友人の紹介"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105]" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs text-gray-600 mb-1">ステータス</label>
+                                            <div className="flex gap-2">
+                                                {(["active", "withdrawn"] as const).map((s) => (
+                                                    <button key={s} onClick={() => setNF("status", s)}
+                                                        className={`flex-1 py-2 text-sm rounded-lg border-2 transition-all ${newForm.status === s ? (s === "active" ? "border-green-400 bg-green-50 text-green-800 font-medium" : "border-gray-400 bg-gray-100 text-gray-700 font-medium") : "border-gray-200 text-gray-500 hover:bg-gray-50"}`}>
+                                                        {s === "active" ? "利用中" : "退会"}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                            <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+                                <button onClick={() => setIsNewOpen(false)} className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">キャンセル</button>
+                                <button onClick={handleNewSave} className="px-5 py-2 text-sm bg-[#0a2105] text-white rounded-lg hover:bg-[#071a04]">保存する</button>
                             </div>
                         </div>
                     </div>

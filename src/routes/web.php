@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\ManualController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\PageController;
+use App\Http\Controllers\Admin\PriceAdjustmentController;
 use App\Http\Controllers\Admin\ReservationController;
 use Illuminate\Support\Facades\Route;
 
@@ -38,15 +39,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // 会員管理
         Route::get('/members', [MemberController::class, 'index'])->name('members.index');
+        Route::post('/members', [MemberController::class, 'store'])->name('members.store');
         Route::delete('/members/{id}', [MemberController::class, 'destroy'])->name('members.destroy');
 
         // 予約管理
         Route::get('/reservations', [ReservationController::class, 'index'])->name('reservations.index');
         Route::patch('/reservations/{id}', [ReservationController::class, 'update'])->name('reservations.update');
+        Route::patch('/reservations/{id}/adjustment', [ReservationController::class, 'updateAdjustment'])->name('reservations.adjustment');
 
         // 請求管理
         Route::get('/billing', [BillingController::class, 'index'])->name('billing.index');
         Route::patch('/billing/{id}', [BillingController::class, 'update'])->name('billing.update');
+        Route::patch('/billing/{id}/adjustment', [BillingController::class, 'updateAdjustment'])->name('billing.adjustment');
 
         // お問合せ管理
         Route::get('/contacts', [ContactController::class, 'index'])->name('contacts.index');
@@ -81,6 +85,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/master/faq', [FaqController::class, 'store'])->name('master.faq.store');
         Route::patch('/master/faq/{id}', [FaqController::class, 'update'])->name('master.faq.update');
         Route::delete('/master/faq/{id}', [FaqController::class, 'destroy'])->name('master.faq.destroy');
+
+        // 料金調整管理
+        Route::get('/master/price-adjustment', [PriceAdjustmentController::class, 'index'])->name('master.price-adjustment.index');
+        Route::post('/master/price-adjustment', [PriceAdjustmentController::class, 'store'])->name('master.price-adjustment.store');
+        Route::patch('/master/price-adjustment/{id}', [PriceAdjustmentController::class, 'update'])->name('master.price-adjustment.update');
+        Route::patch('/master/price-adjustment/{id}/toggle', [PriceAdjustmentController::class, 'toggleStatus'])->name('master.price-adjustment.toggle');
+        Route::delete('/master/price-adjustment/{id}', [PriceAdjustmentController::class, 'destroy'])->name('master.price-adjustment.destroy');
 
         // アカウント管理
         Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');

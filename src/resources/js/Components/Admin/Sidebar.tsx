@@ -29,6 +29,7 @@ export type AdminPage =
     | "pages"
     | "master-availability"
     | "master-experiences"
+    | "master-price-adjustment"
     | "master-cancel-policy"
     | "master-faq"
     | "accounts"
@@ -110,6 +111,11 @@ export default function AdminSidebar({
             id: "master-experiences" as const,
             label: "体験オプション管理",
             path: "/admin/master/experiences",
+        },
+        {
+            id: "master-price-adjustment" as const,
+            label: "料金調整管理",
+            path: "/admin/master/price-adjustment",
         },
         {
             id: "master-cancel-policy" as const,

@@ -9,7 +9,42 @@ import {
     FaFilter,
     FaChevronLeft,
     FaChevronRight,
+    FaYenSign,
+    FaBed,
+    FaStar,
+    FaDog,
+    FaConciergeBell,
+    FaUser,
 } from "react-icons/fa";
+
+interface PriceRule {
+    id: string;
+    dbId: number;
+    name: string;
+    discountPercent: number;
+    hasPeriod: boolean;
+    periodStart: string;
+    periodEnd: string;
+    hasGuestRange: boolean;
+    guestMin: number | null;
+    guestMax: number | null;
+    noExperienceOptions: boolean;
+    noSupportPlan: boolean;
+    status: "active" | "inactive";
+}
+
+interface PriceBreakdown {
+    baseAmount: number;
+    guestExtra: number;
+    petFee: number;
+    supportFee: number;
+    transferSurcharge: number;
+    experiencesTotal: number;
+    deposit: number;
+    adjustment?: number;
+    adjustmentNote?: string;
+    adjustmentRuleId?: string;
+}
 
 interface Reservation {
     id: string;
@@ -25,10 +60,11 @@ interface Reservation {
     hasPet: string;
     petBreed?: string;
     supportFee: boolean;
-    experiences: unknown[];
+    experiences: string[];
+    breakdown: PriceBreakdown;
     status: string;
     payment: string;
-    amount: number;
+    totalAmount: number;
     note?: string;
     createdAt: string;
 }
@@ -54,21 +90,25 @@ const statusBadge = (status: string, type: "reservation" | "payment") => {
         partial: { label: "一部支払", cls: "bg-yellow-100 text-yellow-800" },
     };
     const map = type === "reservation" ? rMap : pMap;
-    const s = map[status] || {
-        label: status,
-        cls: "bg-gray-100 text-gray-800",
-    };
-    return (
-        <span className={`px-2 py-0.5 rounded text-xs ${s.cls}`}>
-            {s.label}
-        </span>
-    );
+    const s = map[status] || { label: status, cls: "bg-gray-100 text-gray-800" };
+    return <span className={`px-2 py-0.5 rounded text-xs ${s.cls}`}>{s.label}</span>;
 };
+
+function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
+    return (
+        <div className="flex gap-3 py-1.5 border-b border-gray-50 last:border-0">
+            <span className="w-32 shrink-0 text-xs text-gray-500">{label}</span>
+            <span className="text-sm text-gray-900">{value}</span>
+        </div>
+    );
+}
 
 export default function Reservations({
     reservations,
+    priceAdjustmentRules,
 }: {
     reservations: Reservation[];
+    priceAdjustmentRules: PriceRule[];
 }) {
     const [searchQuery, setSearchQuery] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
@@ -76,6 +116,14 @@ export default function Reservations({
     const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const perPage = 20;
+
+    // 詳細モーダル内の編集状態
+    const [editStatus, setEditStatus] = useState("");
+    const [statusSaved, setStatusSaved] = useState(false);
+    const [editAdjustment, setEditAdjustment] = useState(0);
+    const [editAdjustmentNote, setEditAdjustmentNote] = useState("");
+    const [editAdjustmentRuleId, setEditAdjustmentRuleId] = useState("");
+    const [adjustmentSaved, setAdjustmentSaved] = useState(false);
 
     const filtered = useMemo(
         () =>
@@ -100,6 +148,49 @@ export default function Reservations({
     const handleStatusChange = (dbId: number, status: string) => {
         router.patch(`/admin/reservations/${dbId}`, { status });
     };
+
+    const openDetail = (r: Reservation) => {
+        setSelectedItem(r);
+        setIsDetailOpen(true);
+        setEditStatus(r.status);
+        setStatusSaved(false);
+        setEditAdjustment(r.breakdown?.adjustment ?? 0);
+        setEditAdjustmentNote(r.breakdown?.adjustmentNote ?? "");
+        setEditAdjustmentRuleId(r.breakdown?.adjustmentRuleId ?? "");
+        setAdjustmentSaved(false);
+    };
+
+    const handleStatusSave = () => {
+        if (!selectedItem) return;
+        router.patch(`/admin/reservations/${selectedItem.dbId}`, { status: editStatus }, {
+            onSuccess: () => setStatusSaved(true),
+        });
+    };
+
+    const handleAdjustmentSave = () => {
+        if (!selectedItem) return;
+        router.patch(`/admin/reservations/${selectedItem.dbId}/adjustment`, {
+            adjustment: editAdjustment,
+            adjustment_note: editAdjustmentNote,
+            adjustment_rule_id: editAdjustmentRuleId || null,
+        }, {
+            onSuccess: () => setAdjustmentSaved(true),
+        });
+    };
+
+    const detailApplicableRules = useMemo(() => {
+        if (!selectedItem) return [];
+        return priceAdjustmentRules.filter((rule) => {
+            if (rule.hasGuestRange) {
+                if (rule.guestMin !== null && selectedItem.guests < rule.guestMin) return false;
+                if (rule.guestMax !== null && selectedItem.guests > rule.guestMax) return false;
+            }
+            if (rule.hasPeriod && selectedItem.checkIn) {
+                if (selectedItem.checkIn < rule.periodStart || selectedItem.checkIn > rule.periodEnd) return false;
+            }
+            return true;
+        });
+    }, [selectedItem, priceAdjustmentRules]);
 
     return (
         <AdminLayout currentPage="reservations" title="予約管理">
@@ -218,10 +309,7 @@ export default function Reservations({
                                         <td className="px-4 py-3 text-right">
                                             <div className="flex items-center justify-end gap-1">
                                                 <button
-                                                    onClick={() => {
-                                                        setSelectedItem(r);
-                                                        setIsDetailOpen(true);
-                                                    }}
+                                                    onClick={() => openDetail(r)}
                                                     className="p-1.5 text-gray-500 hover:text-[#0a2105] hover:bg-[#e8f5e9] rounded"
                                                     title="詳細"
                                                 >
@@ -319,66 +407,209 @@ export default function Reservations({
                 {/* 詳細モーダル */}
                 {isDetailOpen && selectedItem && (
                     <div
-                        className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+                        className="fixed inset-0 bg-black/50 flex items-start justify-center z-50 p-4 overflow-y-auto"
                         onClick={() => setIsDetailOpen(false)}
                     >
                         <div
-                            className="bg-white rounded-xl max-w-lg w-full max-h-[80vh] overflow-y-auto"
+                            className="bg-white rounded-xl max-w-xl w-full my-8"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                                <h3 className="text-base text-gray-900">
-                                    予約詳細
-                                </h3>
-                                <button
-                                    onClick={() => setIsDetailOpen(false)}
-                                    className="text-gray-400 hover:text-gray-600"
-                                >
+                            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white rounded-t-xl z-10">
+                                <div>
+                                    <p className="text-xs text-gray-400 mb-0.5">予約ID: {selectedItem.id}</p>
+                                    <div className="flex items-center gap-2">
+                                        <h3 className="text-base text-gray-900">{selectedItem.memberName}</h3>
+                                        {statusBadge(selectedItem.status, "reservation")}
+                                        {statusBadge(selectedItem.payment, "payment")}
+                                    </div>
+                                </div>
+                                <button onClick={() => setIsDetailOpen(false)} className="text-gray-400 hover:text-gray-600 p-1">
                                     <FaTimes className="w-4 h-4" />
                                 </button>
                             </div>
-                            <div className="px-6 py-4 space-y-3">
-                                {(
-                                    [
-                                        ["予約ID", selectedItem.id],
-                                        ["会員名", selectedItem.memberName],
-                                        ["メール", selectedItem.memberEmail],
-                                        ["電話", selectedItem.memberPhone],
-                                        ["チェックイン", selectedItem.checkIn],
-                                        [
-                                            "チェックアウト",
-                                            selectedItem.checkOut,
-                                        ],
-                                        ["宿泊数", `${selectedItem.nights}泊`],
-                                        ["人数", `${selectedItem.guests}名`],
-                                        [
-                                            "ペット",
-                                            PET_LABELS[selectedItem.hasPet] ||
-                                                selectedItem.hasPet,
-                                        ],
-                                        [
-                                            "滞在サポート",
-                                            selectedItem.supportFee
-                                                ? "あり"
-                                                : "なし",
-                                        ],
-                                        ["予約状況", selectedItem.status],
-                                        ["支払状況", selectedItem.payment],
-                                        [
-                                            "請求金額",
-                                            `¥${selectedItem.amount.toLocaleString()}`,
-                                        ],
-                                    ] as [string, string][]
-                                ).map(([label, value]) => (
-                                    <div key={label} className="flex">
-                                        <span className="w-40 shrink-0 text-sm text-gray-500">
-                                            {label}
-                                        </span>
-                                        <span className="text-sm text-gray-900">
-                                            {value}
-                                        </span>
+
+                            <div className="px-6 py-5 space-y-6">
+                                {/* 宿泊者情報 */}
+                                <div>
+                                    <div className="flex items-center gap-1.5 mb-2.5">
+                                        <FaUser className="w-3 h-3 text-gray-400" />
+                                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">宿泊者情報</h4>
                                     </div>
-                                ))}
+                                    <div className="bg-gray-50 rounded-lg px-4 py-1">
+                                        <InfoRow label="氏名" value={selectedItem.memberName} />
+                                        <InfoRow label="メール" value={selectedItem.memberEmail || "−"} />
+                                        <InfoRow label="電話番号" value={selectedItem.memberPhone} />
+                                    </div>
+                                </div>
+
+                                {/* 宿泊内容 */}
+                                <div>
+                                    <div className="flex items-center gap-1.5 mb-2.5">
+                                        <FaBed className="w-3 h-3 text-gray-400" />
+                                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">宿泊内容</h4>
+                                    </div>
+                                    <div className="bg-gray-50 rounded-lg px-4 py-1">
+                                        <InfoRow label="チェックイン" value={selectedItem.checkIn} />
+                                        <InfoRow label="チェックアウト" value={selectedItem.checkOut} />
+                                        <InfoRow label="泊数 / 人数" value={`${selectedItem.nights}泊 / ${selectedItem.guests}名`} />
+                                        <InfoRow label="ペット" value={`${PET_LABELS[selectedItem.hasPet] || selectedItem.hasPet}${selectedItem.petBreed ? `（${selectedItem.petBreed}）` : ""}`} />
+                                        <InfoRow label="滞在サポート" value={selectedItem.supportFee ? "あり" : "なし"} />
+                                        {selectedItem.note && <InfoRow label="備考" value={selectedItem.note} />}
+                                    </div>
+                                </div>
+
+                                {/* 体験オプション */}
+                                {selectedItem.experiences.length > 0 && (
+                                    <div>
+                                        <div className="flex items-center gap-1.5 mb-2.5">
+                                            <FaStar className="w-3 h-3 text-gray-400" />
+                                            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">体験オプション</h4>
+                                        </div>
+                                        <div className="bg-gray-50 rounded-lg px-4 py-1">
+                                            {selectedItem.experiences.map((exp, i) => (
+                                                <InfoRow key={i} label={`オプション${i + 1}`} value={String(exp)} />
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* 料金内訳 */}
+                                {selectedItem.breakdown && (
+                                    <div>
+                                        <div className="flex items-center gap-1.5 mb-2.5">
+                                            <FaYenSign className="w-3 h-3 text-gray-400" />
+                                            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">料金内訳</h4>
+                                        </div>
+                                        <div className="border border-gray-200 rounded-lg overflow-hidden">
+                                            <div className="divide-y divide-gray-100">
+                                                <div className="flex justify-between items-center px-4 py-2.5 text-sm">
+                                                    <span className="text-gray-600">基本宿泊料</span>
+                                                    <span className="text-gray-900">¥{(selectedItem.breakdown.baseAmount || 0).toLocaleString()}</span>
+                                                </div>
+                                                {(selectedItem.breakdown.petFee || 0) > 0 && (
+                                                    <div className="flex justify-between items-center px-4 py-2.5 text-sm">
+                                                        <span className="flex items-center gap-1.5 text-gray-600"><FaDog className="w-3 h-3" />ペット料金</span>
+                                                        <span className="text-gray-900">¥{(selectedItem.breakdown.petFee || 0).toLocaleString()}</span>
+                                                    </div>
+                                                )}
+                                                {(selectedItem.breakdown.supportFee || 0) > 0 && (
+                                                    <div className="flex justify-between items-center px-4 py-2.5 text-sm">
+                                                        <span className="flex items-center gap-1.5 text-gray-600"><FaConciergeBell className="w-3 h-3" />滞在サポート料</span>
+                                                        <span className="text-gray-900">¥{(selectedItem.breakdown.supportFee || 0).toLocaleString()}</span>
+                                                    </div>
+                                                )}
+                                                {(selectedItem.breakdown.experiencesTotal || 0) > 0 && (
+                                                    <div className="flex justify-between items-center px-4 py-2.5 text-sm">
+                                                        <span className="flex items-center gap-1.5 text-gray-600"><FaStar className="w-3 h-3" />体験オプション計</span>
+                                                        <span className="text-gray-900">¥{(selectedItem.breakdown.experiencesTotal || 0).toLocaleString()}</span>
+                                                    </div>
+                                                )}
+                                                {(selectedItem.breakdown.adjustment ?? 0) !== 0 && (() => {
+                                                    const rule = selectedItem.breakdown.adjustmentRuleId
+                                                        ? priceAdjustmentRules.find(p => p.id === selectedItem.breakdown.adjustmentRuleId)
+                                                        : null;
+                                                    const adj = selectedItem.breakdown.adjustment ?? 0;
+                                                    return (
+                                                        <div className="flex justify-between items-center px-4 py-2.5 text-sm">
+                                                            <span className="text-purple-700">{rule ? `${rule.name}（-${rule.discountPercent}%）` : (selectedItem.breakdown.adjustmentNote || "手動調整")}</span>
+                                                            <span className="text-red-500 font-medium">{adj < 0 ? "−" : "+"}¥{Math.abs(adj).toLocaleString()}</span>
+                                                        </div>
+                                                    );
+                                                })()}
+                                                {(selectedItem.breakdown.deposit || 0) > 0 && (
+                                                    <div className="flex justify-between items-center px-4 py-2.5 text-sm">
+                                                        <span className="text-gray-600">保証料<span className="ml-1.5 text-xs text-green-600 font-medium">返金制</span></span>
+                                                        <span className="text-gray-900">¥{(selectedItem.breakdown.deposit || 0).toLocaleString()}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="flex justify-between items-center px-4 py-3.5 bg-[#0a2105]">
+                                                <span className="text-white text-sm font-semibold">お支払い合計（税込）</span>
+                                                <span className="text-white text-xl font-bold">¥{(selectedItem.totalAmount || 0).toLocaleString()}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* 予約ステータス変更 */}
+                                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-3">
+                                    <p className="text-xs font-medium text-gray-700">予約ステータスを変更</p>
+                                    <div className="flex gap-2">
+                                        {(["pending", "confirmed", "cancelled"] as const).map((s) => (
+                                            <button key={s} onClick={() => { setEditStatus(s); setStatusSaved(false); }}
+                                                className={`flex-1 py-1.5 text-xs rounded-lg border-2 transition-all ${editStatus === s ? (s === "confirmed" ? "border-green-400 bg-green-50 text-green-800 font-medium" : s === "cancelled" ? "border-red-400 bg-red-50 text-red-700 font-medium" : "border-yellow-400 bg-yellow-50 text-yellow-700 font-medium") : "border-gray-200 text-gray-500 hover:bg-gray-50"}`}>
+                                                {s === "pending" ? "保留中" : s === "confirmed" ? "確定" : "キャンセル"}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <div className="flex justify-end">
+                                        {statusSaved ? (
+                                            <span className="text-xs text-green-600">✓ 保存しました</span>
+                                        ) : (
+                                            <button onClick={handleStatusSave} className="px-3 py-1.5 text-xs bg-[#0a2105] text-white rounded-lg hover:bg-[#071a04]">保存する</button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* 料金調整 */}
+                                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 space-y-3">
+                                    <p className="text-xs font-medium text-amber-700">料金調整</p>
+
+                                    {/* マスタルール選択 */}
+                                    {detailApplicableRules.length > 0 && (
+                                        <div className="space-y-1.5">
+                                            <p className="text-xs text-gray-600">マスタから選択</p>
+                                            {detailApplicableRules.map((rule) => {
+                                                const baseAmt = (selectedItem.breakdown?.baseAmount || 0) + (selectedItem.breakdown?.guestExtra || 0);
+                                                const discountAmt = Math.round(baseAmt * rule.discountPercent / 100);
+                                                const isSelected = editAdjustmentRuleId === rule.id;
+                                                const blockedByOptions =
+                                                    (rule.noExperienceOptions && (selectedItem.breakdown?.experiencesTotal || 0) > 0) ||
+                                                    (rule.noSupportPlan && (selectedItem.breakdown?.supportFee || 0) > 0);
+                                                return (
+                                                    <button key={rule.id} type="button" disabled={blockedByOptions}
+                                                        onClick={() => {
+                                                            if (isSelected) { setEditAdjustmentRuleId(""); setEditAdjustment(0); setEditAdjustmentNote(""); }
+                                                            else { setEditAdjustmentRuleId(rule.id); setEditAdjustment(-discountAmt); setEditAdjustmentNote(rule.name); }
+                                                            setAdjustmentSaved(false);
+                                                        }}
+                                                        className={`w-full text-left p-3 rounded-lg border-2 transition-all text-sm ${isSelected ? "border-purple-400 bg-purple-50" : blockedByOptions ? "border-gray-200 bg-gray-100 opacity-50 cursor-not-allowed" : "border-gray-200 bg-white hover:border-purple-300"}`}>
+                                                        <div className="flex items-center justify-between">
+                                                            <div>
+                                                                <span className="font-medium text-gray-900">{rule.name}</span>
+                                                                <span className="ml-2 text-amber-700 text-xs">-{rule.discountPercent}%</span>
+                                                            </div>
+                                                            <span className="text-red-500 text-xs font-medium">¥{discountAmt.toLocaleString()}引</span>
+                                                        </div>
+                                                        {blockedByOptions && <p className="text-xs text-gray-400 mt-1">（体験/サポートが含まれているため適用不可）</p>}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+
+                                    {/* 手動調整 */}
+                                    <div className="space-y-2">
+                                        <p className="text-xs text-gray-600">手動調整金額（マイナス値で割引）</p>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm text-gray-500">¥</span>
+                                            <input type="number" value={editAdjustment}
+                                                onChange={(e) => { setEditAdjustment(Number(e.target.value)); setEditAdjustmentRuleId(""); setAdjustmentSaved(false); }}
+                                                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105]" />
+                                        </div>
+                                        <input type="text" placeholder="調整メモ（例: 特別割引）" value={editAdjustmentNote}
+                                            onChange={(e) => { setEditAdjustmentNote(e.target.value); setAdjustmentSaved(false); }}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105]" />
+                                    </div>
+
+                                    <div className="flex justify-end">
+                                        {adjustmentSaved ? (
+                                            <span className="text-xs text-green-600">✓ 保存しました</span>
+                                        ) : (
+                                            <button onClick={handleAdjustmentSave} className="px-3 py-1.5 text-xs bg-amber-600 text-white rounded-lg hover:bg-amber-700">調整を保存</button>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
