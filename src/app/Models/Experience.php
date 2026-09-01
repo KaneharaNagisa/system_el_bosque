@@ -16,6 +16,8 @@ class Experience extends Model
         'season',
         'season_tag',
         'period',
+        'period_start',
+        'period_end',
         'requires_reservation',
         'points',
         'notes',
@@ -31,6 +33,8 @@ class Experience extends Model
             'requires_reservation' => 'boolean',
             'is_active'            => 'boolean',
             'points'               => 'array',
+            'period_start'         => 'date',
+            'period_end'           => 'date',
         ];
     }
 }

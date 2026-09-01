@@ -54,6 +54,13 @@ interface PriceRule {
     status: "active" | "inactive";
 }
 
+interface ExperienceOption {
+    label: string;
+    seasonTag: string;
+    periodStart: string | null;
+    periodEnd: string | null;
+}
+
 interface ExperienceDetail {
     name: string;
     price: number;
@@ -632,12 +639,14 @@ export default function Reservations({
     members,
     availabilities,
     bookedDates,
+    experiences: experienceOptions,
 }: {
     reservations: Reservation[];
     priceAdjustmentRules: PriceRule[];
     members: Member[];
     availabilities: Record<string, string>;
     bookedDates: string[];
+    experiences: ExperienceOption[];
 }) {
     const [searchQuery, setSearchQuery] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
@@ -684,6 +693,23 @@ export default function Reservations({
         document.addEventListener("mousedown", handler);
         return () => document.removeEventListener("mousedown", handler);
     }, [showMemberDrop]);
+
+    const expPeriodMap = useMemo(
+        () => Object.fromEntries(experienceOptions.map((e) => [e.label, e])),
+        [experienceOptions],
+    );
+
+    const getAvailableExps = (checkInDate: string) =>
+        EXPERIENCE_LIST.filter((exp) => {
+            const opt = expPeriodMap[exp.label];
+            if (!opt) return true;
+            if (opt.seasonTag === "通年" || !opt.periodStart || !opt.periodEnd)
+                return true;
+            if (!checkInDate) return true;
+            return (
+                checkInDate >= opt.periodStart && checkInDate <= opt.periodEnd
+            );
+        });
 
     const filtered = useMemo(
         () =>
@@ -1401,7 +1427,9 @@ export default function Reservations({
                                     ) : (
                                         <>
                                             <div className="space-y-2">
-                                                {EXPERIENCE_LIST.map((exp) => {
+                                                {getAvailableExps(
+                                                    selectedRes?.checkIn ?? "",
+                                                ).map((exp) => {
                                                     const isSelected =
                                                         editExperiences.includes(
                                                             exp.label,
@@ -2569,7 +2597,9 @@ export default function Reservations({
                                             </div>
                                         ) : (
                                             <div className="space-y-2">
-                                                {EXPERIENCE_LIST.map((exp) => {
+                                                {getAvailableExps(
+                                                    newForm.checkIn,
+                                                ).map((exp) => {
                                                     const isSelected =
                                                         newForm.experiences.includes(
                                                             exp.label,

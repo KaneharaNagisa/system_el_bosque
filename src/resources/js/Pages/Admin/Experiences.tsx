@@ -21,6 +21,8 @@ interface Experience {
     duration?: string;
     recommendedPeople?: string;
     period?: string;
+    periodStart?: string;
+    periodEnd?: string;
     season?: string;
     seasonTag?: string;
     requiresReservation: boolean;
@@ -42,6 +44,8 @@ const defaultForm = {
     duration: "",
     recommendedPeople: "",
     period: "",
+    periodStart: "",
+    periodEnd: "",
     season: "",
     seasonTag: "通年",
     requiresReservation: false,
@@ -79,6 +83,8 @@ export default function Experiences({
             duration: item.duration || "",
             recommendedPeople: item.recommendedPeople || "",
             period: item.period || "",
+            periodStart: item.periodStart || "",
+            periodEnd: item.periodEnd || "",
             season: item.season || "",
             seasonTag: item.seasonTag || "通年",
             requiresReservation: item.requiresReservation,
@@ -122,6 +128,15 @@ export default function Experiences({
 
     const handleSave = () => {
         if (!formData.name.trim()) return;
+        if (
+            formData.seasonTag !== "通年" &&
+            (!formData.periodStart || !formData.periodEnd)
+        ) {
+            alert(
+                "通年以外の場合は有効期間（開始日・終了日）を入力してください。",
+            );
+            return;
+        }
         const payload = {
             ...formData,
             points: formData.points.filter((p) => p.trim()),
@@ -419,6 +434,68 @@ export default function Experiences({
                                                 </select>
                                             </div>
                                         </div>
+                                        {formData.seasonTag !== "通年" && (
+                                            <div>
+                                                <label className="text-xs text-gray-600 mb-1 block">
+                                                    有効期間{" "}
+                                                    <span className="text-red-500">
+                                                        *
+                                                    </span>
+                                                </label>
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <div>
+                                                        <label className="text-xs text-gray-400 mb-1 block">
+                                                            開始日
+                                                        </label>
+                                                        <input
+                                                            type="date"
+                                                            value={
+                                                                formData.periodStart
+                                                            }
+                                                            onChange={(e) =>
+                                                                setFormData(
+                                                                    (f) => ({
+                                                                        ...f,
+                                                                        periodStart:
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                    }),
+                                                                )
+                                                            }
+                                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0a2105] outline-none"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-xs text-gray-400 mb-1 block">
+                                                            終了日
+                                                        </label>
+                                                        <input
+                                                            type="date"
+                                                            value={
+                                                                formData.periodEnd
+                                                            }
+                                                            onChange={(e) =>
+                                                                setFormData(
+                                                                    (f) => ({
+                                                                        ...f,
+                                                                        periodEnd:
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                    }),
+                                                                )
+                                                            }
+                                                            min={
+                                                                formData.periodStart ||
+                                                                undefined
+                                                            }
+                                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0a2105] outline-none"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                         <div className="flex items-center gap-2">
                                             <input
                                                 type="checkbox"

@@ -93,7 +93,17 @@ class ReservationController extends Controller
             ->values()
             ->all();
 
-        return Inertia::render('Admin/Reservations', compact('reservations', 'priceAdjustmentRules', 'members', 'availabilities', 'bookedDates'));
+        $experiences = \App\Models\Experience::where('is_active', true)
+            ->orderBy('sort_order')
+            ->get()
+            ->map(fn($e) => [
+                'label'       => $e->name,
+                'seasonTag'   => $e->season_tag ?? '通年',
+                'periodStart' => $e->period_start?->format('Y-m-d'),
+                'periodEnd'   => $e->period_end?->format('Y-m-d'),
+            ]);
+
+        return Inertia::render('Admin/Reservations', compact('reservations', 'priceAdjustmentRules', 'members', 'availabilities', 'bookedDates', 'experiences'));
     }
 
     public function store(Request $request): RedirectResponse
