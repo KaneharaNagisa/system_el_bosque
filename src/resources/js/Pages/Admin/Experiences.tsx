@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import axios from "axios";
 import { router } from "@inertiajs/react";
 import AdminLayout from "../../Components/Admin/Layout";
 import {
@@ -18,6 +19,7 @@ interface Experience {
     description: string;
     price: number;
     priceNote: string;
+    pricingType: string;
     duration?: string;
     recommendedPeople?: string;
     period?: string;
@@ -36,11 +38,56 @@ interface Experience {
 
 const SEASON_TAGS = ["春", "夏", "秋", "冬", "通年"];
 
+const MONTHS = [
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+];
+const DAYS = Array.from({ length: 31 }, (_, i) =>
+    String(i + 1).padStart(2, "0"),
+);
+
+/** "MM-DD" を { m, d } に分解 */
+function parseMD(val: string) {
+    const parts = (val ?? "").split("-");
+    return { m: parts[0] ?? "", d: parts[1] ?? "" };
+}
+/** { m, d } を "MM-DD" に結合（片方だけ選択中でも中間状態を保持する） */
+function formatMD(m: string, d: string) {
+    if (!m && !d) return "";
+    return `${m}-${d}`;
+}
+/** "MM-DD" 形式として完全かどうかを検証 */
+function isValidMD(val: string) {
+    return /^(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(val);
+}
+
+// 絶対 URL が保存されている場合もブラウザからアクセス可能な相対パスに正規化する
+function toPreviewUrl(url: string): string {
+    if (!url) return "";
+    try {
+        const parsed = new URL(url);
+        return parsed.pathname + parsed.search;
+    } catch {
+        return url; // 既に相対パスの場合はそのまま
+    }
+}
+
 const defaultForm = {
     name: "",
     description: "",
     price: 0,
     priceNote: "",
+    pricingType: "per_group",
     duration: "",
     recommendedPeople: "",
     period: "",
@@ -64,6 +111,7 @@ export default function Experiences({
     const [editingItem, setEditingItem] = useState<Experience | null>(null);
     const [formData, setFormData] = useState(defaultForm);
     const [imagePreview, setImagePreview] = useState<string>("");
+    const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const openNew = () => {
@@ -80,6 +128,7 @@ export default function Experiences({
             description: item.description,
             price: item.price,
             priceNote: item.priceNote,
+            pricingType: item.pricingType || "per_group",
             duration: item.duration || "",
             recommendedPeople: item.recommendedPeople || "",
             period: item.period || "",
@@ -93,20 +142,37 @@ export default function Experiences({
             image: item.image || "",
             isActive: item.isActive,
         });
-        setImagePreview(item.image || "");
+        setImagePreview(toPreviewUrl(item.image || ""));
         setIsEditOpen(true);
     };
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageChange = async (
+        e: React.ChangeEvent<HTMLInputElement>,
+    ) => {
         const file = e.target.files?.[0];
         if (!file) return;
+
+        // ローカルプレビューを即度表示
         const reader = new FileReader();
-        reader.onload = (ev) => {
-            const result = ev.target?.result as string;
-            setImagePreview(result);
-            setFormData((f) => ({ ...f, image: result }));
-        };
+        reader.onload = (ev) => setImagePreview(ev.target?.result as string);
         reader.readAsDataURL(file);
+
+        // サーバーにアップロード
+        setIsUploading(true);
+        try {
+            const body = new FormData();
+            body.append("image", file);
+            const res = await axios.post<{ url: string }>(
+                "/admin/master/experiences/upload-image",
+                body,
+            );
+            setFormData((f) => ({ ...f, image: res.data.url }));
+        } catch {
+            alert("画像のアップロードに失敗しました。もう一度お試しください。");
+            setImagePreview("");
+        } finally {
+            setIsUploading(false);
+        }
     };
 
     const handlePointChange = (index: number, value: string) => {
@@ -130,7 +196,7 @@ export default function Experiences({
         if (!formData.name.trim()) return;
         if (
             formData.seasonTag !== "通年" &&
-            (!formData.periodStart || !formData.periodEnd)
+            (!isValidMD(formData.periodStart) || !isValidMD(formData.periodEnd))
         ) {
             alert(
                 "通年以外の場合は有効期間（開始日・終了日）を入力してください。",
@@ -441,57 +507,222 @@ export default function Experiences({
                                                     <span className="text-red-500">
                                                         *
                                                     </span>
+                                                    <span className="ml-1 text-gray-400 font-normal">
+                                                        (毎年適用)
+                                                    </span>
                                                 </label>
                                                 <div className="grid grid-cols-2 gap-3">
                                                     <div>
                                                         <label className="text-xs text-gray-400 mb-1 block">
-                                                            開始日
+                                                            開始
                                                         </label>
-                                                        <input
-                                                            type="date"
-                                                            value={
-                                                                formData.periodStart
-                                                            }
-                                                            onChange={(e) =>
-                                                                setFormData(
-                                                                    (f) => ({
-                                                                        ...f,
-                                                                        periodStart:
-                                                                            e
-                                                                                .target
-                                                                                .value,
-                                                                    }),
-                                                                )
-                                                            }
-                                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0a2105] outline-none"
-                                                        />
+                                                        <div className="flex gap-1.5 items-center">
+                                                            <select
+                                                                value={
+                                                                    parseMD(
+                                                                        formData.periodStart,
+                                                                    ).m
+                                                                }
+                                                                onChange={(e) =>
+                                                                    setFormData(
+                                                                        (
+                                                                            f,
+                                                                        ) => ({
+                                                                            ...f,
+                                                                            periodStart:
+                                                                                formatMD(
+                                                                                    e
+                                                                                        .target
+                                                                                        .value,
+                                                                                    parseMD(
+                                                                                        f.periodStart,
+                                                                                    )
+                                                                                        .d,
+                                                                                ),
+                                                                        }),
+                                                                    )
+                                                                }
+                                                                className="flex-1 px-2 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-[#0a2105] outline-none"
+                                                            >
+                                                                <option value="">
+                                                                    月
+                                                                </option>
+                                                                {MONTHS.map(
+                                                                    (m) => (
+                                                                        <option
+                                                                            key={
+                                                                                m
+                                                                            }
+                                                                            value={
+                                                                                m
+                                                                            }
+                                                                        >
+                                                                            {parseInt(
+                                                                                m,
+                                                                            )}
+                                                                            月
+                                                                        </option>
+                                                                    ),
+                                                                )}
+                                                            </select>
+                                                            <span className="text-gray-400 text-sm">
+                                                                /
+                                                            </span>
+                                                            <select
+                                                                value={
+                                                                    parseMD(
+                                                                        formData.periodStart,
+                                                                    ).d
+                                                                }
+                                                                onChange={(e) =>
+                                                                    setFormData(
+                                                                        (
+                                                                            f,
+                                                                        ) => ({
+                                                                            ...f,
+                                                                            periodStart:
+                                                                                formatMD(
+                                                                                    parseMD(
+                                                                                        f.periodStart,
+                                                                                    )
+                                                                                        .m,
+                                                                                    e
+                                                                                        .target
+                                                                                        .value,
+                                                                                ),
+                                                                        }),
+                                                                    )
+                                                                }
+                                                                className="flex-1 px-2 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-[#0a2105] outline-none"
+                                                            >
+                                                                <option value="">
+                                                                    日
+                                                                </option>
+                                                                {DAYS.map(
+                                                                    (d) => (
+                                                                        <option
+                                                                            key={
+                                                                                d
+                                                                            }
+                                                                            value={
+                                                                                d
+                                                                            }
+                                                                        >
+                                                                            {parseInt(
+                                                                                d,
+                                                                            )}
+                                                                            日
+                                                                        </option>
+                                                                    ),
+                                                                )}
+                                                            </select>
+                                                        </div>
                                                     </div>
                                                     <div>
                                                         <label className="text-xs text-gray-400 mb-1 block">
-                                                            終了日
+                                                            終了
                                                         </label>
-                                                        <input
-                                                            type="date"
-                                                            value={
-                                                                formData.periodEnd
-                                                            }
-                                                            onChange={(e) =>
-                                                                setFormData(
-                                                                    (f) => ({
-                                                                        ...f,
-                                                                        periodEnd:
-                                                                            e
-                                                                                .target
-                                                                                .value,
-                                                                    }),
-                                                                )
-                                                            }
-                                                            min={
-                                                                formData.periodStart ||
-                                                                undefined
-                                                            }
-                                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0a2105] outline-none"
-                                                        />
+                                                        <div className="flex gap-1.5 items-center">
+                                                            <select
+                                                                value={
+                                                                    parseMD(
+                                                                        formData.periodEnd,
+                                                                    ).m
+                                                                }
+                                                                onChange={(e) =>
+                                                                    setFormData(
+                                                                        (
+                                                                            f,
+                                                                        ) => ({
+                                                                            ...f,
+                                                                            periodEnd:
+                                                                                formatMD(
+                                                                                    e
+                                                                                        .target
+                                                                                        .value,
+                                                                                    parseMD(
+                                                                                        f.periodEnd,
+                                                                                    )
+                                                                                        .d,
+                                                                                ),
+                                                                        }),
+                                                                    )
+                                                                }
+                                                                className="flex-1 px-2 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-[#0a2105] outline-none"
+                                                            >
+                                                                <option value="">
+                                                                    月
+                                                                </option>
+                                                                {MONTHS.map(
+                                                                    (m) => (
+                                                                        <option
+                                                                            key={
+                                                                                m
+                                                                            }
+                                                                            value={
+                                                                                m
+                                                                            }
+                                                                        >
+                                                                            {parseInt(
+                                                                                m,
+                                                                            )}
+                                                                            月
+                                                                        </option>
+                                                                    ),
+                                                                )}
+                                                            </select>
+                                                            <span className="text-gray-400 text-sm">
+                                                                /
+                                                            </span>
+                                                            <select
+                                                                value={
+                                                                    parseMD(
+                                                                        formData.periodEnd,
+                                                                    ).d
+                                                                }
+                                                                onChange={(e) =>
+                                                                    setFormData(
+                                                                        (
+                                                                            f,
+                                                                        ) => ({
+                                                                            ...f,
+                                                                            periodEnd:
+                                                                                formatMD(
+                                                                                    parseMD(
+                                                                                        f.periodEnd,
+                                                                                    )
+                                                                                        .m,
+                                                                                    e
+                                                                                        .target
+                                                                                        .value,
+                                                                                ),
+                                                                        }),
+                                                                    )
+                                                                }
+                                                                className="flex-1 px-2 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-[#0a2105] outline-none"
+                                                            >
+                                                                <option value="">
+                                                                    日
+                                                                </option>
+                                                                {DAYS.map(
+                                                                    (d) => (
+                                                                        <option
+                                                                            key={
+                                                                                d
+                                                                            }
+                                                                            value={
+                                                                                d
+                                                                            }
+                                                                        >
+                                                                            {parseInt(
+                                                                                d,
+                                                                            )}
+                                                                            日
+                                                                        </option>
+                                                                    ),
+                                                                )}
+                                                            </select>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -587,6 +818,57 @@ export default function Experiences({
                                     <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
                                         料金・詳細情報
                                     </h4>
+                                    <div className="mb-3">
+                                        <label className="text-xs text-gray-600 mb-1 block">
+                                            料金計算単位
+                                        </label>
+                                        <div className="flex gap-4">
+                                            <label className="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    type="radio"
+                                                    name="pricingType"
+                                                    value="per_person"
+                                                    checked={
+                                                        formData.pricingType ===
+                                                        "per_person"
+                                                    }
+                                                    onChange={() =>
+                                                        setFormData((f) => ({
+                                                            ...f,
+                                                            pricingType:
+                                                                "per_person",
+                                                        }))
+                                                    }
+                                                    className="accent-[#0a2105]"
+                                                />
+                                                <span className="text-sm text-gray-700">
+                                                    人数計算（1人あたり）
+                                                </span>
+                                            </label>
+                                            <label className="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    type="radio"
+                                                    name="pricingType"
+                                                    value="per_group"
+                                                    checked={
+                                                        formData.pricingType ===
+                                                        "per_group"
+                                                    }
+                                                    onChange={() =>
+                                                        setFormData((f) => ({
+                                                            ...f,
+                                                            pricingType:
+                                                                "per_group",
+                                                        }))
+                                                    }
+                                                    className="accent-[#0a2105]"
+                                                />
+                                                <span className="text-sm text-gray-700">
+                                                    組計算（人数に関係なく一律）
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
                                     <div className="grid grid-cols-2 gap-3">
                                         <div>
                                             <label className="text-xs text-gray-600 mb-1 block">
@@ -800,10 +1082,16 @@ export default function Experiences({
                                     </button>
                                     <button
                                         onClick={handleSave}
-                                        disabled={!formData.name.trim()}
+                                        disabled={
+                                            !formData.name.trim() || isUploading
+                                        }
                                         className="flex-1 py-2.5 bg-[#0a2105] text-white rounded-lg text-sm hover:bg-[#071a04] disabled:opacity-40 disabled:cursor-not-allowed"
                                     >
-                                        {editingItem ? "更新する" : "登録する"}
+                                        {isUploading
+                                            ? "画像アップロード中…"
+                                            : editingItem
+                                              ? "更新する"
+                                              : "登録する"}
                                     </button>
                                 </div>
                             </div>

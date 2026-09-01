@@ -101,6 +101,10 @@ class ReservationController extends Controller
                 'seasonTag'   => $e->season_tag ?? '通年',
                 'periodStart' => $e->period_start?->format('Y-m-d'),
                 'periodEnd'   => $e->period_end?->format('Y-m-d'),
+                'price'       => $e->price,
+                'priceNote'   => $e->price_note,
+                'pricingType' => $e->pricing_type ?? 'per_group',
+                'period'      => $e->period,
             ]);
 
         return Inertia::render('Admin/Reservations', compact('reservations', 'priceAdjustmentRules', 'members', 'availabilities', 'bookedDates', 'experiences'));

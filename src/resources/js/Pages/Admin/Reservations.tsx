@@ -59,6 +59,10 @@ interface ExperienceOption {
     seasonTag: string;
     periodStart: string | null;
     periodEnd: string | null;
+    price: number;
+    priceNote: string;
+    pricingType: "per_person" | "per_group";
+    period: string | null;
 }
 
 interface ExperienceDetail {
@@ -118,38 +122,6 @@ const PET_LABELS: Record<string, string> = {
     large1: "大型犬1頭",
     large2: "大型犬2頭",
 };
-const EXP_MAP: Record<
-    string,
-    { perPerson: boolean; amount: number; priceNote: string }
-> = {
-    田植え体験: { perPerson: true, amount: 4500, priceNote: "¥4,500/人" },
-    稲刈り体験: { perPerson: true, amount: 4500, priceNote: "¥4,500/人" },
-    薪割り体験: { perPerson: false, amount: 2000, priceNote: "¥2,000/時間" },
-    夏野菜収穫体験: {
-        perPerson: false,
-        amount: 1500,
-        priceNote: "¥1,500/カゴ",
-    },
-    BBQグリルレンタル: {
-        perPerson: false,
-        amount: 3500,
-        priceNote: "¥3,500/回",
-    },
-    星空ガイド: { perPerson: false, amount: 2000, priceNote: "¥2,000/組" },
-};
-const EXPERIENCE_LIST = [
-    { label: "田植え体験", season: "5月〜6月", price: "¥4,500/人" },
-    { label: "稲刈り体験", season: "9月〜10月", price: "¥4,500/人" },
-    { label: "薪割り体験", season: "通年", price: "¥2,000/時間" },
-    { label: "夏野菜収穫体験", season: "7月〜8月", price: "¥1,500/カゴ" },
-    { label: "BBQグリルレンタル", season: "通年", price: "¥3,500/回" },
-    {
-        label: "星空ガイド",
-        season: "通年（晴天時）",
-        price: "¥2,000/組",
-        note: "ガイドなしは無料",
-    },
-];
 
 // ── ユーティリティ ──
 function calcNights(ci: string, co: string): number {
@@ -179,14 +151,21 @@ function petDisplayLabel(hasPet: string, breed?: string) {
     const base = PET_LABELS[hasPet] ?? hasPet;
     return hasPet === "none" ? base : `${base}${breed ? `（${breed}）` : ""}`;
 }
-function getExpDetails(res: Reservation): ExperienceDetail[] {
-    return (res.experiences ?? []).map((label) => ({
-        name: label,
-        price: EXP_MAP[label]?.perPerson
-            ? EXP_MAP[label].amount * res.guests
-            : (EXP_MAP[label]?.amount ?? 0),
-        priceNote: EXP_MAP[label]?.priceNote ?? "",
-    }));
+function getExpDetails(
+    res: Reservation,
+    expMap: Record<string, ExperienceOption>,
+): ExperienceDetail[] {
+    return (res.experiences ?? []).map((label) => {
+        const opt = expMap[label];
+        const perPerson = opt?.pricingType === "per_person";
+        return {
+            name: label,
+            price: perPerson
+                ? (opt?.price ?? 0) * res.guests
+                : (opt?.price ?? 0),
+            priceNote: opt?.priceNote ?? "",
+        };
+    });
 }
 
 // ── バッジ ──
@@ -596,7 +575,7 @@ const emptyNewForm: NewForm = {
 };
 
 // ── 料金計算（新規フォーム用） ──
-function calcFromForm(f: NewForm) {
+function calcFromForm(f: NewForm, expMap: Record<string, ExperienceOption>) {
     const nights = calcNights(f.checkIn, f.checkOut);
     const baseRate = getBaseRate(f.checkIn);
     const baseAmount = baseRate * nights;
@@ -605,9 +584,14 @@ function calcFromForm(f: NewForm) {
     const supportFee = f.supportPlan ? 8000 : 0;
     const transferSurcharge = f.supportPlan && f.guests >= 5 ? 5000 : 0;
     const experiencesTotal = f.experiences.reduce((acc, label) => {
-        const info = EXP_MAP[label];
-        if (!info) return acc;
-        return acc + (info.perPerson ? info.amount * f.guests : info.amount);
+        const opt = expMap[label];
+        if (!opt) return acc;
+        return (
+            acc +
+            (opt.pricingType === "per_person"
+                ? opt.price * f.guests
+                : opt.price)
+        );
     }, 0);
     const deposit = 10000;
     const total =
@@ -700,15 +684,14 @@ export default function Reservations({
     );
 
     const getAvailableExps = (checkInDate: string) =>
-        EXPERIENCE_LIST.filter((exp) => {
-            const opt = expPeriodMap[exp.label];
-            if (!opt) return true;
-            if (opt.seasonTag === "通年" || !opt.periodStart || !opt.periodEnd)
+        experienceOptions.filter((exp) => {
+            if (exp.seasonTag === "通年" || !exp.periodStart || !exp.periodEnd)
                 return true;
             if (!checkInDate) return true;
-            return (
-                checkInDate >= opt.periodStart && checkInDate <= opt.periodEnd
-            );
+            const md = checkInDate.slice(5); // "YYYY-MM-DD" → "MM-DD"
+            const { periodStart: s, periodEnd: e } = exp;
+            // 年をまたぐ期間（例: 11月〜2月）にも対応
+            return s <= e ? md >= s && md <= e : md >= s || md <= e;
         });
 
     const filtered = useMemo(
@@ -851,7 +834,10 @@ export default function Reservations({
         });
     }, [memberQuery, members]);
 
-    const calc = useMemo(() => calcFromForm(newForm), [newForm]);
+    const calc = useMemo(
+        () => calcFromForm(newForm, expPeriodMap),
+        [newForm, expPeriodMap],
+    );
 
     // 詳細モーダル用 適用可能ルール
     const detailApplicableRules = useMemo(() => {
@@ -1359,7 +1345,8 @@ export default function Reservations({
                                     icon={<FaStar className="w-3 h-3" />}
                                     title="体験オプション"
                                 >
-                                    {getExpDetails(selectedRes).length > 0 ? (
+                                    {getExpDetails(selectedRes, expPeriodMap)
+                                        .length > 0 ? (
                                         <div className="border border-gray-200 rounded-lg overflow-hidden">
                                             <table className="w-full text-sm">
                                                 <thead>
@@ -1375,6 +1362,7 @@ export default function Reservations({
                                                 <tbody>
                                                     {getExpDetails(
                                                         selectedRes,
+                                                        expPeriodMap,
                                                     ).map((exp, i) => (
                                                         <tr
                                                             key={i}
@@ -1477,21 +1465,19 @@ export default function Reservations({
                                                                     {exp.label}
                                                                 </span>
                                                                 <span className="text-xs text-gray-400">
-                                                                    {exp.season}
+                                                                    {exp.period ||
+                                                                        exp.seasonTag}
                                                                 </span>
-                                                                {"note" in
-                                                                    exp &&
-                                                                    exp.note && (
-                                                                        <span className="text-xs text-amber-600 block">
-                                                                            ※{" "}
-                                                                            {
-                                                                                exp.note
-                                                                            }
-                                                                        </span>
-                                                                    )}
                                                             </div>
                                                             <span className="text-xs font-semibold text-gray-600 shrink-0">
-                                                                {exp.price}
+                                                                {exp.priceNote}
+                                                                {exp.pricingType ===
+                                                                    "per_person" && (
+                                                                    <span className="text-gray-400 font-normal">
+                                                                        {" "}
+                                                                        /人
+                                                                    </span>
+                                                                )}
                                                             </span>
                                                         </label>
                                                     );
@@ -2628,21 +2614,19 @@ export default function Reservations({
                                                                     {exp.label}
                                                                 </span>
                                                                 <span className="text-xs text-gray-400">
-                                                                    {exp.season}
+                                                                    {exp.period ||
+                                                                        exp.seasonTag}
                                                                 </span>
-                                                                {"note" in
-                                                                    exp &&
-                                                                    exp.note && (
-                                                                        <span className="text-xs text-amber-600 block">
-                                                                            ※{" "}
-                                                                            {
-                                                                                exp.note
-                                                                            }
-                                                                        </span>
-                                                                    )}
                                                             </div>
                                                             <span className="text-xs font-semibold text-gray-600 shrink-0">
-                                                                {exp.price}
+                                                                {exp.priceNote}
+                                                                {exp.pricingType ===
+                                                                    "per_person" && (
+                                                                    <span className="text-gray-400 font-normal">
+                                                                        {" "}
+                                                                        /人
+                                                                    </span>
+                                                                )}
                                                             </span>
                                                         </label>
                                                     );

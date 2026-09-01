@@ -76,6 +76,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/master/availability', [AvailabilityController::class, 'update'])->name('master.availability.update');
 
         Route::get('/master/experiences', [ExperienceController::class, 'index'])->name('master.experiences.index');
+        Route::post('/master/experiences/upload-image', [ExperienceController::class, 'uploadImage'])->name('master.experiences.upload-image');
         Route::post('/master/experiences', [ExperienceController::class, 'store'])->name('master.experiences.store');
         Route::patch('/master/experiences/{id}', [ExperienceController::class, 'update'])->name('master.experiences.update');
         Route::delete('/master/experiences/{id}', [ExperienceController::class, 'destroy'])->name('master.experiences.destroy');

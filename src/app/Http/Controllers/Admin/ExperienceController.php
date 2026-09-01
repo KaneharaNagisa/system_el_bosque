@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Experience;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -22,13 +23,14 @@ class ExperienceController extends Controller
                 'description'         => $e->description,
                 'price'               => $e->price,
                 'priceNote'           => $e->price_note,
+                'pricingType'         => $e->pricing_type ?? 'per_group',
                 'duration'            => $e->duration,
                 'recommendedPeople'   => $e->recommended_people,
                 'season'              => $e->season,
                 'seasonTag'           => $e->season_tag,
                 'period'              => $e->period,
-                'periodStart'         => $e->period_start?->format('Y-m-d'),
-                'periodEnd'           => $e->period_end?->format('Y-m-d'),
+                'periodStart'         => $e->period_start,
+                'periodEnd'           => $e->period_end,
                 'requiresReservation' => $e->requires_reservation,
                 'points'              => $e->points ?? [],
                 'notes'               => $e->notes,
@@ -64,6 +66,15 @@ class ExperienceController extends Controller
         return back()->with('message', '体験オプションを削除しました');
     }
 
+    public function uploadImage(Request $request): JsonResponse
+    {
+        $request->validate(['image' => ['required', 'image', 'max:10240']]);
+        $path = $request->file('image')->store('experiences', 'public');
+
+        // 相対パスを返す（APP_URL に依存しないようにするため）
+        return response()->json(['url' => '/storage/' . $path]);
+    }
+
     private function rules(): array
     {
         return [
@@ -71,13 +82,14 @@ class ExperienceController extends Controller
             'description'          => ['required', 'string'],
             'price'                => ['required', 'integer', 'min:0'],
             'priceNote'            => ['required', 'string', 'max:255'],
+            'pricingType'          => ['required', 'string', 'in:per_person,per_group'],
             'duration'             => ['nullable', 'string'],
             'recommendedPeople'    => ['nullable', 'string'],
             'season'               => ['nullable', 'string'],
             'seasonTag'            => ['nullable', 'string'],
             'period'               => ['nullable', 'string'],
-            'periodStart'          => ['nullable', 'date', 'required_unless:seasonTag,通年'],
-            'periodEnd'            => ['nullable', 'date', 'required_unless:seasonTag,通年', 'after_or_equal:periodStart'],
+            'periodStart'          => ['nullable', 'regex:/^(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/', 'required_unless:seasonTag,通年'],
+            'periodEnd'            => ['nullable', 'regex:/^(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/', 'required_unless:seasonTag,通年'],
             'requiresReservation'  => ['boolean'],
             'points'               => ['nullable', 'array'],
             'notes'                => ['nullable', 'string'],
@@ -93,6 +105,7 @@ class ExperienceController extends Controller
             'description'          => $data['description'],
             'price'                => $data['price'],
             'price_note'           => $data['priceNote'],
+            'pricing_type'         => $data['pricingType'] ?? 'per_group',
             'duration'             => $data['duration'] ?? null,
             'recommended_people'   => $data['recommendedPeople'] ?? null,
             'season'               => $data['season'] ?? null,

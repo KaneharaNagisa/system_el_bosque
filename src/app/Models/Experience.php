@@ -11,6 +11,7 @@ class Experience extends Model
         'description',
         'price',
         'price_note',
+        'pricing_type',
         'duration',
         'recommended_people',
         'season',
@@ -33,8 +34,6 @@ class Experience extends Model
             'requires_reservation' => 'boolean',
             'is_active'            => 'boolean',
             'points'               => 'array',
-            'period_start'         => 'date',
-            'period_end'           => 'date',
         ];
     }
 }
