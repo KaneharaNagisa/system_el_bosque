@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Billing;
 use App\Models\PriceAdjustment;
 use App\Models\Reservation;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -41,8 +43,7 @@ class ReservationController extends Controller
                 'createdAt'    => $r->created_at->format('Y-m-d'),
             ]);
 
-        $priceAdjustmentRules = PriceAdjustment::where('status', 'active')
-            ->orderBy('created_at')
+        $priceAdjustmentRules = PriceAdjustment::orderBy('created_at')
             ->get()
             ->map(fn($r) => [
                 'id'                  => 'ADJ-' . str_pad($r->id, 3, '0', STR_PAD_LEFT),
@@ -60,18 +61,150 @@ class ReservationController extends Controller
                 'status'              => $r->status,
             ]);
 
-        return Inertia::render('Admin/Reservations', compact('reservations', 'priceAdjustmentRules'));
+        $members = User::orderBy('last_name')->orderBy('first_name')
+            ->get()
+            ->map(fn($u) => [
+                'id'            => 'MBR-' . str_pad($u->id, 3, '0', STR_PAD_LEFT),
+                'dbId'          => $u->id,
+                'lastName'      => $u->last_name ?? '',
+                'firstName'     => $u->first_name ?? '',
+                'lastNameKana'  => $u->last_name_kana ?? '',
+                'firstNameKana' => $u->first_name_kana ?? '',
+                'email'         => $u->email,
+                'phone'         => $u->phone ?? '',
+                'joinedAt'      => $u->created_at->format('Y-m-d'),
+                'totalStays'    => $u->reservations()->count(),
+            ]);
+
+        return Inertia::render('Admin/Reservations', compact('reservations', 'priceAdjustmentRules', 'members'));
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'member_db_id'     => ['required', 'integer', 'exists:users,id'],
+            'check_in'         => ['required', 'date'],
+            'check_out'        => ['required', 'date', 'after:check_in'],
+            'guests'           => ['required', 'integer', 'min:1', 'max:10'],
+            'has_pet'          => ['required', 'in:none,small1,small2,large1,large2'],
+            'pet_breed'        => ['nullable', 'string', 'max:100'],
+            'support_fee'      => ['required', 'boolean'],
+            'experiences'      => ['nullable', 'array'],
+            'status'           => ['required', 'in:confirmed,cancelled,noshow'],
+            'payment'          => ['required', 'in:paid,unpaid,refunded'],
+            'note'             => ['nullable', 'string', 'max:1000'],
+            'adjustment'       => ['nullable', 'integer'],
+            'adjustment_note'  => ['nullable', 'string', 'max:255'],
+            'adjustment_rule_id' => ['nullable', 'string', 'max:20'],
+            'base_amount'      => ['required', 'integer'],
+            'guest_extra'      => ['required', 'integer'],
+            'pet_fee'          => ['required', 'integer'],
+            'support_fee_amount' => ['required', 'integer'],
+            'transfer_surcharge' => ['required', 'integer'],
+            'experiences_total' => ['required', 'integer'],
+            'deposit'          => ['required', 'integer'],
+            'total'            => ['required', 'integer'],
+        ]);
+
+        $code = 'RSV-' . strtoupper(Str::random(8));
+
+        $reservation = Reservation::create([
+            'reservation_code' => $code,
+            'user_id'          => $request->member_db_id,
+            'check_in'         => $request->check_in,
+            'check_out'        => $request->check_out,
+            'guests'           => $request->guests,
+            'has_pet'          => $request->has_pet,
+            'pet_breed'        => $request->pet_breed,
+            'support_fee'      => $request->support_fee,
+            'experiences'      => $request->experiences ?? [],
+            'status'           => $request->status,
+            'note'             => $request->note,
+        ]);
+
+        $breakdown = [
+            'baseAmount'        => $request->base_amount,
+            'guestExtra'        => $request->guest_extra,
+            'petFee'            => $request->pet_fee,
+            'supportFee'        => $request->support_fee_amount,
+            'transferSurcharge' => $request->transfer_surcharge,
+            'experiencesTotal'  => $request->experiences_total,
+            'deposit'           => $request->deposit,
+        ];
+        if ($request->adjustment) {
+            $breakdown['adjustment']       = $request->adjustment;
+            $breakdown['adjustmentNote']   = $request->adjustment_note ?? null;
+            $breakdown['adjustmentRuleId'] = $request->adjustment_rule_id ?? null;
+        }
+
+        Billing::create([
+            'billing_code'   => 'BIL-' . strtoupper(Str::random(8)),
+            'reservation_id' => $reservation->id,
+            'amount'         => max(0, $request->total),
+            'breakdown'      => $breakdown,
+            'status'         => $request->payment,
+            'due_date'       => $request->check_in,
+        ]);
+
+        return back()->with('message', '予約を登録しました');
     }
 
     public function update(Request $request, int $id): RedirectResponse
     {
         $request->validate([
-            'status' => ['required', 'in:pending,confirmed,cancelled'],
+            'status' => ['required', 'in:pending,confirmed,cancelled,noshow'],
         ]);
 
         Reservation::findOrFail($id)->update(['status' => $request->status]);
 
         return back()->with('message', '予約を更新しました');
+    }
+
+    public function updatePayment(Request $request, int $id): RedirectResponse
+    {
+        $request->validate([
+            'payment' => ['required', 'in:paid,unpaid,refunded'],
+        ]);
+
+        $reservation = Reservation::with('billing')->findOrFail($id);
+        if (!$reservation->billing) {
+            return back()->with('error', '請求データが存在しません');
+        }
+
+        $paidAt = $request->payment === 'paid' ? now() : null;
+
+        $reservation->billing->update([
+            'status'  => $request->payment,
+            'paid_at' => $paidAt,
+        ]);
+
+        return back()->with('message', '支払状況を更新しました');
+    }
+
+    public function updateExperiences(Request $request, int $id): RedirectResponse
+    {
+        $request->validate([
+            'experiences' => ['nullable', 'array'],
+        ]);
+
+        Reservation::findOrFail($id)->update([
+            'experiences' => $request->experiences ?? [],
+        ]);
+
+        return back()->with('message', '体験オプションを更新しました');
+    }
+
+    public function updateSupport(Request $request, int $id): RedirectResponse
+    {
+        $request->validate([
+            'support_fee' => ['required', 'boolean'],
+        ]);
+
+        Reservation::findOrFail($id)->update([
+            'support_fee' => $request->support_fee,
+        ]);
+
+        return back()->with('message', '滞在サポートを更新しました');
     }
 
     public function updateAdjustment(Request $request, int $id): RedirectResponse

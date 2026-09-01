@@ -44,7 +44,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // 予約管理
         Route::get('/reservations', [ReservationController::class, 'index'])->name('reservations.index');
+        Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
         Route::patch('/reservations/{id}', [ReservationController::class, 'update'])->name('reservations.update');
+        Route::patch('/reservations/{id}/payment', [ReservationController::class, 'updatePayment'])->name('reservations.payment');
+        Route::patch('/reservations/{id}/experiences', [ReservationController::class, 'updateExperiences'])->name('reservations.experiences');
+        Route::patch('/reservations/{id}/support', [ReservationController::class, 'updateSupport'])->name('reservations.support');
         Route::patch('/reservations/{id}/adjustment', [ReservationController::class, 'updateAdjustment'])->name('reservations.adjustment');
 
         // 請求管理
