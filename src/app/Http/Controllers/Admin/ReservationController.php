@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Availability;
 use App\Models\Billing;
 use App\Models\PriceAdjustment;
 use App\Models\Reservation;
@@ -76,7 +77,23 @@ class ReservationController extends Controller
                 'totalStays'    => $u->reservations()->count(),
             ]);
 
-        return Inertia::render('Admin/Reservations', compact('reservations', 'priceAdjustmentRules', 'members'));
+        $availabilities = Availability::orderBy('date')
+            ->get()
+            ->mapWithKeys(fn($a) => [
+                $a->date->format('Y-m-d') => $a->status,
+            ]);
+
+        $bookedDates = Reservation::where('status', 'confirmed')
+            ->get()
+            ->flatMap(
+                fn($r) => collect(range(0, $r->check_in->diffInDays($r->check_out) - 1))
+                    ->map(fn($i) => $r->check_in->copy()->addDays($i)->format('Y-m-d'))
+            )
+            ->unique()
+            ->values()
+            ->all();
+
+        return Inertia::render('Admin/Reservations', compact('reservations', 'priceAdjustmentRules', 'members', 'availabilities', 'bookedDates'));
     }
 
     public function store(Request $request): RedirectResponse

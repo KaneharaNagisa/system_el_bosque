@@ -15,6 +15,7 @@ class Experience extends Model
         'recommended_people',
         'season',
         'season_tag',
+        'period',
         'requires_reservation',
         'points',
         'notes',

@@ -26,6 +26,7 @@ class ExperienceController extends Controller
                 'recommendedPeople'   => $e->recommended_people,
                 'season'              => $e->season,
                 'seasonTag'           => $e->season_tag,
+                'period'              => $e->period,
                 'requiresReservation' => $e->requires_reservation,
                 'points'              => $e->points ?? [],
                 'notes'               => $e->notes,
@@ -72,9 +73,11 @@ class ExperienceController extends Controller
             'recommendedPeople'    => ['nullable', 'string'],
             'season'               => ['nullable', 'string'],
             'seasonTag'            => ['nullable', 'string'],
+            'period'               => ['nullable', 'string'],
             'requiresReservation'  => ['boolean'],
             'points'               => ['nullable', 'array'],
             'notes'                => ['nullable', 'string'],
+            'image'                => ['nullable', 'string'],
             'isActive'             => ['boolean'],
         ];
     }
@@ -90,9 +93,11 @@ class ExperienceController extends Controller
             'recommended_people'   => $data['recommendedPeople'] ?? null,
             'season'               => $data['season'] ?? null,
             'season_tag'           => $data['seasonTag'] ?? null,
+            'period'               => $data['period'] ?? null,
             'requires_reservation' => $data['requiresReservation'] ?? false,
             'points'               => $data['points'] ?? [],
             'notes'                => $data['notes'] ?? null,
+            'image'                => $data['image'] ?? null,
             'is_active'            => $data['isActive'] ?? true,
         ];
     }

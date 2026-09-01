@@ -258,19 +258,28 @@ const CAL_MONTH_NAMES = [
 
 type CalStatus = "available" | "booked" | "unavailable" | "off";
 
-function getAdminDayStatus(month: number, day: number): CalStatus {
+function getAdminDayStatus(
+    month: number,
+    day: number,
+    availabilities: Record<string, string>,
+    bookedDatesSet: Set<string>,
+): CalStatus {
     if (month < CAL_SEASON_START || month > CAL_SEASON_END) return "off";
-    const d = new Date(CAL_YEAR, month, day);
-    const dow = d.getDay();
-    if (CAL_CLOSED_DOW.includes(dow)) return "unavailable";
-    if ((month === 3 && day >= 29) || (month === 4 && day <= 5))
+    const dateStr = `${CAL_YEAR}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    const dow = new Date(CAL_YEAR, month, day).getDay();
+
+    if (bookedDatesSet.has(dateStr)) return "booked";
+
+    const avStatus = availabilities[dateStr];
+    if (avStatus) {
+        if (avStatus === "available") return "available";
+        if (avStatus === "offseason") return "off";
+        if (avStatus === "closed") return "unavailable";
         return "booked";
-    if (month === 7 && day >= 10 && day <= 16) return "booked";
-    if (month === 11 && day >= 28) return "booked";
-    const seed = day * 7 + month * 13 + CAL_YEAR;
-    const hash = ((seed * 2654435761) >>> 0) % 100;
-    if (dow === 5 || dow === 6) return hash < 40 ? "booked" : "available";
-    return hash < 20 ? "booked" : "available";
+    }
+
+    if (CAL_CLOSED_DOW.includes(dow)) return "unavailable";
+    return "available";
 }
 
 function adminFmtDate(month: number, day: number): string {
@@ -281,12 +290,16 @@ interface AdminDateRangePickerProps {
     checkIn: string;
     checkOut: string;
     onChange: (ci: string, co: string) => void;
+    availabilities: Record<string, string>;
+    bookedDates: string[];
 }
 
 function AdminDateRangePicker({
     checkIn,
     checkOut,
     onChange,
+    availabilities,
+    bookedDates,
 }: AdminDateRangePickerProps) {
     const [viewMonth, setViewMonth] = useState(() => {
         const now = new Date();
@@ -301,6 +314,8 @@ function AdminDateRangePicker({
         const m = Number(checkIn.split("-")[1]) - 1;
         if (m >= CAL_SEASON_START && m <= CAL_SEASON_END) setViewMonth(m);
     }, [checkIn]);
+
+    const bookedDatesSet = useMemo(() => new Set(bookedDates), [bookedDates]);
 
     const cells = useMemo(() => {
         const daysInMonth = new Date(CAL_YEAR, viewMonth + 1, 0).getDate();
@@ -319,14 +334,19 @@ function AdminDateRangePicker({
             items.push({
                 day: d,
                 dateStr: adminFmtDate(viewMonth, d),
-                status: getAdminDayStatus(viewMonth, d),
+                status: getAdminDayStatus(
+                    viewMonth,
+                    d,
+                    availabilities,
+                    bookedDatesSet,
+                ),
                 dow,
             });
         }
         while (items.length % 7 !== 0)
             items.push({ day: 0, dateStr: "", status: "off", dow: 0 });
         return items;
-    }, [viewMonth]);
+    }, [viewMonth, availabilities, bookedDatesSet]);
 
     const isSelectingCO = !!checkIn && !checkOut;
 
@@ -610,10 +630,14 @@ export default function Reservations({
     reservations,
     priceAdjustmentRules,
     members,
+    availabilities,
+    bookedDates,
 }: {
     reservations: Reservation[];
     priceAdjustmentRules: PriceRule[];
     members: Member[];
+    availabilities: Record<string, string>;
+    bookedDates: string[];
 }) {
     const [searchQuery, setSearchQuery] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
@@ -829,6 +853,13 @@ export default function Reservations({
             return true;
         });
     }, [selectedRes, priceAdjustmentRules]);
+
+    const detailSelectedRule = useMemo(
+        () =>
+            priceAdjustmentRules.find((r) => r.id === editAdjustmentRuleId) ??
+            null,
+        [editAdjustmentRuleId, priceAdjustmentRules],
+    );
 
     const selectedAdjustmentRule = useMemo(
         () =>
@@ -1359,81 +1390,101 @@ export default function Reservations({
                                     icon={<FaStar className="w-3 h-3" />}
                                     title="体験オプションを変更"
                                 >
-                                    <div className="space-y-2">
-                                        {EXPERIENCE_LIST.map((exp) => {
-                                            const isSelected =
-                                                editExperiences.includes(
-                                                    exp.label,
-                                                );
-                                            return (
-                                                <label
-                                                    key={exp.label}
-                                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg border-2 cursor-pointer transition-all ${isSelected ? "border-[#0a2105] bg-[#e8f5e9]" : "border-gray-200 hover:bg-gray-50"}`}
-                                                >
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={isSelected}
-                                                        onChange={() => {
-                                                            setEditExperiences(
-                                                                (prev) =>
-                                                                    prev.includes(
-                                                                        exp.label,
-                                                                    )
-                                                                        ? prev.filter(
-                                                                              (
-                                                                                  e,
-                                                                              ) =>
-                                                                                  e !==
-                                                                                  exp.label,
-                                                                          )
-                                                                        : [
-                                                                              ...prev,
-                                                                              exp.label,
-                                                                          ],
-                                                            );
-                                                            setExperiencesSaved(
-                                                                false,
-                                                            );
-                                                        }}
-                                                        className="w-4 h-4 accent-[#0a2105] shrink-0"
-                                                    />
-                                                    <div className="flex-1 min-w-0">
-                                                        <span
-                                                            className={`text-sm block ${isSelected ? "font-medium text-[#0a2105]" : "text-gray-800"}`}
+                                    {detailSelectedRule?.noExperienceOptions ? (
+                                        <div className="flex items-start gap-2 px-3 py-3 bg-red-50 border border-red-200 rounded-lg">
+                                            <FaBan className="w-3.5 h-3.5 text-red-500 shrink-0 mt-0.5" />
+                                            <p className="text-xs text-red-700">
+                                                「{detailSelectedRule.name}
+                                                」はオプション選択不可の割引です。体験オプションを変更するにはルールの選択を解除してください。
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div className="space-y-2">
+                                                {EXPERIENCE_LIST.map((exp) => {
+                                                    const isSelected =
+                                                        editExperiences.includes(
+                                                            exp.label,
+                                                        );
+                                                    return (
+                                                        <label
+                                                            key={exp.label}
+                                                            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg border-2 cursor-pointer transition-all ${isSelected ? "border-[#0a2105] bg-[#e8f5e9]" : "border-gray-200 hover:bg-gray-50"}`}
                                                         >
-                                                            {exp.label}
-                                                        </span>
-                                                        <span className="text-xs text-gray-400">
-                                                            {exp.season}
-                                                        </span>
-                                                        {"note" in exp &&
-                                                            exp.note && (
-                                                                <span className="text-xs text-amber-600 block">
-                                                                    ※ {exp.note}
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={
+                                                                    isSelected
+                                                                }
+                                                                onChange={() => {
+                                                                    setEditExperiences(
+                                                                        (
+                                                                            prev,
+                                                                        ) =>
+                                                                            prev.includes(
+                                                                                exp.label,
+                                                                            )
+                                                                                ? prev.filter(
+                                                                                      (
+                                                                                          e,
+                                                                                      ) =>
+                                                                                          e !==
+                                                                                          exp.label,
+                                                                                  )
+                                                                                : [
+                                                                                      ...prev,
+                                                                                      exp.label,
+                                                                                  ],
+                                                                    );
+                                                                    setExperiencesSaved(
+                                                                        false,
+                                                                    );
+                                                                }}
+                                                                className="w-4 h-4 accent-[#0a2105] shrink-0"
+                                                            />
+                                                            <div className="flex-1 min-w-0">
+                                                                <span
+                                                                    className={`text-sm block ${isSelected ? "font-medium text-[#0a2105]" : "text-gray-800"}`}
+                                                                >
+                                                                    {exp.label}
                                                                 </span>
-                                                            )}
-                                                    </div>
-                                                    <span className="text-xs font-semibold text-gray-600 shrink-0">
-                                                        {exp.price}
+                                                                <span className="text-xs text-gray-400">
+                                                                    {exp.season}
+                                                                </span>
+                                                                {"note" in
+                                                                    exp &&
+                                                                    exp.note && (
+                                                                        <span className="text-xs text-amber-600 block">
+                                                                            ※{" "}
+                                                                            {
+                                                                                exp.note
+                                                                            }
+                                                                        </span>
+                                                                    )}
+                                                            </div>
+                                                            <span className="text-xs font-semibold text-gray-600 shrink-0">
+                                                                {exp.price}
+                                                            </span>
+                                                        </label>
+                                                    );
+                                                })}
+                                            </div>
+                                            <button
+                                                onClick={handleExperiencesSave}
+                                                disabled={experiencesSaved}
+                                                className="mt-3 w-full py-2.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#0a2105] text-white hover:bg-[#071a04]"
+                                            >
+                                                {experiencesSaved ? (
+                                                    <span className="flex items-center justify-center gap-1.5">
+                                                        <FaCheckCircle className="w-3.5 h-3.5" />{" "}
+                                                        保存しました
                                                     </span>
-                                                </label>
-                                            );
-                                        })}
-                                    </div>
-                                    <button
-                                        onClick={handleExperiencesSave}
-                                        disabled={experiencesSaved}
-                                        className="mt-3 w-full py-2.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#0a2105] text-white hover:bg-[#071a04]"
-                                    >
-                                        {experiencesSaved ? (
-                                            <span className="flex items-center justify-center gap-1.5">
-                                                <FaCheckCircle className="w-3.5 h-3.5" />{" "}
-                                                保存しました
-                                            </span>
-                                        ) : (
-                                            "体験オプションを保存"
-                                        )}
-                                    </button>
+                                                ) : (
+                                                    "体験オプションを保存"
+                                                )}
+                                            </button>
+                                        </>
+                                    )}
                                 </Section>
 
                                 <Section
@@ -1442,61 +1493,73 @@ export default function Reservations({
                                     }
                                     title="滞在サポートを変更"
                                 >
-                                    <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                                        <p className="text-xs text-gray-500">
-                                            送迎（最寄り駅⇔ログハウス）と食材買い出し代行。
-                                            料金:{" "}
-                                            {selectedRes.guests >= 5 ? (
-                                                <strong className="text-gray-700">
-                                                    ¥13,000（¥8,000 +
-                                                    送迎追加¥5,000）
-                                                </strong>
-                                            ) : (
-                                                <strong className="text-gray-700">
-                                                    ¥8,000
-                                                </strong>
-                                            )}
-                                        </p>
-                                        <div className="flex gap-2">
-                                            {([true, false] as const).map(
-                                                (v) => (
-                                                    <button
-                                                        key={String(v)}
-                                                        onClick={() => {
-                                                            setEditSupportPlan(
-                                                                v,
-                                                            );
-                                                            setSupportPlanSaved(
-                                                                false,
-                                                            );
-                                                        }}
-                                                        className={`flex-1 py-2 text-sm font-medium rounded-lg border-2 transition-all ${
-                                                            editSupportPlan ===
-                                                            v
-                                                                ? "border-[#0a2105] bg-[#e8f5e9] text-[#0a2105]"
-                                                                : "border-gray-200 bg-white text-gray-500 hover:bg-gray-50"
-                                                        }`}
-                                                    >
-                                                        {v ? "あり" : "なし"}
-                                                    </button>
-                                                ),
-                                            )}
+                                    {detailSelectedRule?.noSupportPlan ? (
+                                        <div className="flex items-start gap-2 px-3 py-3 bg-orange-50 border border-orange-200 rounded-lg">
+                                            <FaBan className="w-3.5 h-3.5 text-orange-500 shrink-0 mt-0.5" />
+                                            <p className="text-xs text-orange-700">
+                                                「{detailSelectedRule.name}
+                                                」は滞在サポート選択不可の割引です。サポートを変更するにはルールの選択を解除してください。
+                                            </p>
                                         </div>
-                                        <button
-                                            onClick={handleSupportPlanSave}
-                                            disabled={supportPlanSaved}
-                                            className="w-full py-2.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#0a2105] text-white hover:bg-[#071a04]"
-                                        >
-                                            {supportPlanSaved ? (
-                                                <span className="flex items-center justify-center gap-1.5">
-                                                    <FaCheckCircle className="w-3.5 h-3.5" />{" "}
-                                                    保存しました
-                                                </span>
-                                            ) : (
-                                                "滞在サポートを保存"
-                                            )}
-                                        </button>
-                                    </div>
+                                    ) : (
+                                        <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                                            <p className="text-xs text-gray-500">
+                                                送迎（最寄り駅⇔ログハウス）と食材買い出し代行。
+                                                料金:{" "}
+                                                {selectedRes.guests >= 5 ? (
+                                                    <strong className="text-gray-700">
+                                                        ¥13,000（¥8,000 +
+                                                        送迎追加¥5,000）
+                                                    </strong>
+                                                ) : (
+                                                    <strong className="text-gray-700">
+                                                        ¥8,000
+                                                    </strong>
+                                                )}
+                                            </p>
+                                            <div className="flex gap-2">
+                                                {([true, false] as const).map(
+                                                    (v) => (
+                                                        <button
+                                                            key={String(v)}
+                                                            onClick={() => {
+                                                                setEditSupportPlan(
+                                                                    v,
+                                                                );
+                                                                setSupportPlanSaved(
+                                                                    false,
+                                                                );
+                                                            }}
+                                                            className={`flex-1 py-2 text-sm font-medium rounded-lg border-2 transition-all ${
+                                                                editSupportPlan ===
+                                                                v
+                                                                    ? "border-[#0a2105] bg-[#e8f5e9] text-[#0a2105]"
+                                                                    : "border-gray-200 bg-white text-gray-500 hover:bg-gray-50"
+                                                            }`}
+                                                        >
+                                                            {v
+                                                                ? "あり"
+                                                                : "なし"}
+                                                        </button>
+                                                    ),
+                                                )}
+                                            </div>
+                                            <button
+                                                onClick={handleSupportPlanSave}
+                                                disabled={supportPlanSaved}
+                                                className="w-full py-2.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#0a2105] text-white hover:bg-[#071a04]"
+                                            >
+                                                {supportPlanSaved ? (
+                                                    <span className="flex items-center justify-center gap-1.5">
+                                                        <FaCheckCircle className="w-3.5 h-3.5" />{" "}
+                                                        保存しました
+                                                    </span>
+                                                ) : (
+                                                    "滞在サポートを保存"
+                                                )}
+                                            </button>
+                                        </div>
+                                    )}
                                 </Section>
 
                                 <Section
@@ -1725,16 +1788,10 @@ export default function Reservations({
                                                                 rule.id;
                                                             const blockedByOptions =
                                                                 (rule.noExperienceOptions &&
-                                                                    (selectedRes
-                                                                        .breakdown
-                                                                        ?.experiencesTotal ??
-                                                                        0) >
+                                                                    editExperiences.length >
                                                                         0) ||
                                                                 (rule.noSupportPlan &&
-                                                                    (selectedRes
-                                                                        .breakdown
-                                                                        ?.supportFee ??
-                                                                        0) > 0);
+                                                                    editSupportPlan);
                                                             return (
                                                                 <button
                                                                     key={
@@ -1776,19 +1833,12 @@ export default function Reservations({
                                                                         blockedByOptions
                                                                             ? [
                                                                                   rule.noExperienceOptions &&
-                                                                                  (selectedRes
-                                                                                      .breakdown
-                                                                                      ?.experiencesTotal ??
-                                                                                      0) >
+                                                                                  editExperiences.length >
                                                                                       0
                                                                                       ? "体験オプションが含まれているため適用不可"
                                                                                       : "",
                                                                                   rule.noSupportPlan &&
-                                                                                  (selectedRes
-                                                                                      .breakdown
-                                                                                      ?.supportFee ??
-                                                                                      0) >
-                                                                                      0
+                                                                                  editSupportPlan
                                                                                       ? "滞在サポートが含まれているため適用不可"
                                                                                       : "",
                                                                               ]
@@ -2319,6 +2369,8 @@ export default function Reservations({
                                                     checkOut: co,
                                                 }))
                                             }
+                                            availabilities={availabilities}
+                                            bookedDates={bookedDates}
                                         />
                                         {newForm.checkIn && (
                                             <p className="text-xs text-gray-500 mt-1.5">
@@ -2778,12 +2830,46 @@ export default function Reservations({
                                                                         const isSelected =
                                                                             newForm.selectedRuleId ===
                                                                             rule.id;
+                                                                        const blockedByOptions =
+                                                                            (rule.noExperienceOptions &&
+                                                                                newForm
+                                                                                    .experiences
+                                                                                    .length >
+                                                                                    0) ||
+                                                                            (rule.noSupportPlan &&
+                                                                                newForm.supportPlan);
                                                                         return (
                                                                             <button
                                                                                 key={
                                                                                     rule.id
                                                                                 }
                                                                                 type="button"
+                                                                                disabled={
+                                                                                    blockedByOptions
+                                                                                }
+                                                                                title={
+                                                                                    blockedByOptions
+                                                                                        ? [
+                                                                                              rule.noExperienceOptions &&
+                                                                                              newForm
+                                                                                                  .experiences
+                                                                                                  .length >
+                                                                                                  0
+                                                                                                  ? "体験オプションが含まれているため適用不可"
+                                                                                                  : "",
+                                                                                              rule.noSupportPlan &&
+                                                                                              newForm.supportPlan
+                                                                                                  ? "滞在サポートが含まれているため適用不可"
+                                                                                                  : "",
+                                                                                          ]
+                                                                                              .filter(
+                                                                                                  Boolean,
+                                                                                              )
+                                                                                              .join(
+                                                                                                  " / ",
+                                                                                              )
+                                                                                        : undefined
+                                                                                }
                                                                                 onClick={() => {
                                                                                     if (
                                                                                         isSelected
@@ -2825,9 +2911,11 @@ export default function Reservations({
                                                                                     }
                                                                                 }}
                                                                                 className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded border text-xs transition-all text-left ${
-                                                                                    isSelected
-                                                                                        ? "border-amber-400 bg-amber-50 text-amber-800"
-                                                                                        : "border-gray-200 bg-white text-gray-700 hover:border-amber-300 hover:bg-amber-50"
+                                                                                    blockedByOptions
+                                                                                        ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed opacity-60"
+                                                                                        : isSelected
+                                                                                          ? "border-amber-400 bg-amber-50 text-amber-800"
+                                                                                          : "border-gray-200 bg-white text-gray-700 hover:border-amber-300 hover:bg-amber-50"
                                                                                 }`}
                                                                             >
                                                                                 <span className="font-medium truncate mr-1">
@@ -2836,11 +2924,12 @@ export default function Reservations({
                                                                                     }
                                                                                 </span>
                                                                                 <span
-                                                                                    className={`shrink-0 font-semibold ${isSelected ? "text-red-500" : "text-gray-500"}`}
+                                                                                    className={`shrink-0 font-semibold ${isSelected ? "text-red-500" : blockedByOptions ? "text-gray-400" : "text-gray-500"}`}
                                                                                 >
                                                                                     {
                                                                                         rule.discountPercent
                                                                                     }
+
                                                                                     %
                                                                                     OFF{" "}
                                                                                     {isSelected
