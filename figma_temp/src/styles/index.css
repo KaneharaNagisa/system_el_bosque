@@ -1,0 +1,382 @@
+@import './fonts.css';
+@import './tailwind.css';
+@import './theme.css';
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Select element styling for dark backgrounds */
+select option {
+  background-color: #2d5016;
+  color: #ffffff;
+}
+
+/* ==========================================
+   管理画面用スタイル
+   ========================================== */
+
+/* 管理画面用のCSS変数オーバーライド */
+.admin-page {
+  --background: #ffffff;
+  --foreground: #111827;
+  --card: #ffffff;
+  --card-foreground: #111827;
+  --popover: #ffffff;
+  --popover-foreground: #111827;
+  --accent: #f3f4f6;
+  --accent-foreground: #111827;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  --border: #e5e7eb;
+  font-family: 'Noto Sans JP', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* 管理画面モード時のグローバルCSS変数オーバーライド（Portal対応） */
+body[data-admin="true"] {
+  --popover: #ffffff;
+  --popover-foreground: #111827;
+  --accent: #f3f4f6;
+  --accent-foreground: #111827;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  --border: #e5e7eb;
+}
+
+/* 管理画面用の入力欄スタイル */
+.admin-page input[type="text"],
+.admin-page input[type="email"],
+.admin-page input[type="password"],
+.admin-page input[type="tel"],
+.admin-page input[type="number"],
+.admin-page input[type="search"],
+.admin-page input[type="url"],
+.admin-page textarea,
+.admin-page select {
+  border: 1px solid rgba(10,33,5,0.2) !important;
+}
+
+.admin-page select,
+.admin-page [role="combobox"],
+.admin-page button[role="combobox"] {
+  border: 1px solid rgba(10,33,5,0.2) !important;
+}
+
+/* 管理画面用プレースホルダー */
+.admin-page ::placeholder {
+  color: #b0b0b0;
+  opacity: 1;
+}
+
+/* 管理画面用カスタムスクロールバー */
+.admin-page ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.admin-page ::-webkit-scrollbar-track {
+  background: #e0e0e0;
+  border-radius: 10px;
+}
+
+.admin-page ::-webkit-scrollbar-thumb {
+  background: #9e9e9e;
+  border-radius: 10px;
+}
+
+.admin-page ::-webkit-scrollbar-thumb:hover {
+  background: #616161;
+}
+
+/* React Quillのカスタムスタイル - 管理画面用 */
+.admin-page .ql-toolbar.ql-snow {
+  border: 1px solid #e5e7eb !important;
+  border-radius: 0.5rem 0.5rem 0 0;
+  background: #f9fafb;
+  padding: 8px;
+}
+
+.admin-page .ql-container.ql-snow {
+  border: 1px solid #e5e7eb !important;
+  border-top: none !important;
+  border-radius: 0 0 0.5rem 0.5rem;
+  font-family: 'Noto Sans JP', ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px;
+  min-height: 200px;
+}
+
+.admin-page .ql-editor {
+  min-height: 200px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #111827;
+}
+
+.admin-page .ql-editor.ql-blank::before {
+  color: #9ca3af;
+  font-style: normal;
+}
+
+.admin-page .ql-snow .ql-stroke {
+  stroke: #6b7280;
+}
+
+.admin-page .ql-snow .ql-fill {
+  fill: #6b7280;
+}
+
+.admin-page .ql-snow .ql-picker-label {
+  color: #374151;
+}
+
+.admin-page .ql-toolbar button:hover,
+.admin-page .ql-toolbar button:focus,
+.admin-page .ql-toolbar button.ql-active {
+  color: #0a2105;
+}
+
+.admin-page .ql-toolbar button:hover .ql-stroke,
+.admin-page .ql-toolbar button:focus .ql-stroke,
+.admin-page .ql-toolbar button.ql-active .ql-stroke {
+  stroke: #0a2105;
+}
+
+.admin-page .ql-toolbar button:hover .ql-fill,
+.admin-page .ql-toolbar button:focus .ql-fill,
+.admin-page .ql-toolbar button.ql-active .ql-fill {
+  fill: #0a2105;
+}
+
+.admin-page .ql-snow .ql-picker-label:hover,
+.admin-page .ql-snow .ql-picker-label.ql-active {
+  color: #0a2105;
+}
+
+.admin-page .ql-snow .ql-picker-options {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.admin-page .ql-snow .ql-picker-item:hover {
+  background: #e8f5e9;
+  color: #0a2105;
+}
+
+.admin-page .ql-editor img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.375rem;
+  margin: 1rem 0;
+}
+
+.admin-page .ql-editor a {
+  color: #0a2105;
+  text-decoration: underline;
+}
+
+.admin-page .ql-editor a:hover {
+  color: #071a04;
+}
+
+/* ==========================================
+   フロント側レスポンシブ対応
+   ========================================== */
+
+/* ヘッダーナビ: デスクトップは表示、モバイルは非表示 */
+.desktop-nav {
+  display: flex;
+}
+.mobile-nav-toggle {
+  display: none;
+}
+.mobile-menu {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  /* ヘッダーナビ切替 */
+  .desktop-nav {
+    display: none !important;
+  }
+  .mobile-nav-toggle {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .mobile-menu {
+    display: flex !important;
+  }
+  /* ドロワーオーバーレイはblockで表示 */
+  div.mobile-menu {
+    display: block !important;
+  }
+
+  /* About: ログハウス紹介 2カラム → 1カラム */
+  .about-intro-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+
+  .about-intro-grid img {
+    height: 280px !important;
+  }
+
+  /* About: スペック 2×2 グリッド → 1カラム */
+  .about-spec-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .about-spec-grid > div {
+    border-right: none !important;
+    border-bottom: 1px solid rgba(180,140,80,0.2) !important;
+  }
+
+  .about-spec-grid > div:last-child {
+    border-bottom: none !important;
+  }
+
+  /* About: フォトギャラリー 3カラム → 2カラム */
+  .about-gallery-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-rows: auto !important;
+  }
+
+  /* Home: 画像サブグリッド 2カラム → 1カラム */
+  .home-img-subgrid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Experiences: カード本体 2fr 3fr → 1カラム */
+  .exp-card-body {
+    grid-template-columns: 1fr !important;
+  }
+  .exp-card-body > div:first-child {
+    min-height: 220px !important;
+  }
+  .exp-card-body > div:last-child {
+    padding: 1.25rem 1.25rem !important;
+  }
+
+  /* Reservation: 2カラム → 1カラム */
+  .reservation-2col {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Register / MyPage: 2カラム → 1カラム */
+  .form-2col {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* MyPage: 編集グリッド */
+  .mypage-edit-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* MyPage: 予約情報グリッド */
+  .mypage-res-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Pricing: 料金計算機パディング調整 */
+  .pricing-calculator {
+    padding: 1.5rem !important;
+  }
+
+  /* Area: アクセスカード grid */
+  .area-access-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Area: 温泉カード grid */
+  .area-onsen-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Contact: フォーム 2カラム → 1カラム */
+  .contact-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ReservationDetail: メイン + サイドバー → 1カラム */
+  .detail-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* 汎用: テーブル横スクロール */
+  .responsive-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .responsive-table-wrap table {
+    min-width: 500px;
+  }
+
+  /* Features grid: minmax調整 */
+  .features-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Home: Price grid */
+  .price-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Reservation: 日付 2カラム → 1カラム */
+  .date-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Reservation: info cards grid */
+  .info-cards-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Pricing: 料金計算機内パディング縮小 */
+  .pricing-calculator {
+    padding: 1.5rem !important;
+  }
+
+  /* テーブル系の横スクロール対応 */
+  .pricing-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .pricing-table-wrap table {
+    min-width: 480px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* About: フォトギャラリー → 1カラム */
+  .about-gallery-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Hero: バッジを小さく */
+  .hero-badges {
+    gap: 0.3rem !important;
+  }
+
+  .hero-badges span {
+    font-size: 0.65rem !important;
+    padding: 0.2rem 0.6rem !important;
+  }
+}
