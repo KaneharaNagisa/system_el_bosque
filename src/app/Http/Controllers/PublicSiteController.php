@@ -14,7 +14,7 @@ use Inertia\Response;
 
 class PublicSiteController extends Controller
 {
-    public function show(string $page): Response
+    public function show(string $page, array $props = []): Response
     {
         return Inertia::render('Public/Page', [
             'page' => $page,
@@ -22,6 +22,7 @@ class PublicSiteController extends Controller
             'experiences' => $this->experiences($page),
             'faqs' => $this->faqs($page),
             'availability' => $this->availability($page),
+            ...$props,
         ]);
     }
 

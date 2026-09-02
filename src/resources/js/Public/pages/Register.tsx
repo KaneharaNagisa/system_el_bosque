@@ -1,4 +1,5 @@
 ﻿import { useState } from "react";
+import { usePage } from "@inertiajs/react";
 import { Link, useNavigate, useSearchParams } from "../router";
 import {
     FaChevronRight,
@@ -125,15 +126,22 @@ function StepIndicator({ current }: { current: number }) {
 }
 
 export function Register() {
-    const [step, setStep] = useState(1);
-    const [email, setEmail] = useState("");
+    const { registration } = usePage<{
+        registration?: { email: string | null };
+    }>().props;
+    const [searchParams] = useSearchParams();
+    const verifiedEmail = registration?.email ?? "";
+    const [step, setStep] = useState(verifiedEmail ? 3 : 1);
+    const [email, setEmail] = useState(verifiedEmail);
     const [focusedField, setFocusedField] = useState("");
+    const [isSendingEmail, setIsSendingEmail] = useState(false);
+    const [emailError, setEmailError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [registerError, setRegisterError] = useState("");
-    const { register: authRegister, setPendingEmail } = useAuth();
+    const { register: authRegister, sendRegistrationEmail } = useAuth();
     const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
     const redirect = searchParams.get("redirect") || "/reservation";
+    const isExpired = searchParams.get("expired") === "1";
 
     const [profile, setProfile] = useState({
         lastName: "",
@@ -194,15 +202,20 @@ export function Register() {
     // Step 1: Email provisional registration
     const handleEmailSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        setPendingEmail(email);
-        setStep(2);
-        window.scrollTo(0, 0);
-    };
-
-    // Step 2 → Step 3: Simulate email link click
-    const handleEmailConfirm = () => {
-        setStep(3);
-        window.scrollTo(0, 0);
+        setIsSendingEmail(true);
+        setEmailError("");
+        sendRegistrationEmail(
+            email,
+            () => {
+                setIsSendingEmail(false);
+                setStep(2);
+                window.scrollTo(0, 0);
+            },
+            (message) => {
+                setIsSendingEmail(false);
+                setEmailError(message);
+            },
+        );
     };
 
     // Step 3: Main registration form submit → confirm
@@ -368,6 +381,19 @@ export function Register() {
                                     <br />
                                     確認メールをお送りいたします。
                                 </p>
+                                {isExpired && (
+                                    <p
+                                        style={{
+                                            color: "#a03020",
+                                            fontSize: "0.82rem",
+                                            lineHeight: 1.7,
+                                            marginBottom: "1.25rem",
+                                            textAlign: "center",
+                                        }}
+                                    >
+                                        確認メールの有効期限が切れています。再度仮登録してください。
+                                    </p>
+                                )}
                                 <div style={{ marginBottom: "1.5rem" }}>
                                     <label style={labelStyle}>
                                         メールアドレス{" "}
@@ -390,6 +416,7 @@ export function Register() {
                                 </div>
                                 <button
                                     type="submit"
+                                    disabled={isSendingEmail}
                                     style={{
                                         width: "100%",
                                         backgroundColor: "#5c2e12",
@@ -397,7 +424,10 @@ export function Register() {
                                         padding: "1rem",
                                         borderRadius: "3px",
                                         border: "none",
-                                        cursor: "pointer",
+                                        cursor: isSendingEmail
+                                            ? "wait"
+                                            : "pointer",
+                                        opacity: isSendingEmail ? 0.65 : 1,
                                         fontSize: "0.95rem",
                                         fontWeight: 700,
                                         fontFamily:
@@ -409,8 +439,22 @@ export function Register() {
                                     }}
                                 >
                                     <FaPaperPlane size={14} />
-                                    確認メールを送信する
+                                    {isSendingEmail
+                                        ? "送信中..."
+                                        : "確認メールを送信する"}
                                 </button>
+                                {emailError && (
+                                    <p
+                                        style={{
+                                            color: "#a03020",
+                                            fontSize: "0.82rem",
+                                            marginTop: "0.75rem",
+                                            textAlign: "center",
+                                        }}
+                                    >
+                                        {emailError}
+                                    </p>
+                                )}
                                 <div
                                     style={{
                                         textAlign: "center",
@@ -433,7 +477,7 @@ export function Register() {
                         </form>
                     )}
 
-                    {/* ─── Step 2: Email Sent (Simulation) ─── */}
+                    {/* ─── Step 2: Email Sent ─── */}
                     {step === 2 && (
                         <div
                             style={{
@@ -497,48 +541,6 @@ export function Register() {
                                 <br />※
                                 メールが届かない場合は迷惑メールフォルダをご確認ください。
                             </p>
-
-                            <div
-                                style={{
-                                    backgroundColor: "#f2e8d0",
-                                    borderRadius: "3px",
-                                    padding: "1.25rem",
-                                    marginBottom: "1.5rem",
-                                    border: "1px solid rgba(180,140,80,0.15)",
-                                }}
-                            >
-                                <p
-                                    style={{
-                                        fontSize: "0.75rem",
-                                        color: "#8a7868",
-                                        marginBottom: "0.75rem",
-                                    }}
-                                >
-                                    ※
-                                    デモ環境のため、下のボタンで本登録に進めます
-                                </p>
-                                <button
-                                    onClick={handleEmailConfirm}
-                                    style={{
-                                        backgroundColor: "#1e3c0e",
-                                        color: "#f0e8d0",
-                                        padding: "0.75rem 1.5rem",
-                                        borderRadius: "3px",
-                                        border: "none",
-                                        cursor: "pointer",
-                                        fontSize: "0.88rem",
-                                        fontWeight: 700,
-                                        fontFamily:
-                                            "'Noto Sans JP', sans-serif",
-                                        display: "inline-flex",
-                                        alignItems: "center",
-                                        gap: "0.5rem",
-                                    }}
-                                >
-                                    メール内のURLをクリック（シミュレーション）
-                                    <FaChevronRight size={12} />
-                                </button>
-                            </div>
                         </div>
                     )}
 

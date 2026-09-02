@@ -30,6 +30,11 @@ interface AuthContextType {
         onError: (message: string) => void,
     ) => void;
     logout: () => void;
+    sendRegistrationEmail: (
+        email: string,
+        onSuccess: () => void,
+        onError: (message: string) => void,
+    ) => void;
     register: (
         profile: UserProfile,
         redirect: string,
@@ -56,6 +61,7 @@ const defaultAuthContext: AuthContextType = {
     isLoggedIn: false,
     login: () => {},
     logout: () => {},
+    sendRegistrationEmail: () => {},
     register: () => {},
     updateProfile: () => {},
     changePassword: () => {},
@@ -86,6 +92,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         );
     };
     const logout = () => router.post("/logout");
+    const sendRegistrationEmail: AuthContextType["sendRegistrationEmail"] = (
+        email,
+        onSuccess,
+        onError,
+    ) => {
+        router.post(
+            "/register/email",
+            { email },
+            {
+                preserveScroll: true,
+                onSuccess,
+                onError: (errors) =>
+                    onError(
+                        String(
+                            errors.email ??
+                                "確認メールを送信できませんでした。",
+                        ),
+                    ),
+            },
+        );
+    };
     const register: AuthContextType["register"] = (
         profile,
         redirect,
@@ -142,6 +169,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 isLoggedIn: !!auth.user,
                 login,
                 logout,
+                sendRegistrationEmail,
                 register,
                 updateProfile,
                 changePassword,

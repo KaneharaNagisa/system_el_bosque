@@ -20,6 +20,7 @@ use App\Http\Controllers\MemberAuthController;
 use App\Http\Controllers\MemberReservationController;
 use App\Http\Controllers\MyPageController;
 use App\Http\Controllers\PublicSiteController;
+use App\Models\PendingRegistration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -34,7 +35,15 @@ Route::get('/login', fn() => auth()->check()
     ? redirect('/mypage')
     : app(PublicSiteController::class)->show('login'))->name('login');
 Route::post('/login', [MemberAuthController::class, 'login'])->name('login.store');
-Route::get('/register', fn() => app(PublicSiteController::class)->show('register'));
+Route::get('/register', fn(Request $request) => app(PublicSiteController::class)->show('register', [
+    'registration' => [
+        'email' => $request->session()->get('pending_registration_id')
+            ? PendingRegistration::find($request->session()->get('pending_registration_id'))?->email
+            : null,
+    ],
+]))->name('register');
+Route::post('/register/email', [MemberAuthController::class, 'sendRegistrationEmail'])->name('register.email');
+Route::get('/register/verify/{pendingRegistration}/{token}', [MemberAuthController::class, 'verifyRegistrationEmail'])->name('register.verify');
 Route::post('/register', [MemberAuthController::class, 'register'])->name('register.store');
 Route::get('/contact', fn() => app(PublicSiteController::class)->show('contact'));
 Route::post('/contact', [PublicSiteController::class, 'contact'])->name('contact.store');

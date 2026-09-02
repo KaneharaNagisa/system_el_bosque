@@ -11,6 +11,7 @@ services:
       - app_node_modules:/var/www/html/node_modules
     depends_on:
       - db
+      - mailpit
     networks:
       - app-network
 

@@ -5,9 +5,12 @@ namespace Tests\Feature;
 use App\Models\Billing;
 use App\Models\Availability;
 use App\Models\Experience;
+use App\Models\PendingRegistration;
 use App\Models\Reservation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class MemberPortalTest extends TestCase
@@ -39,7 +42,13 @@ class MemberPortalTest extends TestCase
 
     public function test_guest_can_register_as_an_active_member(): void
     {
-        $this->from('/register')->post('/register', [
+        $pendingRegistration = PendingRegistration::create([
+            'email' => 'new-member@example.com',
+            'token' => Hash::make('test-token'),
+            'expires_at' => now()->addHour(),
+        ]);
+
+        $this->withSession(['pending_registration_id' => $pendingRegistration->id])->from('/register')->post('/register', [
             'lastName' => '山田',
             'firstName' => '太郎',
             'lastNameKana' => 'やまだ',
@@ -61,6 +70,50 @@ class MemberPortalTest extends TestCase
         $this->assertAuthenticatedAs($user);
         $this->assertSame('active', $user->status);
         $this->assertSame('none', $user->has_pet);
+        $this->assertNotNull($pendingRegistration->fresh()->used_at);
+    }
+
+    public function test_guest_can_receive_a_registration_confirmation_email(): void
+    {
+        Mail::fake();
+
+        $this->from('/register')->post('/register/email', [
+            'email' => 'new-member@example.com',
+        ])->assertRedirect('/register')->assertSessionHasNoErrors();
+
+        $pendingRegistration = PendingRegistration::where('email', 'new-member@example.com')->firstOrFail();
+
+        Mail::assertSent(\App\Mail\RegistrationConfirmationMail::class, function ($mail) use ($pendingRegistration) {
+            return $mail->hasTo('new-member@example.com')
+                && $mail->recipientEmail === 'new-member@example.com'
+                && str_contains($mail->registrationUrl, "/register/verify/{$pendingRegistration->id}/");
+        });
+    }
+
+    public function test_valid_registration_link_starts_main_registration(): void
+    {
+        $pendingRegistration = PendingRegistration::create([
+            'email' => 'new-member@example.com',
+            'token' => Hash::make('valid-token'),
+            'expires_at' => now()->addHour(),
+        ]);
+
+        $this->get("/register/verify/{$pendingRegistration->id}/valid-token")
+            ->assertRedirect('/register')
+            ->assertSessionHas('pending_registration_id', $pendingRegistration->id);
+    }
+
+    public function test_expired_registration_link_returns_to_provisional_registration(): void
+    {
+        $pendingRegistration = PendingRegistration::create([
+            'email' => 'new-member@example.com',
+            'token' => Hash::make('expired-token'),
+            'expires_at' => now()->subSecond(),
+        ]);
+
+        $this->get("/register/verify/{$pendingRegistration->id}/expired-token")
+            ->assertRedirect('/register?expired=1')
+            ->assertSessionMissing('pending_registration_id');
     }
 
     public function test_member_can_update_own_profile(): void
