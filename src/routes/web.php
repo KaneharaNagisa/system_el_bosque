@@ -74,6 +74,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // 会員管理
         Route::get('/members', [MemberController::class, 'index'])->name('members.index');
         Route::post('/members', [MemberController::class, 'store'])->name('members.store');
+        Route::patch('/members/{id}/password', [MemberController::class, 'updatePassword'])->name('members.password');
         Route::delete('/members/{id}', [MemberController::class, 'destroy'])->name('members.destroy');
 
         // 予約管理

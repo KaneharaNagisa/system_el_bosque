@@ -70,6 +70,8 @@ const emptyNewForm = {
     petBreed2: "",
     hasFamily: "individual",
     howFound: "",
+    password: "",
+    passwordConfirmation: "",
     status: "active",
 };
 
@@ -94,6 +96,11 @@ export default function Members({
     const [newErrors, setNewErrors] = useState<
         Partial<Record<keyof typeof emptyNewForm, string>>
     >({});
+    const [passwordForm, setPasswordForm] = useState({
+        password: "",
+        passwordConfirmation: "",
+    });
+    const [passwordError, setPasswordError] = useState("");
 
     const setNF = <K extends keyof typeof emptyNewForm>(
         key: K,
@@ -180,6 +187,11 @@ export default function Members({
         else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newForm.email))
             errs.email = "正しいメールアドレスを入力してください";
         if (!newForm.phone.trim()) errs.phone = "電話番号は必須です";
+        if (!newForm.password) errs.password = "パスワードは必須です";
+        else if (newForm.password.length < 8)
+            errs.password = "パスワードは8文字以上で入力してください";
+        else if (newForm.password !== newForm.passwordConfirmation)
+            errs.passwordConfirmation = "パスワードが一致しません";
         setNewErrors(errs);
         return Object.keys(errs).length === 0;
     };
@@ -203,6 +215,8 @@ export default function Members({
                 family_type: newForm.hasFamily,
                 how_found: newForm.howFound.trim() || null,
                 status: newForm.status,
+                password: newForm.password,
+                password_confirmation: newForm.passwordConfirmation,
             },
             {
                 onSuccess: () => {
@@ -418,6 +432,12 @@ export default function Members({
                                                 <button
                                                     onClick={() => {
                                                         setSelectedMember(m);
+                                                        setPasswordForm({
+                                                            password: "",
+                                                            passwordConfirmation:
+                                                                "",
+                                                        });
+                                                        setPasswordError("");
                                                         setIsDetailOpen(true);
                                                     }}
                                                     className="p-1.5 text-gray-500 hover:text-[#0a2105] hover:bg-[#e8f5e9] rounded"
@@ -584,6 +604,105 @@ export default function Members({
                                         </span>
                                     </div>
                                 ))}
+                                <div className="border-t border-gray-200 pt-4 mt-4">
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                                        パスワード変更
+                                    </h4>
+                                    <div className="space-y-3">
+                                        <div>
+                                            <label className="block text-xs text-gray-600 mb-1">
+                                                新しいパスワード
+                                            </label>
+                                            <input
+                                                type="password"
+                                                value={passwordForm.password}
+                                                onChange={(e) => {
+                                                    setPasswordForm((form) => ({
+                                                        ...form,
+                                                        password:
+                                                            e.target.value,
+                                                    }));
+                                                    setPasswordError("");
+                                                }}
+                                                autoComplete="new-password"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105]"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs text-gray-600 mb-1">
+                                                新しいパスワード（確認）
+                                            </label>
+                                            <input
+                                                type="password"
+                                                value={
+                                                    passwordForm.passwordConfirmation
+                                                }
+                                                onChange={(e) => {
+                                                    setPasswordForm((form) => ({
+                                                        ...form,
+                                                        passwordConfirmation:
+                                                            e.target.value,
+                                                    }));
+                                                    setPasswordError("");
+                                                }}
+                                                autoComplete="new-password"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105]"
+                                            />
+                                        </div>
+                                        {passwordError && (
+                                            <p className="text-xs text-red-500">
+                                                {passwordError}
+                                            </p>
+                                        )}
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                if (
+                                                    passwordForm.password
+                                                        .length < 8
+                                                ) {
+                                                    setPasswordError(
+                                                        "パスワードは8文字以上で入力してください",
+                                                    );
+                                                    return;
+                                                }
+                                                if (
+                                                    passwordForm.password !==
+                                                    passwordForm.passwordConfirmation
+                                                ) {
+                                                    setPasswordError(
+                                                        "パスワードが一致しません",
+                                                    );
+                                                    return;
+                                                }
+                                                router.patch(
+                                                    `/admin/members/${selectedMember.dbId}/password`,
+                                                    {
+                                                        password:
+                                                            passwordForm.password,
+                                                        password_confirmation:
+                                                            passwordForm.passwordConfirmation,
+                                                    },
+                                                    {
+                                                        onSuccess: () => {
+                                                            setPasswordForm({
+                                                                password: "",
+                                                                passwordConfirmation:
+                                                                    "",
+                                                            });
+                                                            setPasswordError(
+                                                                "",
+                                                            );
+                                                        },
+                                                    },
+                                                );
+                                            }}
+                                            className="w-full px-4 py-2 text-sm bg-[#0a2105] text-white rounded-lg hover:bg-[#071a04]"
+                                        >
+                                            パスワードを変更する
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -777,6 +896,62 @@ export default function Members({
                                                 {newErrors.phone && (
                                                     <p className="text-xs text-red-500 mt-1">
                                                         {newErrors.phone}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label className="block text-xs text-gray-600 mb-1">
+                                                    パスワード{" "}
+                                                    <span className="text-red-500">
+                                                        *
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    type="password"
+                                                    value={newForm.password}
+                                                    onChange={(e) =>
+                                                        setNF(
+                                                            "password",
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    autoComplete="new-password"
+                                                    className={`w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105] ${newErrors.password ? "border-red-400 bg-red-50" : "border-gray-300"}`}
+                                                />
+                                                {newErrors.password && (
+                                                    <p className="text-xs text-red-500 mt-1">
+                                                        {newErrors.password}
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs text-gray-600 mb-1">
+                                                    パスワード（確認）{" "}
+                                                    <span className="text-red-500">
+                                                        *
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    type="password"
+                                                    value={
+                                                        newForm.passwordConfirmation
+                                                    }
+                                                    onChange={(e) =>
+                                                        setNF(
+                                                            "passwordConfirmation",
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    autoComplete="new-password"
+                                                    className={`w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105] ${newErrors.passwordConfirmation ? "border-red-400 bg-red-50" : "border-gray-300"}`}
+                                                />
+                                                {newErrors.passwordConfirmation && (
+                                                    <p className="text-xs text-red-500 mt-1">
+                                                        {
+                                                            newErrors.passwordConfirmation
+                                                        }
                                                     </p>
                                                 )}
                                             </div>

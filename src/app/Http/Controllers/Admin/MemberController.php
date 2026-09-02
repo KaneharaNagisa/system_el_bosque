@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -48,6 +49,7 @@ class MemberController extends Controller
             'last_name_kana' => ['required', 'string', 'max:100'],
             'first_name_kana' => ['required', 'string', 'max:100'],
             'email'          => ['required', 'email', 'unique:users,email'],
+            'password'       => ['required', 'confirmed', Password::min(8)],
             'phone'          => ['required', 'string', 'max:20'],
             'address'        => ['nullable', 'string', 'max:255'],
             'birth_date'     => ['nullable', 'date'],
@@ -60,12 +62,25 @@ class MemberController extends Controller
         ]);
 
         $validated['name']     = trim($validated['last_name'] . ' ' . $validated['first_name']);
-        $validated['password'] = Hash::make(substr(str_shuffle('ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789'), 0, 12));
+        $validated['password'] = Hash::make($validated['password']);
         $validated['status']   = $validated['status'] ?? 'active';
 
         User::create($validated);
 
         return back()->with('message', '会員を登録しました');
+    }
+
+    public function updatePassword(Request $request, int $id): RedirectResponse
+    {
+        $validated = $request->validate([
+            'password' => ['required', 'confirmed', Password::min(8)],
+        ]);
+
+        User::findOrFail($id)->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return back()->with('message', 'パスワードを変更しました');
     }
 
     public function destroy(int $id): RedirectResponse
