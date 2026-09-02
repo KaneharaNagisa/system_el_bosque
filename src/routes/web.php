@@ -16,10 +16,40 @@ use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PriceAdjustmentController;
 use App\Http\Controllers\Admin\ReservationController;
+use App\Http\Controllers\MemberAuthController;
+use App\Http\Controllers\MemberReservationController;
+use App\Http\Controllers\MyPageController;
+use App\Http\Controllers\PublicSiteController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', fn() => app(PublicSiteController::class)->show('home'));
+Route::get('/about', fn() => app(PublicSiteController::class)->show('about'));
+Route::get('/pricing', fn() => app(PublicSiteController::class)->show('pricing'));
+Route::get('/experiences', fn() => app(PublicSiteController::class)->show('experiences'));
+Route::get('/area', fn() => app(PublicSiteController::class)->show('area'));
+Route::get('/faq', fn() => app(PublicSiteController::class)->show('faq'));
+Route::get('/reservation', fn() => app(PublicSiteController::class)->show('reservation'));
+Route::get('/login', fn() => auth()->check()
+    ? redirect('/mypage')
+    : app(PublicSiteController::class)->show('login'))->name('login');
+Route::post('/login', [MemberAuthController::class, 'login'])->name('login.store');
+Route::get('/register', fn() => app(PublicSiteController::class)->show('register'));
+Route::post('/register', [MemberAuthController::class, 'register'])->name('register.store');
+Route::get('/contact', fn() => app(PublicSiteController::class)->show('contact'));
+Route::post('/contact', [PublicSiteController::class, 'contact'])->name('contact.store');
+Route::get('/password-reset', fn() => app(PublicSiteController::class)->show('password-reset'));
+
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [MemberAuthController::class, 'logout'])->name('logout');
+    Route::get('/mypage', [MyPageController::class, 'show'])->name('mypage');
+    Route::patch('/mypage', [MyPageController::class, 'update'])->name('mypage.update');
+    Route::patch('/mypage/password', [MyPageController::class, 'password'])->name('mypage.password');
+    Route::delete('/mypage', [MyPageController::class, 'destroy'])->name('mypage.destroy');
+    Route::get('/reservation/detail', fn() => app(PublicSiteController::class)->show('reservation-detail'));
+    Route::get('/reservation/confirm', fn() => app(PublicSiteController::class)->show('reservation-confirm'));
+    Route::get('/reservation/complete', fn() => app(PublicSiteController::class)->show('reservation-complete'));
+    Route::post('/reservations', [MemberReservationController::class, 'store'])->name('reservations.store');
 });
 
 // ─────────────────────────────────────────────
@@ -28,7 +58,11 @@ Route::get('/', function () {
 Route::prefix('admin')->name('admin.')->group(function () {
 
     // 認証不要
-    Route::get('/', [AuthController::class, 'showLogin'])->name('login');
+    Route::get('/', function (Request $request) {
+        return $request->session()->has('admin_user')
+            ? redirect()->route('admin.dashboard')
+            : app(AuthController::class)->showLogin();
+    })->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
