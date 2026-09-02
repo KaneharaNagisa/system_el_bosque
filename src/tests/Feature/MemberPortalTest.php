@@ -61,7 +61,9 @@ class MemberPortalTest extends TestCase
             'birthDate' => '1990-01-01',
             'hasPet' => 'no',
             'hasFamily' => 'individual',
+            'concerns' => '虫が苦手です',
             'howFound' => 'search',
+            'expectations' => '自然の中で静かに過ごしたいです',
             'redirect' => '/reservation',
         ])->assertRedirect('/register')->assertSessionHasNoErrors();
 
@@ -70,6 +72,9 @@ class MemberPortalTest extends TestCase
         $this->assertAuthenticatedAs($user);
         $this->assertSame('active', $user->status);
         $this->assertSame('none', $user->has_pet);
+        $this->assertSame('虫が苦手です', $user->concerns);
+        $this->assertSame('search', $user->how_found);
+        $this->assertSame('自然の中で静かに過ごしたいです', $user->expectations);
         $this->assertNotNull($pendingRegistration->fresh()->used_at);
     }
 
@@ -130,7 +135,9 @@ class MemberPortalTest extends TestCase
             'petBreed' => '',
             'petBreed2' => '',
             'hasFamily' => 'individual',
+            'concerns' => 'アレルギーがあります',
             'howFound' => '検索',
+            'expectations' => '犬とゆっくり過ごしたいです',
         ])->assertSessionHasNoErrors();
 
         $this->assertDatabaseHas('users', [
@@ -138,6 +145,9 @@ class MemberPortalTest extends TestCase
             'name' => '山田 花子',
             'last_name' => '山田',
             'first_name' => '花子',
+            'concerns' => 'アレルギーがあります',
+            'how_found' => '検索',
+            'expectations' => '犬とゆっくり過ごしたいです',
         ]);
     }
 

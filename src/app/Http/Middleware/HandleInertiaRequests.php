@@ -32,7 +32,9 @@ class HandleInertiaRequests extends Middleware
                     'petBreed' => $request->user()->pet_breed ?? '',
                     'petBreed2' => $request->user()->pet_breed2 ?? '',
                     'hasFamily' => $request->user()->family_type ?? '',
+                    'concerns' => $request->user()->concerns ?? '',
                     'howFound' => $request->user()->how_found ?? '',
+                    'expectations' => $request->user()->expectations ?? '',
                 ] : null,
             ],
             'flash' => [

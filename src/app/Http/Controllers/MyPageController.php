@@ -67,7 +67,9 @@ class MyPageController extends Controller
             'petBreed' => ['nullable', 'string', 'max:100'],
             'petBreed2' => ['nullable', 'string', 'max:100'],
             'hasFamily' => ['nullable', 'in:individual,friends,couple,married,family'],
+            'concerns' => ['nullable', 'string'],
             'howFound' => ['nullable', 'string', 'max:255'],
+            'expectations' => ['nullable', 'string'],
         ]);
 
         $user->update([
@@ -84,7 +86,9 @@ class MyPageController extends Controller
             'pet_breed' => $validated['petBreed'] ?? null,
             'pet_breed2' => $validated['petBreed2'] ?? null,
             'family_type' => $validated['hasFamily'] ?? null,
+            'concerns' => $validated['concerns'] ?? null,
             'how_found' => $validated['howFound'] ?? null,
+            'expectations' => $validated['expectations'] ?? null,
         ]);
 
         return back()->with('message', '会員情報を更新しました。');

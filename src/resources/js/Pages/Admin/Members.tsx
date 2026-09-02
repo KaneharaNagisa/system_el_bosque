@@ -35,7 +35,9 @@ interface Member {
     petBreed?: string;
     petBreed2?: string;
     hasFamily?: string;
+    concerns?: string;
     howFound?: string;
+    expectations?: string;
     registeredAt: string;
     lastLoginAt?: string;
     status: string;
@@ -55,6 +57,13 @@ const familyLabels: Record<string, string> = {
     married: "ご夫婦",
     family: "ご家族（お子さんあり）",
 };
+const howFoundLabels: Record<string, string> = {
+    search: "検索エンジン",
+    sns: "SNS（Instagram・X等）",
+    friend: "知人の紹介",
+    media: "雑誌・テレビ",
+    other: "その他",
+};
 
 const emptyNewForm = {
     lastName: "",
@@ -69,7 +78,9 @@ const emptyNewForm = {
     petBreed: "",
     petBreed2: "",
     hasFamily: "individual",
+    concerns: "",
     howFound: "",
+    expectations: "",
     password: "",
     passwordConfirmation: "",
     status: "active",
@@ -213,7 +224,9 @@ export default function Members({
                 pet_breed: newForm.petBreed.trim() || null,
                 pet_breed2: newForm.petBreed2.trim() || null,
                 family_type: newForm.hasFamily,
+                concerns: newForm.concerns.trim() || null,
                 how_found: newForm.howFound.trim() || null,
+                expectations: newForm.expectations.trim() || null,
                 status: newForm.status,
                 password: newForm.password,
                 password_confirmation: newForm.passwordConfirmation,
@@ -579,8 +592,20 @@ export default function Members({
                                               ]
                                             : []),
                                         [
+                                            "宿泊の際に気になること",
+                                            selectedMember.concerns || "−",
+                                        ],
+                                        [
                                             "知ったきっかけ",
-                                            selectedMember.howFound || "−",
+                                            howFoundLabels[
+                                                selectedMember.howFound ?? ""
+                                            ] ||
+                                                selectedMember.howFound ||
+                                                "−",
+                                        ],
+                                        [
+                                            "エルボスケに期待すること",
+                                            selectedMember.expectations || "−",
                                         ],
                                         ["登録日", selectedMember.registeredAt],
                                         [
@@ -1135,10 +1160,26 @@ export default function Members({
                                     <div className="space-y-3">
                                         <div>
                                             <label className="block text-xs text-gray-600 mb-1">
+                                                宿泊の際に気になること
+                                            </label>
+                                            <textarea
+                                                value={newForm.concerns}
+                                                onChange={(e) =>
+                                                    setNF(
+                                                        "concerns",
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                placeholder="例: アレルギー、静かに過ごしたい等"
+                                                rows={3}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105] resize-y"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs text-gray-600 mb-1">
                                                 知ったきっかけ
                                             </label>
-                                            <input
-                                                type="text"
+                                            <select
                                                 value={newForm.howFound}
                                                 onChange={(e) =>
                                                     setNF(
@@ -1146,8 +1187,43 @@ export default function Members({
                                                         e.target.value,
                                                     )
                                                 }
-                                                placeholder="例: インターネット検索、友人の紹介"
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105]"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white outline-none focus:ring-2 focus:ring-[#0a2105]"
+                                            >
+                                                <option value="">
+                                                    選択してください
+                                                </option>
+                                                <option value="search">
+                                                    検索エンジン
+                                                </option>
+                                                <option value="sns">
+                                                    SNS（Instagram・X等）
+                                                </option>
+                                                <option value="friend">
+                                                    知人の紹介
+                                                </option>
+                                                <option value="media">
+                                                    雑誌・テレビ
+                                                </option>
+                                                <option value="other">
+                                                    その他
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs text-gray-600 mb-1">
+                                                エルボスケに期待すること
+                                            </label>
+                                            <textarea
+                                                value={newForm.expectations}
+                                                onChange={(e) =>
+                                                    setNF(
+                                                        "expectations",
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                placeholder="例: 自然体験、ペットとの時間等"
+                                                rows={3}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105] resize-y"
                                             />
                                         </div>
                                         <div>

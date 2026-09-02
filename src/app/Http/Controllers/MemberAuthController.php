@@ -68,7 +68,9 @@ class MemberAuthController extends Controller
             'petBreed' => ['nullable', 'string', 'max:100'],
             'petBreed2' => ['nullable', 'string', 'max:100'],
             'hasFamily' => ['nullable', 'in:individual,friends,couple,married,family'],
+            'concerns' => ['nullable', 'string'],
             'howFound' => ['nullable', 'string', 'max:255'],
+            'expectations' => ['nullable', 'string'],
             'redirect' => ['nullable', 'string'],
         ]);
 
@@ -117,7 +119,9 @@ class MemberAuthController extends Controller
                 'pet_breed' => $validated['petBreed'] ?? null,
                 'pet_breed2' => $validated['petBreed2'] ?? null,
                 'family_type' => $validated['hasFamily'] ?? null,
+                'concerns' => $validated['concerns'] ?? null,
                 'how_found' => $validated['howFound'] ?? null,
+                'expectations' => $validated['expectations'] ?? null,
                 'status' => 'active',
                 'last_login_at' => now(),
             ]);

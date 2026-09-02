@@ -32,7 +32,9 @@ class MemberController extends Controller
                 'petBreed'      => $u->pet_breed,
                 'petBreed2'     => $u->pet_breed2,
                 'hasFamily'     => $u->family_type,
+                'concerns'      => $u->concerns,
                 'howFound'      => $u->how_found,
+                'expectations'  => $u->expectations,
                 'registeredAt'  => $u->created_at->format('Y-m-d'),
                 'lastLoginAt'   => $u->last_login_at?->format('Y-m-d'),
                 'status'        => $u->status ?? 'active',
@@ -57,7 +59,9 @@ class MemberController extends Controller
             'pet_breed'      => ['nullable', 'string', 'max:100'],
             'pet_breed2'     => ['nullable', 'string', 'max:100'],
             'family_type'    => ['nullable', 'in:individual,friends,couple,married,family'],
+            'concerns'       => ['nullable', 'string'],
             'how_found'      => ['nullable', 'string', 'max:255'],
+            'expectations'   => ['nullable', 'string'],
             'status'         => ['nullable', 'in:active,withdrawn'],
         ]);
 

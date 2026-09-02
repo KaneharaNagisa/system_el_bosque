@@ -78,6 +78,14 @@ const familyLabelMap: Record<string, string> = {
     family: "ご家族（お子さんあり）",
 };
 
+const howFoundLabelMap: Record<string, string> = {
+    search: "検索エンジン",
+    sns: "SNS（Instagram・X等）",
+    friend: "知人の紹介",
+    media: "雑誌・テレビ",
+    other: "その他",
+};
+
 function formatPetDisplay(
     hasPet: string,
     petBreed: string,
@@ -95,6 +103,10 @@ function formatPetDisplay(
 
 function formatFamilyDisplay(hasFamily: string): string {
     return familyLabelMap[hasFamily] || hasFamily || "−";
+}
+
+function formatHowFoundDisplay(howFound: string): string {
+    return howFoundLabelMap[howFound] || howFound || "−";
 }
 
 // ── マイページ向けお知らせ（管理画面の target:"mypage"|"both" × status:"published" と同期） ──
@@ -1132,13 +1144,31 @@ export function MyPage() {
                                             <label style={labelStyle}>
                                                 何でこのログハウスを知りましたか？
                                             </label>
-                                            <input
+                                            <select
                                                 name="howFound"
                                                 value={editForm.howFound}
                                                 onChange={handleEditChange}
-                                                placeholder="例：インターネット検索、友人の紹介"
-                                                style={inputStyle}
-                                            />
+                                                style={selectStyle}
+                                            >
+                                                <option value="">
+                                                    選択してください
+                                                </option>
+                                                <option value="search">
+                                                    検索エンジン
+                                                </option>
+                                                <option value="sns">
+                                                    SNS（Instagram・X等）
+                                                </option>
+                                                <option value="friend">
+                                                    知人の紹介
+                                                </option>
+                                                <option value="media">
+                                                    雑誌・テレビ
+                                                </option>
+                                                <option value="other">
+                                                    その他
+                                                </option>
+                                            </select>
                                         </div>
 
                                         {/* エルボスケに期待すること */}
@@ -1263,7 +1293,9 @@ export function MyPage() {
                                         },
                                         {
                                             label: "知ったきっかけ",
-                                            value: user.howFound || "−",
+                                            value: formatHowFoundDisplay(
+                                                user.howFound || "",
+                                            ),
                                         },
                                         {
                                             label: "エルボスケに期待すること",

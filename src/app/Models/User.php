@@ -33,7 +33,9 @@ class User extends Authenticatable
         'pet_breed',
         'pet_breed2',
         'family_type',
+        'concerns',
         'how_found',
+        'expectations',
         'status',
         'last_login_at',
     ];
