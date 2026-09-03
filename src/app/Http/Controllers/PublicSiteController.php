@@ -19,6 +19,7 @@ class PublicSiteController extends Controller
     {
         $usesPricing = in_array($page, [
             'home',
+            'about',
             'pricing',
             'reservation',
             'reservation-detail',

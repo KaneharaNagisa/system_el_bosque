@@ -3,6 +3,7 @@ import cabinPhoto from "../assets/0b3064ec72e9db4af32817c032fdcc52faa8d748.png";
 import livingPhoto from "../assets/cefee1687153313be4a93e924c2d47762b764e35.png";
 import kitchenPhoto from "../assets/051ba647ed3b30d30bbf8b5eb0e7a7d11aa5aa53.png";
 import loftPhoto from "../assets/4776090ab6a75676e3ccee00c2cda4a78c0952e8.png";
+import { usePage } from "@inertiajs/react";
 import { Link } from "../router";
 import {
     FaChevronRight,
@@ -25,6 +26,7 @@ import {
     FaVolumeUp,
 } from "react-icons/fa";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { defaultPricingSetting, type PricingSetting } from "../pricing";
 
 /* ── 画像 ── */
 const IMG_LIVING =
@@ -180,6 +182,11 @@ const SectionHeading = ({
 );
 
 export function About() {
+    const { pricingSetting } = usePage().props as unknown as {
+        pricingSetting?: PricingSetting;
+    };
+    const rates = pricingSetting ?? defaultPricingSetting;
+
     return (
         <div>
             {/* ── ページヘッダー ── */}
@@ -664,7 +671,7 @@ export function About() {
                                     lineHeight: 1.2,
                                 }}
                             >
-                                15:00〜
+                                {rates.checkInTime}〜
                             </div>
                             <p
                                 style={{
@@ -723,7 +730,7 @@ export function About() {
                                     lineHeight: 1.2,
                                 }}
                             >
-                                〜10:00
+                                〜{rates.checkOutTime}
                             </div>
                             <p
                                 style={{

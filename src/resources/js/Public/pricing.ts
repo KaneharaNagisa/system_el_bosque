@@ -3,6 +3,8 @@ export interface PricingSetting {
     additionalGuestRate: number;
     weekdayRate: number;
     holidayRate: number;
+    checkInTime: string;
+    checkOutTime: string;
     periodRates: Array<{
         name: string;
         start: string;
@@ -17,6 +19,8 @@ export const defaultPricingSetting: PricingSetting = {
     additionalGuestRate: 3000,
     weekdayRate: 20000,
     holidayRate: 26000,
+    checkInTime: "15:00",
+    checkOutTime: "11:00",
     periodRates: [],
     holidayDates: [],
 };

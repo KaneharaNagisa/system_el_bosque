@@ -93,6 +93,8 @@ interface PriceBreakdown {
     transferSurcharge: number;
     experiencesTotal: number;
     deposit: number;
+    depositRefunded?: boolean;
+    depositRefundAmount?: number;
     adjustment?: number;
     adjustmentNote?: string;
     adjustmentRuleId?: string;
@@ -1180,8 +1182,16 @@ export default function Reservations({
                                         <td className="px-4 py-3 text-sm text-gray-600 text-center">
                                             {r.guests}名
                                         </td>
-                                        <td className="px-4 py-3 text-sm text-gray-900 text-right font-medium">
-                                            ¥{r.totalAmount.toLocaleString()}
+                                        <td className="px-4 py-3 text-right">
+                                            <div className="text-sm text-gray-900 font-medium">
+                                                ¥
+                                                {r.totalAmount.toLocaleString()}
+                                            </div>
+                                            {r.breakdown?.depositRefunded && (
+                                                <div className="text-[11px] text-green-600 whitespace-nowrap">
+                                                    保証金返金後
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="px-4 py-3 text-center">
                                             {(() => {
@@ -1789,10 +1799,30 @@ export default function Reservations({
                                                     ).toLocaleString()}
                                                 </span>
                                             </div>
+                                            {selectedRes.breakdown
+                                                ?.depositRefunded && (
+                                                <div className="flex justify-between items-center px-4 py-2.5 text-sm bg-green-50">
+                                                    <span className="text-green-700 font-medium">
+                                                        保証金返金済
+                                                    </span>
+                                                    <span className="text-green-700 font-medium">
+                                                        −¥
+                                                        {(
+                                                            selectedRes
+                                                                .breakdown
+                                                                ?.depositRefundAmount ??
+                                                            10000
+                                                        ).toLocaleString()}
+                                                    </span>
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="flex justify-between items-center px-4 py-3.5 bg-[#0a2105]">
                                             <span className="text-white text-sm font-semibold">
-                                                お支払い合計（税込）
+                                                {selectedRes.breakdown
+                                                    ?.depositRefunded
+                                                    ? "決済済金額（税込）"
+                                                    : "お支払い合計（税込）"}
                                             </span>
                                             <span className="text-white text-xl font-bold tracking-tight">
                                                 ¥

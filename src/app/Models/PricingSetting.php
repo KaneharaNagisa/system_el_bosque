@@ -13,6 +13,8 @@ class PricingSetting extends Model
         'additional_guest_rate',
         'weekday_rate',
         'holiday_rate',
+        'check_in_time',
+        'check_out_time',
         'period_rates',
     ];
 
@@ -30,6 +32,8 @@ class PricingSetting extends Model
             'additional_guest_rate' => 3000,
             'weekday_rate' => 20000,
             'holiday_rate' => 26000,
+            'check_in_time' => '15:00',
+            'check_out_time' => '11:00',
             'period_rates' => [],
         ]);
     }
@@ -113,6 +117,8 @@ class PricingSetting extends Model
             'additionalGuestRate' => $this->additional_guest_rate,
             'weekdayRate' => $this->weekday_rate,
             'holidayRate' => $this->holiday_rate,
+            'checkInTime' => substr((string) $this->check_in_time, 0, 5),
+            'checkOutTime' => substr((string) $this->check_out_time, 0, 5),
             'periodRates' => $this->period_rates ?? [],
             'holidayDates' => $holidayDates,
         ];

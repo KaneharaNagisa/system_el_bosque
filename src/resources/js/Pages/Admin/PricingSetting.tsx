@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { router } from "@inertiajs/react";
-import { CalendarRange, Plus, Save, Trash2, WalletCards } from "lucide-react";
+import {
+    CalendarRange,
+    Clock,
+    Plus,
+    Save,
+    Trash2,
+    WalletCards,
+} from "lucide-react";
 import AdminLayout from "../../Components/Admin/Layout";
 
 interface PeriodRate {
@@ -15,6 +22,8 @@ interface PricingSettingProps {
     additionalGuestRate: number;
     weekdayRate: number;
     holidayRate: number;
+    checkInTime: string;
+    checkOutTime: string;
     periodRates: PeriodRate[];
 }
 
@@ -23,6 +32,8 @@ interface FormState {
     additional_guest_rate: number;
     weekday_rate: number;
     holiday_rate: number;
+    check_in_time: string;
+    check_out_time: string;
     period_rates: PeriodRate[];
 }
 
@@ -75,6 +86,8 @@ export default function PricingSetting({
         additional_guest_rate: pricingSetting.additionalGuestRate,
         weekday_rate: pricingSetting.weekdayRate,
         holiday_rate: pricingSetting.holidayRate,
+        check_in_time: pricingSetting.checkInTime,
+        check_out_time: pricingSetting.checkOutTime,
         period_rates: pricingSetting.periodRates,
     });
     const [saving, setSaving] = useState(false);
@@ -122,6 +135,8 @@ export default function PricingSetting({
                 additional_guest_rate: form.additional_guest_rate,
                 weekday_rate: form.weekday_rate,
                 holiday_rate: form.holiday_rate,
+                check_in_time: form.check_in_time,
+                check_out_time: form.check_out_time,
                 period_rates: form.period_rates.map(
                     ({ name, start, end, rate }) => ({
                         name,
@@ -216,6 +231,54 @@ export default function PricingSetting({
                                 setForm({ ...form, holiday_rate: value })
                             }
                         />
+                    </div>
+                </section>
+
+                <section className="border-b border-gray-200 pb-6">
+                    <div className="mb-4 flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-gray-500" />
+                        <div>
+                            <h3 className="text-sm font-semibold text-gray-900">
+                                チェックイン・チェックアウト時間
+                            </h3>
+                            <p className="text-xs text-gray-500">
+                                宿泊案内に使用する標準時間を設定します
+                            </p>
+                        </div>
+                    </div>
+                    <div className="grid gap-5 md:grid-cols-2">
+                        <label className="block">
+                            <span className="block text-sm font-medium text-gray-800">
+                                チェックイン時間
+                            </span>
+                            <input
+                                type="time"
+                                value={form.check_in_time}
+                                onChange={(event) =>
+                                    setForm({
+                                        ...form,
+                                        check_in_time: event.target.value,
+                                    })
+                                }
+                                className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 focus:border-[#2c976c] focus:outline-none focus:ring-2 focus:ring-[#2c976c]/20"
+                            />
+                        </label>
+                        <label className="block">
+                            <span className="block text-sm font-medium text-gray-800">
+                                チェックアウト時間
+                            </span>
+                            <input
+                                type="time"
+                                value={form.check_out_time}
+                                onChange={(event) =>
+                                    setForm({
+                                        ...form,
+                                        check_out_time: event.target.value,
+                                    })
+                                }
+                                className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 focus:border-[#2c976c] focus:outline-none focus:ring-2 focus:ring-[#2c976c]/20"
+                            />
+                        </label>
                     </div>
                 </section>
 

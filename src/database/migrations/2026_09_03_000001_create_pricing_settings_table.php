@@ -14,6 +14,8 @@ return new class extends Migration
             $table->unsignedInteger('additional_guest_rate')->default(3000);
             $table->unsignedInteger('weekday_rate')->default(20000);
             $table->unsignedInteger('holiday_rate')->default(26000);
+            $table->time('check_in_time')->default('15:00');
+            $table->time('check_out_time')->default('11:00');
             $table->json('period_rates')->nullable();
             $table->timestamps();
         });

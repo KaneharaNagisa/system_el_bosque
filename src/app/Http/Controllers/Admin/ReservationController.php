@@ -206,12 +206,7 @@ class ReservationController extends Controller
             return back()->with('error', '請求データが存在しません');
         }
 
-        $paidAt = $request->payment === 'paid' ? now() : null;
-
-        $reservation->billing->update([
-            'status'  => $request->payment,
-            'paid_at' => $paidAt,
-        ]);
+        $reservation->billing->applyPaymentStatus($request->payment);
 
         return back()->with('message', '支払状況を更新しました');
     }

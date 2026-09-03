@@ -41,6 +41,8 @@ interface PriceBreakdown {
     transferSurcharge: number;
     experiencesTotal: number;
     deposit: number;
+    depositRefunded?: boolean;
+    depositRefundAmount?: number;
     adjustment?: number;
     adjustmentNote?: string;
     adjustmentRuleId?: string;
@@ -439,8 +441,15 @@ export default function Billing({
                                         <td className="px-4 py-3 text-sm text-gray-600">
                                             {b.checkOut}
                                         </td>
-                                        <td className="px-4 py-3 text-sm text-gray-900 text-right font-medium">
-                                            ¥{b.amount.toLocaleString()}
+                                        <td className="px-4 py-3 text-right">
+                                            <div className="text-sm text-gray-900 font-medium">
+                                                ¥{b.amount.toLocaleString()}
+                                            </div>
+                                            {b.breakdown?.depositRefunded && (
+                                                <div className="text-[11px] text-green-600 whitespace-nowrap">
+                                                    保証金返金後
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="px-4 py-3">
                                             {(() => {
@@ -902,10 +911,28 @@ export default function Billing({
                                                 ).toLocaleString()}
                                             </span>
                                         </div>
+                                        {selected.breakdown
+                                            ?.depositRefunded && (
+                                            <div className="flex justify-between items-center px-4 py-2.5 text-sm bg-green-50">
+                                                <span className="text-green-700 font-medium">
+                                                    保証金返金済
+                                                </span>
+                                                <span className="text-green-700 font-medium">
+                                                    −¥
+                                                    {(
+                                                        selected.breakdown
+                                                            ?.depositRefundAmount ??
+                                                        10000
+                                                    ).toLocaleString()}
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="flex justify-between items-center px-4 py-3.5 bg-[#0a2105]">
                                         <span className="text-white text-sm font-semibold">
-                                            お支払い合計（税込）
+                                            {selected.breakdown?.depositRefunded
+                                                ? "決済済金額（税込）"
+                                                : "お支払い合計（税込）"}
                                         </span>
                                         <span className="text-white text-xl font-bold tracking-tight">
                                             ¥{selected.amount.toLocaleString()}

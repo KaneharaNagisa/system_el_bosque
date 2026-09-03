@@ -73,10 +73,7 @@ class BillingController extends Controller
         ]);
 
         $billing = Billing::findOrFail($id);
-        $billing->update([
-            'status'  => $request->status,
-            'paid_at' => $request->status === 'paid' ? now() : null,
-        ]);
+        $billing->applyPaymentStatus($request->status);
 
         return back()->with('message', '請求情報を更新しました');
     }

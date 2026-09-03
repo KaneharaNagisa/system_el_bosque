@@ -17,8 +17,8 @@ class DashboardController extends Controller
             'totalMembers'         => User::count(),
             'newMembersThisMonth'  => User::whereMonth('created_at', now()->month)->count(),
             'activeMembers'        => User::where('status', 'active')->count(),
-            'totalReservations'    => Reservation::count(),
-            'pendingReservations'  => Reservation::where('status', 'pending')->count(),
+            'paidReservations'     => Reservation::whereHas('billing', fn($query) => $query->where('status', 'paid'))->count(),
+            'reservationsThisMonth' => Reservation::whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->count(),
             'unansweredContacts'   => Contact::where('status', 'unread')->count(),
         ];
 

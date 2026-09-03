@@ -29,8 +29,8 @@ interface Stats {
     totalMembers: number;
     newMembersThisMonth: number;
     activeMembers: number;
-    totalReservations: number;
-    pendingReservations: number;
+    paidReservations: number;
+    reservationsThisMonth: number;
     unansweredContacts: number;
 }
 interface Props {
@@ -154,7 +154,7 @@ export default function Dashboard({
                 </div>
 
                 {/* 統計カード */}
-                <div className="grid grid-cols-4 gap-4 mb-8">
+                <div className="grid grid-cols-5 gap-4 mb-8">
                     <div
                         className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow cursor-pointer"
                         onClick={() => router.visit("/admin/members")}
@@ -198,16 +198,33 @@ export default function Dashboard({
                         onClick={() => router.visit("/admin/reservations")}
                     >
                         <p className="text-xs text-gray-500 mb-1">
-                            保留中の予約
+                            現在の支払い済予約総数
+                        </p>
+                        <div className="flex items-center justify-between">
+                            <span className="text-3xl text-blue-600">
+                                {stats.paidReservations}
+                            </span>
+                            <FaCreditCard className="w-6 h-6 text-blue-600 opacity-50" />
+                        </div>
+                        <p className="text-xs text-gray-400 mt-2">
+                            現在の支払い済予約
+                        </p>
+                    </div>
+                    <div
+                        className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow cursor-pointer"
+                        onClick={() => router.visit("/admin/reservations")}
+                    >
+                        <p className="text-xs text-gray-500 mb-1">
+                            今月の予約総数
                         </p>
                         <div className="flex items-center justify-between">
                             <span className="text-3xl text-amber-600">
-                                {stats.pendingReservations}
+                                {stats.reservationsThisMonth}
                             </span>
                             <FaCalendarAlt className="w-6 h-6 text-amber-600 opacity-50" />
                         </div>
                         <p className="text-xs text-gray-400 mt-2">
-                            確認が必要な予約
+                            今月受け付けた予約
                         </p>
                     </div>
                     <div
