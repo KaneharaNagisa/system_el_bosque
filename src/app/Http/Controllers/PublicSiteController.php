@@ -17,13 +17,21 @@ class PublicSiteController extends Controller
 {
     public function show(string $page, array $props = []): Response
     {
+        $usesPricing = in_array($page, [
+            'home',
+            'pricing',
+            'reservation',
+            'reservation-detail',
+            'reservation-confirm',
+        ], true);
+
         return Inertia::render('Public/Page', [
             'page' => $page,
             'news' => $this->news($page),
             'experiences' => $this->experiences($page),
             'faqs' => $this->faqs($page),
             'availability' => $this->availability($page),
-            'pricingSetting' => $page === 'pricing' ? PricingSetting::current()->toFrontend() : null,
+            'pricingSetting' => $usesPricing ? PricingSetting::current()->toFrontend() : null,
             ...$props,
         ]);
     }

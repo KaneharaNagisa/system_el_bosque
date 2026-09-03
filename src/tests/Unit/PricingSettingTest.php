@@ -6,7 +6,7 @@ use App\Models\PricingSetting;
 use App\Models\Reservation;
 use Carbon\Carbon;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class PricingSettingTest extends TestCase
 {
@@ -28,7 +28,7 @@ class PricingSettingTest extends TestCase
         return [
             'weekday Monday' => ['2026-09-07', 20000],
             'weekday Thursday' => ['2026-09-03', 20000],
-            'weekday Friday' => ['2026-09-04', 20000],
+            'holiday Friday' => ['2026-09-04', 30000],
             'holiday Monday' => ['2026-09-21', 30000],
             'holiday Saturday' => ['2026-09-05', 30000],
             'holiday Sunday' => ['2026-09-06', 30000],
@@ -59,8 +59,18 @@ class PricingSettingTest extends TestCase
             'period_rates' => [],
         ]);
 
-        $this->assertSame(40000, $setting->amountForStay(Carbon::parse('2026-09-03'), 2));
+        $this->assertSame(50000, $setting->amountForStay(Carbon::parse('2026-09-03'), 2));
         $this->assertSame(0, $setting->amountForStay(Carbon::parse('2026-09-03'), 0));
+    }
+
+    public function test_additional_guest_amount_is_charged_only_for_guests_beyond_five(): void
+    {
+        $setting = new PricingSetting(['additional_guest_rate' => 4000]);
+
+        $this->assertSame(0, $setting->additionalGuestAmount(1, 2));
+        $this->assertSame(0, $setting->additionalGuestAmount(5, 2));
+        $this->assertSame(8000, $setting->additionalGuestAmount(6, 2));
+        $this->assertSame(24000, $setting->additionalGuestAmount(8, 2));
     }
 
     public function test_it_reprices_a_reservation_breakdown_from_the_current_setting(): void
@@ -85,9 +95,9 @@ class PricingSettingTest extends TestCase
             'adjustment' => -5000,
         ]);
 
-        $this->assertSame(50000, $breakdown['baseAmount']);
+        $this->assertSame(60000, $breakdown['baseAmount']);
         $this->assertSame(8000, $breakdown['guestExtra']);
-        $this->assertSame(65500, $setting->totalForBreakdown($breakdown));
+        $this->assertSame(75500, $setting->totalForBreakdown($breakdown));
     }
 
     public function test_frontend_data_contains_holiday_date_strings(): void

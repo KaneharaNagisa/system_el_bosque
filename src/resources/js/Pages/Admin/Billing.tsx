@@ -56,6 +56,7 @@ interface Billing {
     id: string;
     dbId: number;
     reservationId: string;
+    reservationStatus: string;
     memberName: string;
     memberEmail: string;
     memberPhone: string;
@@ -107,6 +108,26 @@ const statusBadge = (status: string) => {
     );
 };
 
+const reservationStatusBadge = (status: string) => {
+    const map: Record<string, { label: string; cls: string }> = {
+        confirmed: { label: "確定", cls: "bg-green-100 text-green-800" },
+        cancelled: { label: "キャンセル", cls: "bg-red-100 text-red-800" },
+        noshow: { label: "ドタキャン", cls: "bg-purple-100 text-purple-800" },
+        pending: { label: "保留中", cls: "bg-yellow-100 text-yellow-800" },
+    };
+    const value = map[status] || {
+        label: status,
+        cls: "bg-gray-100 text-gray-600",
+    };
+    return (
+        <span
+            className={`px-2 py-0.5 rounded text-xs font-medium ${value.cls}`}
+        >
+            {value.label}
+        </span>
+    );
+};
+
 function Section({
     icon,
     title,
@@ -147,6 +168,8 @@ export default function Billing({
 }) {
     const [searchQuery, setSearchQuery] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
+    const [filterReservationStatus, setFilterReservationStatus] =
+        useState("all");
     const [selected, setSelected] = useState<Billing | null>(null);
 
     const [editStatus, setEditStatus] = useState<string>("unpaid");
@@ -175,16 +198,23 @@ export default function Billing({
                     b.reservationId.includes(searchQuery);
                 const matchStatus =
                     filterStatus === "all" || b.status === filterStatus;
-                return matchSearch && matchStatus;
+                const matchReservationStatus =
+                    filterReservationStatus === "all" ||
+                    b.reservationStatus === filterReservationStatus;
+                return matchSearch && matchStatus && matchReservationStatus;
             }),
-        [billings, searchQuery, filterStatus],
+        [billings, searchQuery, filterStatus, filterReservationStatus],
     );
 
     const totalPaid = billings
         .filter((b) => b.status === "paid")
         .reduce((s, b) => s + b.amount, 0);
     const totalUnpaid = billings
-        .filter((b) => b.status === "unpaid")
+        .filter(
+            (b) =>
+                b.status === "unpaid" &&
+                !["cancelled", "noshow"].includes(b.reservationStatus),
+        )
         .reduce((s, b) => s + b.amount, 0);
     const totalRefunded = billings
         .filter((b) => b.status === "refunded")
@@ -305,7 +335,7 @@ export default function Billing({
                                 </p>
                             </div>
                         </div>
-                        <div className="flex gap-3">
+                        <div className="flex flex-col gap-3 md:flex-row">
                             <div className="relative flex-1">
                                 <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                                 <input
@@ -325,10 +355,23 @@ export default function Billing({
                                 }
                                 className="px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#0a2105] outline-none"
                             >
-                                <option value="all">すべて</option>
+                                <option value="all">支払状況：すべて</option>
                                 <option value="paid">支払済</option>
                                 <option value="unpaid">未払い</option>
                                 <option value="refunded">返金済</option>
+                            </select>
+                            <select
+                                value={filterReservationStatus}
+                                onChange={(e) =>
+                                    setFilterReservationStatus(e.target.value)
+                                }
+                                className="px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#0a2105] outline-none"
+                            >
+                                <option value="all">予約状況：すべて</option>
+                                <option value="confirmed">確定</option>
+                                <option value="cancelled">キャンセル</option>
+                                <option value="noshow">ドタキャン</option>
+                                <option value="pending">保留中</option>
                             </select>
                         </div>
                     </div>
@@ -365,7 +408,10 @@ export default function Billing({
                                         支払日
                                     </th>
                                     <th className="text-center px-4 py-3 text-xs text-gray-500">
-                                        状態
+                                        予約状況
+                                    </th>
+                                    <th className="text-center px-4 py-3 text-xs text-gray-500">
+                                        支払状況
                                     </th>
                                     <th className="text-right px-4 py-3 text-xs text-gray-500">
                                         操作
@@ -478,6 +524,11 @@ export default function Billing({
                                         </td>
                                         <td className="px-4 py-3 text-sm text-gray-600">
                                             {b.paidAt || "−"}
+                                        </td>
+                                        <td className="px-4 py-3 text-center">
+                                            {reservationStatusBadge(
+                                                b.reservationStatus,
+                                            )}
                                         </td>
                                         <td className="px-4 py-3 text-center">
                                             {statusBadge(b.status)}
@@ -704,7 +755,10 @@ export default function Billing({
                                         {selected.breakdown.guestExtra > 0 && (
                                             <div className="flex justify-between items-center px-4 py-2.5 text-sm">
                                                 <span className="text-gray-600">
-                                                    追加人数料金（6名以上）
+                                                    追加人数料金（
+                                                    {selected.guests - 5}名 ×
+                                                    {selected.nights}
+                                                    泊）
                                                 </span>
                                                 <span className="text-gray-900">
                                                     ¥

@@ -14,6 +14,13 @@ import {
     FaShieldAlt,
 } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+import {
+    additionalGuestAmount,
+    amountForStay,
+    dayTypeLabel,
+    defaultPricingSetting,
+    type PricingSetting,
+} from "../pricing";
 
 const WEEKDAY_NAMES = ["日", "月", "火", "水", "木", "金", "土"];
 
@@ -22,12 +29,6 @@ function formatDateJP(dateStr: string): string {
     const [y, m, d] = dateStr.split("-").map(Number);
     const date = new Date(y, m - 1, d);
     return `${y}年${m}月${d}日（${WEEKDAY_NAMES[date.getDay()]}）`;
-}
-
-function getBaseRate(dayType: string): number {
-    if (dayType.startsWith("特別日")) return 33000;
-    if (dayType.startsWith("休前日")) return 26000;
-    return 20000;
 }
 
 const PET_FEES: Record<string, number> = {
@@ -53,13 +54,15 @@ const dividerStyle: React.CSSProperties = {
 };
 
 export function ReservationConfirm() {
-    const { experiences = [] } = usePage().props as unknown as {
+    const { experiences = [], pricingSetting } = usePage().props as unknown as {
         experiences?: Array<{
             name: string;
             price: number;
             pricingType?: "per_person" | "per_group";
         }>;
+        pricingSetting?: PricingSetting;
     };
+    const rates = pricingSetting ?? defaultPricingSetting;
     const experienceRates = Object.fromEntries(
         experiences.map((experience) => [
             experience.name,
@@ -121,13 +124,13 @@ export function ReservationConfirm() {
         );
     }
 
-    const { form, checkin, checkout, nights, dayType } = state;
+    const { form, checkin, checkout, nights } = state;
     const guestsNum = parseInt(form.guests, 10);
+    const dayType = dayTypeLabel(checkin, rates);
 
     /* ── 料金計算 ── */
-    const baseRate = getBaseRate(dayType);
-    const baseTotal = baseRate * nights;
-    const guestExtra = guestsNum > 5 ? (guestsNum - 5) * 3000 * nights : 0;
+    const baseTotal = amountForStay(checkin, nights, rates);
+    const guestExtra = additionalGuestAmount(guestsNum, nights, rates);
     const petPerNight = PET_FEES[form.pets] || 0;
     const petTotal = petPerNight * nights;
     const supportFee = form.supportPlan === "yes" ? 8000 : 0;
@@ -163,14 +166,14 @@ export function ReservationConfirm() {
         {
             label: `基本宿泊料（${dayType}）`,
             amount: baseTotal,
-            note: `¥${baseRate.toLocaleString()} × ${nights}泊`,
+            note: `日ごとの料金を合算（${nights}泊）`,
         },
         ...(guestExtra > 0
             ? [
                   {
                       label: `人数追加料金（${guestsNum - 5}名分）`,
                       amount: guestExtra,
-                      note: `¥${((guestsNum - 5) * 3000).toLocaleString()} × ${nights}泊`,
+                      note: `¥${rates.additionalGuestRate.toLocaleString()} × ${guestsNum - 5}名 × ${nights}泊`,
                   },
               ]
             : []),

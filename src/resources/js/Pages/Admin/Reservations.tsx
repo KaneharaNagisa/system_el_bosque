@@ -144,6 +144,13 @@ function calcNights(ci: string, co: string): number {
         (new Date(co).getTime() - new Date(ci).getTime()) / 86400000,
     );
 }
+function getAdditionalGuestAmount(
+    guests: number,
+    nights: number,
+    rate: number,
+): number {
+    return Math.max(0, guests - 5) * rate * Math.max(0, nights);
+}
 function getBaseRate(dateStr: string, pricing: PricingSetting): number {
     if (!dateStr) return pricing.baseRate;
     const [y, m, d] = dateStr.split("-").map(Number);
@@ -155,9 +162,9 @@ function getBaseRate(dateStr: string, pricing: PricingSetting): number {
             : monthDay >= item.start || monthDay <= item.end,
     );
     if (period) return period.rate;
-    if ([6, 0].includes(dow) || pricing.holidayDates.includes(dateStr))
+    if ([5, 6, 0].includes(dow) || pricing.holidayDates.includes(dateStr))
         return pricing.holidayRate;
-    if ([1, 2, 3, 4, 5].includes(dow)) return pricing.weekdayRate;
+    if ([1, 2, 3, 4].includes(dow)) return pricing.weekdayRate;
     return pricing.baseRate;
 }
 function getDayTypeLabel(dateStr: string, pricing: PricingSetting): string {
@@ -170,9 +177,9 @@ function getDayTypeLabel(dateStr: string, pricing: PricingSetting): string {
     );
     if (period) return period.name;
     const dow = new Date(`${dateStr}T00:00:00`).getDay();
-    if ([6, 0].includes(dow) || pricing.holidayDates.includes(dateStr))
-        return "休日（土・日、祝日）";
-    if ([1, 2, 3, 4, 5].includes(dow)) return "平日（月〜金）";
+    if ([5, 6, 0].includes(dow) || pricing.holidayDates.includes(dateStr))
+        return "休日（金〜日、祝日）";
+    if ([1, 2, 3, 4].includes(dow)) return "平日（月〜木）";
     return "基本料金日";
 }
 function petDisplayLabel(hasPet: string, breed?: string) {
@@ -613,10 +620,11 @@ function calcFromForm(
         const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
         return getBaseRate(dateString, pricing);
     }).reduce((total, rate) => total + rate, 0);
-    const guestExtra =
-        f.guests > 5
-            ? (f.guests - 5) * pricing.additionalGuestRate * nights
-            : 0;
+    const guestExtra = getAdditionalGuestAmount(
+        f.guests,
+        nights,
+        pricing.additionalGuestRate,
+    );
     const petFee = (PET_FEES[f.pets] || 0) * nights;
     const supportFee = f.supportPlan ? 8000 : 0;
     const transferSurcharge = f.supportPlan && f.guests >= 5 ? 5000 : 0;
@@ -1630,7 +1638,11 @@ export default function Reservations({
                                                 ?.guestExtra || 0) > 0 && (
                                                 <div className="flex justify-between items-center px-4 py-2.5 text-sm">
                                                     <span className="text-gray-600">
-                                                        追加人数料金（6名以上）
+                                                        追加人数料金（
+                                                        {selectedRes.guests - 5}
+                                                        名 ×{" "}
+                                                        {selectedRes.nights}
+                                                        泊）
                                                     </span>
                                                     <span className="text-gray-900">
                                                         ¥
@@ -2456,14 +2468,16 @@ export default function Reservations({
                                                 <option key={n} value={n}>
                                                     {n}名
                                                     {n > 5
-                                                        ? `（追加料金 +¥${((n - 5) * pricingSetting.additionalGuestRate).toLocaleString()}）`
-                                                        : "（推奨）"}
+                                                        ? `（追加料金 +¥${((n - 5) * pricingSetting.additionalGuestRate).toLocaleString()}/泊）`
+                                                        : "（1組料金）"}
                                                 </option>
                                             ))}
                                         </select>
                                         <p className="text-xs text-gray-400 mt-1">
                                             ※
-                                            最大10名。6名以上は1名につき¥3,000の追加料金（泊数×人数分）
+                                            最大10名。1〜5名は同一料金、6人目から1名・1泊につき¥
+                                            {pricingSetting.additionalGuestRate.toLocaleString()}
+                                            を加算
                                         </p>
                                     </section>
 
@@ -2763,7 +2777,10 @@ export default function Reservations({
                                                 {calc.guestExtra > 0 && (
                                                     <div className="flex justify-between py-1.5 border-b border-gray-100">
                                                         <span className="text-gray-500">
-                                                            追加人数
+                                                            追加人数（
+                                                            {newForm.guests - 5}
+                                                            名 × {calc.nights}
+                                                            泊）
                                                         </span>
                                                         <span className="text-gray-800">
                                                             ¥

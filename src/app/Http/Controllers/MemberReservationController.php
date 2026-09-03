@@ -83,7 +83,7 @@ class MemberReservationController extends Controller
         });
         $breakdown = [
             'baseAmount' => $pricingSetting->amountForStay($checkin, $nights),
-            'guestExtra' => max(0, $validated['guests'] - 5) * $pricingSetting->additional_guest_rate * $nights,
+            'guestExtra' => $pricingSetting->additionalGuestAmount($validated['guests'], $nights),
             'petFee' => $petRates[$validated['pets']] * $nights,
             'supportFee' => $validated['supportPlan'] === 'yes' ? 8000 : 0,
             'transferSurcharge' => $validated['supportPlan'] === 'yes' && $validated['guests'] >= 5 ? 5000 : 0,

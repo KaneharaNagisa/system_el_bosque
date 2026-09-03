@@ -13,6 +13,11 @@ import {
     FaChevronLeft,
 } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+import {
+    dayTypeLabel,
+    defaultPricingSetting,
+    type PricingSetting,
+} from "../pricing";
 
 const WEEKDAY_NAMES = ["日", "月", "火", "水", "木", "金", "土"];
 
@@ -69,23 +74,8 @@ function calcNights(ci: string, co: string): number {
     return Math.round((b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-/** Detect day-type label from checkin date */
-function getDayTypeLabel(ci: string): string {
-    if (!ci) return "";
-    const [y, m, d] = ci.split("-").map(Number);
-    const date = new Date(y, m - 1, d);
-    const dow = date.getDay();
-    // GW (Apr 29 - May 5), Obon (Aug 10-16), Year-end (Dec 28-31)
-    if ((m === 4 && d >= 29) || (m === 5 && d <= 5)) return "特別日（GW）";
-    if (m === 8 && d >= 10 && d <= 16) return "特別日（お盆）";
-    if (m === 12 && d >= 28) return "特別日（年末）";
-    // Fri(5) or Sat(6) → weekend rate
-    if (dow === 5 || dow === 6) return "休前日（金・土）";
-    return "平日（日〜木）";
-}
-
 export function ReservationDetail() {
-    const { experiences = [] } = usePage().props as unknown as {
+    const { experiences = [], pricingSetting } = usePage().props as unknown as {
         experiences?: Array<{
             id: number;
             name: string;
@@ -97,7 +87,9 @@ export function ReservationDetail() {
             priceNote?: string;
             notes?: string;
         }>;
+        pricingSetting?: PricingSetting;
     };
+    const rates = pricingSetting ?? defaultPricingSetting;
     const { user } = useAuth();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -139,7 +131,10 @@ export function ReservationDetail() {
         () => calcNights(checkin, checkout),
         [checkin, checkout],
     );
-    const dayType = useMemo(() => getDayTypeLabel(checkin), [checkin]);
+    const dayType = useMemo(
+        () => dayTypeLabel(checkin, rates),
+        [checkin, rates],
+    );
 
     const [form, setForm] = useState<DetailForm>({
         guests: "2",
@@ -379,8 +374,8 @@ export function ReservationDetail() {
                                                 <option key={n} value={n}>
                                                     {n}名
                                                     {n <= 5
-                                                        ? "（推奨）"
-                                                        : `（追加料金 +¥${((n - 5) * 3000).toLocaleString()}）`}
+                                                        ? ""
+                                                        : `（追加料金 +¥${((n - 5) * rates.additionalGuestRate).toLocaleString()}/泊）`}
                                                 </option>
                                             ))}
                                         </select>
@@ -392,7 +387,9 @@ export function ReservationDetail() {
                                             }}
                                         >
                                             ※
-                                            推奨1〜5名、最大10名まで。6名以上は1名追加につき¥3,000の追加料金が発生します
+                                            1〜5名は人数にかかわらず同一料金です。6人目から1名・1泊につき¥
+                                            {rates.additionalGuestRate.toLocaleString()}
+                                            の追加料金が発生します
                                         </p>
                                     </div>
                                 </div>
@@ -1221,20 +1218,20 @@ export function ReservationDetail() {
                                 >
                                     {[
                                         {
-                                            label: "平日（1〜5名）",
-                                            price: "¥28,000〜",
+                                            label: "平日（月〜木・1〜5名）",
+                                            price: `¥${rates.weekdayRate.toLocaleString()}`,
                                         },
                                         {
-                                            label: "休前日（1〜5名）",
-                                            price: "¥34,000〜",
+                                            label: "休日（金〜日・祝日・1〜5名）",
+                                            price: `¥${rates.holidayRate.toLocaleString()}`,
                                         },
+                                        ...rates.periodRates.map((period) => ({
+                                            label: `${period.name}（1〜5名）`,
+                                            price: `¥${period.rate.toLocaleString()}`,
+                                        })),
                                         {
-                                            label: "特別日（1〜5名）",
-                                            price: "¥41,000〜",
-                                        },
-                                        {
-                                            label: "6名以上（1名追加ごと）",
-                                            price: "+¥3,000",
+                                            label: "6名以上（1名・1泊ごと）",
+                                            price: `+¥${rates.additionalGuestRate.toLocaleString()}`,
                                         },
                                     ].map((item) => (
                                         <div

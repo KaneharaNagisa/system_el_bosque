@@ -13,6 +13,7 @@ import {
     FaPaw,
     FaFire,
 } from "react-icons/fa";
+import { defaultPricingSetting, type PricingSetting } from "../pricing";
 
 /* ── 共通セクション見出し ── */
 const SectionHeading = ({
@@ -88,26 +89,9 @@ export function Pricing() {
             requiresReservation: boolean;
             notes?: string;
         }>;
-        pricingSetting?: {
-            baseRate: number;
-            additionalGuestRate: number;
-            weekdayRate: number;
-            holidayRate: number;
-            periodRates: Array<{
-                name: string;
-                start: string;
-                end: string;
-                rate: number;
-            }>;
-        };
+        pricingSetting?: PricingSetting;
     };
-    const rates = pricingSetting ?? {
-        baseRate: 20000,
-        additionalGuestRate: 3000,
-        weekdayRate: 20000,
-        holidayRate: 26000,
-        periodRates: [],
-    };
+    const rates = pricingSetting ?? defaultPricingSetting;
     const experienceOptions = experiences.map((experience) => ({
         id: experience.id,
         name: experience.name,
@@ -133,25 +117,26 @@ export function Pricing() {
             experience.notes ||
             (experience.requiresReservation ? "要事前予約" : "予約不要"),
     }));
-    const [dayType, setDayType] = useState<"weekday" | "weekend" | "special">(
-        "weekday",
-    );
+    const [dayType, setDayType] = useState("weekday");
     const [guests, setGuests] = useState(2);
+    const [nights, setNights] = useState(1);
     const [petFee, setPetFee] = useState(0);
     const [selectedExperiences, setSelectedExperiences] = useState<number[]>(
         [],
     );
     const [supportEnabled, setSupportEnabled] = useState(false);
 
-    const baseMap = {
-        weekday: rates.weekdayRate,
-        weekend: rates.holidayRate,
-        special: rates.periodRates[0]?.rate ?? rates.baseRate,
-    };
-
-    const base = baseMap[dayType];
+    const periodIndex = Number(dayType.replace("period-", ""));
+    const base =
+        dayType === "weekday"
+            ? rates.weekdayRate
+            : dayType === "weekend"
+              ? rates.holidayRate
+              : (rates.periodRates[periodIndex]?.rate ?? rates.baseRate);
     const guestExtra =
-        guests > 5 ? (guests - 5) * rates.additionalGuestRate : 0;
+        guests > 5 ? (guests - 5) * rates.additionalGuestRate * nights : 0;
+    const accommodationFee = base * nights;
+    const petTotal = petFee * nights;
     const supportFee = supportEnabled ? 8000 : 0;
     const transferSurcharge = supportEnabled && guests >= 5 ? 5000 : 0;
 
@@ -162,11 +147,11 @@ export function Pricing() {
     }, 0);
 
     const total =
-        base +
+        accommodationFee +
         guestExtra +
         supportFee +
         transferSurcharge +
-        petFee +
+        petTotal +
         experienceFee +
         10000;
 
@@ -206,8 +191,8 @@ export function Pricing() {
         },
         {
             icon: <FaPaw size={18} color="#8a5c30" />,
-            title: "愛犬連れ5名・休前日グループ旅行",
-            desc: "5名・休前日・小型犬1頭・滞在サポートあり",
+            title: "愛犬連れ5名・休日グループ旅行",
+            desc: "5名・休日・小型犬1頭・滞在サポートあり",
             rows: [
                 {
                     label: "基本宿泊料（1〜5名・休日）",
@@ -331,34 +316,28 @@ export function Pricing() {
                                 1〜5名（基本）
                             </span>
                             <span style={{ flex: 1, textAlign: "center" }}>
-                                6名以上（1名追加につき）
+                                6名以上（1名・1泊につき）
                             </span>
                         </div>
                         {[
                             {
-                                label: "基本料金",
-                                sub: "通常日",
-                                base: `¥${rates.baseRate.toLocaleString()}`,
-                                highlight: false,
-                            },
-                            {
                                 label: "平日",
-                                sub: "月〜金（祝日を除く）",
+                                sub: "月〜木（祝日を除く）",
                                 base: `¥${rates.weekdayRate.toLocaleString()}`,
                                 highlight: false,
                             },
                             {
                                 label: "休日",
-                                sub: "土・日・祝日",
+                                sub: "金〜日・祝日",
                                 base: `¥${rates.holidayRate.toLocaleString()}`,
                                 highlight: true,
                             },
-                            ...rates.periodRates.map((period) => ({
-                                label: period.name,
-                                sub: `${period.start}〜${period.end}`,
-                                base: `¥${period.rate.toLocaleString()}`,
+                            {
+                                label: "特別日",
+                                sub: "GW・お盆・年末年始等",
+                                base: `¥${(rates.periodRates[0]?.rate ?? rates.baseRate).toLocaleString()}`,
                                 highlight: false,
-                            })),
+                            },
                         ].map((row) => (
                             <div
                                 key={row.label}
@@ -390,12 +369,12 @@ export function Pricing() {
                                 {/* 6名以上追加 */}
                                 <div className="rate-cell-extra">
                                     <span className="rate-cell-mobile-label">
-                                        6名以上（1名追加につき）
+                                        6名以上（1名・1泊につき）
                                     </span>
                                     <span className="rate-extra-value">
                                         +¥
                                         {rates.additionalGuestRate.toLocaleString()}{" "}
-                                        / 人
+                                        / 人・泊
                                     </span>
                                 </div>
                             </div>
@@ -409,10 +388,45 @@ export function Pricing() {
                             lineHeight: 1.7,
                         }}
                     >
-                        ※ 1〜5名が基本料金。6名以上は1名追加につき¥
+                        ※
+                        1〜5名は人数にかかわらず同一料金。6人目から1名・1泊につき¥
                         {rates.additionalGuestRate.toLocaleString()}
                         （曜日問わず一律）。最大10名まで宿泊可能です。
                     </p>
+
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            gap: "1rem",
+                            marginTop: "1.5rem",
+                            padding: "1rem 0",
+                            borderTop: "1px solid rgba(180,140,80,0.3)",
+                            borderBottom: "1px solid rgba(180,140,80,0.3)",
+                            flexWrap: "wrap",
+                        }}
+                    >
+                        <div>
+                            <strong style={{ color: "#1e3c0e" }}>
+                                保証料（返金制）
+                            </strong>
+                            <p
+                                style={{
+                                    color: "#7a6858",
+                                    fontSize: "0.78rem",
+                                    marginTop: "0.25rem",
+                                }}
+                            >
+                                ご滞在後にトラブルがなければ全額返金します
+                            </p>
+                        </div>
+                        <strong
+                            style={{ color: "#1e3c0e", fontSize: "1.1rem" }}
+                        >
+                            ¥10,000 / 1滞在
+                        </strong>
+                    </div>
 
                     {/* 滞在サポート料（任意） */}
                     <div
@@ -801,7 +815,7 @@ export function Pricing() {
                         }}
                         className="pricing-calculator"
                     >
-                        {/* 曜日 + 人数 */}
+                        {/* 曜日 + 人数 + 宿泊数 */}
                         <div
                             style={{
                                 display: "grid",
@@ -826,34 +840,28 @@ export function Pricing() {
                                 </label>
                                 <select
                                     value={dayType}
-                                    onChange={(e) =>
-                                        setDayType(
-                                            e.target.value as typeof dayType,
-                                        )
-                                    }
+                                    onChange={(e) => setDayType(e.target.value)}
                                     style={selectStyle}
                                 >
                                     <option
                                         value="weekday"
                                         style={{ backgroundColor: "#1b2f0e" }}
                                     >
-                                        平日（月〜金・祝日を除く）¥
+                                        平日（月〜木・祝日を除く）¥
                                         {rates.weekdayRate.toLocaleString()}
                                     </option>
                                     <option
                                         value="weekend"
                                         style={{ backgroundColor: "#1b2f0e" }}
                                     >
-                                        休日（土・日・祝日）¥
+                                        休日（金〜日・祝日）¥
                                         {rates.holidayRate.toLocaleString()}
                                     </option>
                                     <option
-                                        value="special"
+                                        value="period-0"
                                         style={{ backgroundColor: "#1b2f0e" }}
                                     >
-                                        {rates.periodRates[0]?.name ??
-                                            "基本料金日"}{" "}
-                                        ¥
+                                        特別日（GW・お盆・年末年始等）¥
                                         {(
                                             rates.periodRates[0]?.rate ??
                                             rates.baseRate
@@ -893,11 +901,45 @@ export function Pricing() {
                                             >
                                                 {n}名
                                                 {n <= 5
-                                                    ? "（基本料金）"
-                                                    : `（+¥${((n - 5) * rates.additionalGuestRate).toLocaleString()}）`}
+                                                    ? ""
+                                                    : `（+¥${((n - 5) * rates.additionalGuestRate).toLocaleString()}/泊）`}
                                             </option>
                                         ),
                                     )}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label
+                                    style={{
+                                        color: "#d4b070",
+                                        fontSize: "0.78rem",
+                                        fontWeight: 700,
+                                        display: "block",
+                                        marginBottom: "0.5rem",
+                                        letterSpacing: "0.08em",
+                                    }}
+                                >
+                                    宿泊数
+                                </label>
+                                <select
+                                    value={nights}
+                                    onChange={(e) =>
+                                        setNights(Number(e.target.value))
+                                    }
+                                    style={selectStyle}
+                                >
+                                    {[1, 2, 3, 4].map((night) => (
+                                        <option
+                                            key={night}
+                                            value={night}
+                                            style={{
+                                                backgroundColor: "#1b2f0e",
+                                            }}
+                                        >
+                                            {night}泊{night + 1}日
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                         </div>
@@ -1126,9 +1168,17 @@ export function Pricing() {
                             >
                                 {[
                                     {
-                                        label: `基本宿泊料（${guests > 5 ? `1〜5名 + ${guests - 5}名追加` : "1〜5名"}）`,
-                                        value: base + guestExtra,
+                                        label: `基本宿泊料（1〜5名・${nights}泊）`,
+                                        value: accommodationFee,
                                     },
+                                    ...(guestExtra > 0
+                                        ? [
+                                              {
+                                                  label: `追加人数料金（${guests - 5}名 × ${nights}泊）`,
+                                                  value: guestExtra,
+                                              },
+                                          ]
+                                        : []),
                                     ...(supportEnabled
                                         ? [
                                               {
@@ -1148,8 +1198,8 @@ export function Pricing() {
                                     ...(petFee > 0
                                         ? [
                                               {
-                                                  label: "ペット料金",
-                                                  value: petFee,
+                                                  label: `ペット料金（${nights}泊）`,
+                                                  value: petTotal,
                                               },
                                           ]
                                         : []),

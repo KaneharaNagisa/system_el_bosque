@@ -50,11 +50,11 @@ class PricingSetting extends Model
             }
         }
 
-        if ($date->isWeekend() || Yasumi::create('Japan', $date->year, 'ja_JP')->isHoliday($date)) {
+        if ($date->isFriday() || $date->isWeekend() || Yasumi::create('Japan', $date->year, 'ja_JP')->isHoliday($date)) {
             return $this->holiday_rate;
         }
 
-        if ($date->isWeekday()) {
+        if ($date->isMonday() || $date->isTuesday() || $date->isWednesday() || $date->isThursday()) {
             return $this->weekday_rate;
         }
 
@@ -71,13 +71,16 @@ class PricingSetting extends Model
             ->sum(fn(int $offset) => $this->rateFor($checkIn->copy()->addDays($offset)));
     }
 
+    public function additionalGuestAmount(int $guests, int $nights): int
+    {
+        return max(0, $guests - 5) * (int) $this->additional_guest_rate * max(0, $nights);
+    }
+
     public function priceBreakdown(Reservation $reservation, array $breakdown): array
     {
-        $nights = $reservation->check_in->diffInDays($reservation->check_out);
+        $nights = (int) $reservation->check_in->diffInDays($reservation->check_out);
         $breakdown['baseAmount'] = $this->amountForStay($reservation->check_in, $nights);
-        $breakdown['guestExtra'] = max(0, $reservation->guests - 5)
-            * $this->additional_guest_rate
-            * $nights;
+        $breakdown['guestExtra'] = $this->additionalGuestAmount($reservation->guests, $nights);
 
         return $breakdown;
     }

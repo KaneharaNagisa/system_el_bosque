@@ -15,6 +15,7 @@ import {
     FaChevronUp,
 } from "react-icons/fa";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { defaultPricingSetting, type PricingSetting } from "../pricing";
 
 const HERO_IMG =
     "https://images.unsplash.com/photo-1709209509834-d02055e6f9e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1920";
@@ -127,14 +128,16 @@ const fallbackTopNews: TopNewsItem[] = [
 
 export function Home() {
     const [expandedId, setExpandedId] = useState<string | null>(null);
-    const { news = [] } = usePage().props as unknown as {
+    const { news = [], pricingSetting } = usePage().props as unknown as {
         news?: Array<{
             id: number;
             title: string;
             content: string;
             publish_date: string;
         }>;
+        pricingSetting?: PricingSetting;
     };
+    const rates = pricingSetting ?? defaultPricingSetting;
     const topNews = news.map((item) => ({
         id: String(item.id),
         title: item.title,
@@ -1034,8 +1037,7 @@ export function Home() {
                             marginBottom: "2.5rem",
                         }}
                     >
-                        ※
-                        基本宿泊料＋滞在サポート料¥8,000の合計（別途保証料¥10,000・トラブルなければ返金）
+                        ※ 基本宿泊料（1棟貸切・1泊あたり）の料金です
                     </p>
 
                     <div
@@ -1052,18 +1054,23 @@ export function Home() {
                         {[
                             {
                                 label: "平日",
-                                sub: "日〜木",
-                                price: "¥28,000〜",
+                                sub: "月〜木（祝日を除く）・1〜5名",
+                                price: `¥${rates.weekdayRate.toLocaleString()}`,
                             },
                             {
-                                label: "休前日",
-                                sub: "金・土",
-                                price: "¥34,000〜",
+                                label: "休日",
+                                sub: "金〜日・祝日・1〜5名",
+                                price: `¥${rates.holidayRate.toLocaleString()}`,
                             },
                             {
                                 label: "特別日",
-                                sub: "GW・お盆等",
-                                price: "¥41,000〜",
+                                sub: "GW・お盆・年末年始等・1〜5名",
+                                price: `¥${(rates.periodRates[0]?.rate ?? rates.baseRate).toLocaleString()}`,
+                            },
+                            {
+                                label: "6名以上",
+                                sub: "6人目から1名・1泊ごと",
+                                price: `+¥${rates.additionalGuestRate.toLocaleString()}`,
                             },
                         ].map((item) => (
                             <div

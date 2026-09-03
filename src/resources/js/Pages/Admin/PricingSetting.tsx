@@ -182,16 +182,16 @@ export default function PricingSetting({
                     </h3>
                     <div className="grid gap-5 md:grid-cols-2">
                         <RateInput
-                            label="基本料金（1〜5名）"
-                            note="平日・休日・期間料金に該当しない日の料金"
+                            label="基本料金（1組・1〜5名）"
+                            note="1〜5名は人数にかかわらず、1組あたり同一料金です"
                             value={form.base_rate}
                             onChange={(value) =>
                                 setForm({ ...form, base_rate: value })
                             }
                         />
                         <RateInput
-                            label="6名以上の追加料金"
-                            note="6人目から1名ごとに加算"
+                            label="6名以上の追加料金（1名あたり）"
+                            note="6人目から、1名・1泊ごとに加算します"
                             value={form.additional_guest_rate}
                             onChange={(value) =>
                                 setForm({
@@ -201,16 +201,16 @@ export default function PricingSetting({
                             }
                         />
                         <RateInput
-                            label="平日料金（月〜金）"
-                            note="祝日を除く月曜〜金曜に適用します"
+                            label="平日料金（月〜木）"
+                            note="祝日を除く月曜〜木曜に適用します"
                             value={form.weekday_rate}
                             onChange={(value) =>
                                 setForm({ ...form, weekday_rate: value })
                             }
                         />
                         <RateInput
-                            label="休日料金（土・日、祝日）"
-                            note="土曜・日曜と日本の祝日に適用します"
+                            label="休日料金（金〜日、祝日）"
+                            note="金曜〜日曜と日本の祝日に適用します"
                             value={form.holiday_rate}
                             onChange={(value) =>
                                 setForm({ ...form, holiday_rate: value })

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Billing;
 use App\Models\PriceAdjustment;
-use App\Models\PricingSetting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,20 +14,15 @@ class BillingController extends Controller
 {
     public function index(): Response
     {
-        $pricingSetting = PricingSetting::current();
         $billings = Billing::with(['reservation.user'])
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(function ($b) use ($pricingSetting) {
-                $breakdown = $pricingSetting->priceBreakdown(
-                    $b->reservation,
-                    $b->breakdown ?? [],
-                );
-
+            ->map(function ($b) {
                 return [
                     'id'            => 'BIL-' . str_pad($b->id, 3, '0', STR_PAD_LEFT),
                     'dbId'          => $b->id,
                     'reservationId' => 'RSV-' . str_pad($b->reservation_id, 3, '0', STR_PAD_LEFT),
+                    'reservationStatus' => $b->reservation->status,
                     'memberName'    => $this->fullName($b->reservation->user ?? null),
                     'memberEmail'   => $b->reservation->user->email ?? '−',
                     'memberPhone'   => $b->reservation->user->phone ?? '−',
@@ -40,8 +34,8 @@ class BillingController extends Controller
                     'petBreed'      => $b->reservation->pet_breed,
                     'supportFee'    => $b->reservation->support_fee,
                     'experiences'   => $b->reservation->experiences ?? [],
-                    'breakdown'     => $breakdown,
-                    'amount'        => $pricingSetting->totalForBreakdown($breakdown),
+                    'breakdown'     => $b->breakdown ?? [],
+                    'amount'        => $b->amount,
                     'status'        => $b->status,
                     'paidAt'        => $b->paid_at?->format('Y-m-d'),
                     'dueDate'       => $b->due_date->format('Y-m-d'),
@@ -95,10 +89,10 @@ class BillingController extends Controller
             'adjustment_rule_id' => ['nullable', 'string', 'max:20'],
         ]);
 
-        $billing   = Billing::findOrFail($id);
+        $billing = Billing::findOrFail($id);
         $breakdown = $billing->breakdown ?? [];
-        $prevAdj   = $breakdown['adjustment'] ?? 0;
-        $newAdj    = (int) $request->adjustment;
+        $previousAdjustment = (int) ($breakdown['adjustment'] ?? 0);
+        $newAdj = (int) $request->adjustment;
 
         $breakdown['adjustment']       = $newAdj !== 0 ? $newAdj : null;
         $breakdown['adjustmentNote']   = ($newAdj !== 0 && $request->adjustment_note) ? $request->adjustment_note : null;
@@ -106,7 +100,7 @@ class BillingController extends Controller
 
         $billing->update([
             'breakdown' => $breakdown,
-            'amount'    => max(0, $billing->amount - $prevAdj + $newAdj),
+            'amount'    => max(0, $billing->amount - $previousAdjustment + $newAdj),
         ]);
 
         return back()->with('message', '料金調整を保存しました');

@@ -23,10 +23,8 @@ class ReservationController extends Controller
         $reservations = Reservation::with(['user', 'billing'])
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(function ($r) use ($pricingSetting) {
-                $breakdown = $r->billing
-                    ? $pricingSetting->priceBreakdown($r, $r->billing->breakdown ?? [])
-                    : [];
+            ->map(function ($r) {
+                $breakdown = $r->billing?->breakdown ?? [];
 
                 return [
                     'id'           => 'RSV-' . str_pad($r->id, 3, '0', STR_PAD_LEFT),
@@ -46,7 +44,7 @@ class ReservationController extends Controller
                     'breakdown'    => $breakdown,
                     'status'       => $r->status,
                     'payment'      => $r->billing?->status ?? 'unpaid',
-                    'totalAmount'  => $r->billing ? $pricingSetting->totalForBreakdown($breakdown) : 0,
+                    'totalAmount'  => $r->billing?->amount ?? 0,
                     'note'         => $r->note,
                     'createdAt'    => $r->created_at->format('Y-m-d'),
                 ];
