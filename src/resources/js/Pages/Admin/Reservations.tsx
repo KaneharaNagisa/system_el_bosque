@@ -54,6 +54,20 @@ interface PriceRule {
     status: "active" | "inactive";
 }
 
+interface PricingSetting {
+    baseRate: number;
+    additionalGuestRate: number;
+    weekdayRate: number;
+    holidayRate: number;
+    holidayDates: string[];
+    periodRates: Array<{
+        name: string;
+        start: string;
+        end: string;
+        rate: number;
+    }>;
+}
+
 interface ExperienceOption {
     label: string;
     seasonTag: string;
@@ -130,22 +144,36 @@ function calcNights(ci: string, co: string): number {
         (new Date(co).getTime() - new Date(ci).getTime()) / 86400000,
     );
 }
-function getBaseRate(dateStr: string): number {
-    if (!dateStr) return 20000;
+function getBaseRate(dateStr: string, pricing: PricingSetting): number {
+    if (!dateStr) return pricing.baseRate;
     const [y, m, d] = dateStr.split("-").map(Number);
     const dow = new Date(y, m - 1, d).getDay();
-    if ((m === 4 && d >= 29) || (m === 5 && d <= 5)) return 33000;
-    if (m === 8 && d >= 10 && d <= 16) return 33000;
-    if (m === 12 && d >= 28) return 33000;
-    if (dow === 5 || dow === 6) return 26000;
-    return 20000;
+    const monthDay = `${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    const period = pricing.periodRates.find((item) =>
+        item.start <= item.end
+            ? monthDay >= item.start && monthDay <= item.end
+            : monthDay >= item.start || monthDay <= item.end,
+    );
+    if (period) return period.rate;
+    if ([6, 0].includes(dow) || pricing.holidayDates.includes(dateStr))
+        return pricing.holidayRate;
+    if ([1, 2, 3, 4, 5].includes(dow)) return pricing.weekdayRate;
+    return pricing.baseRate;
 }
-function getDayTypeLabel(dateStr: string): string {
+function getDayTypeLabel(dateStr: string, pricing: PricingSetting): string {
     if (!dateStr) return "";
-    const r = getBaseRate(dateStr);
-    if (r === 33000) return "特別日";
-    if (r === 26000) return "休前日（金・土）";
-    return "平日（日〜木）";
+    const monthDay = dateStr.slice(5);
+    const period = pricing.periodRates.find((item) =>
+        item.start <= item.end
+            ? monthDay >= item.start && monthDay <= item.end
+            : monthDay >= item.start || monthDay <= item.end,
+    );
+    if (period) return period.name;
+    const dow = new Date(`${dateStr}T00:00:00`).getDay();
+    if ([6, 0].includes(dow) || pricing.holidayDates.includes(dateStr))
+        return "休日（土・日、祝日）";
+    if ([1, 2, 3, 4, 5].includes(dow)) return "平日（月〜金）";
+    return "基本料金日";
 }
 function petDisplayLabel(hasPet: string, breed?: string) {
     const base = PET_LABELS[hasPet] ?? hasPet;
@@ -225,7 +253,6 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 const CAL_YEAR = 2026;
 const CAL_SEASON_START = 2;
 const CAL_SEASON_END = 11;
-const CAL_CLOSED_DOW = [2, 3, 4];
 const CAL_DOW_NAMES = ["日", "月", "火", "水", "木", "金", "土"];
 const CAL_MONTH_NAMES = [
     "1月",
@@ -260,11 +287,11 @@ function getAdminDayStatus(
     if (avStatus) {
         if (avStatus === "available") return "available";
         if (avStatus === "offseason") return "off";
-        if (avStatus === "closed") return "unavailable";
+        if (avStatus === "manual_blocked") return "unavailable";
+        if (avStatus === "closed") return "available";
         return "booked";
     }
 
-    if (CAL_CLOSED_DOW.includes(dow)) return "unavailable";
     return "available";
 }
 
@@ -424,9 +451,7 @@ function AdminDateRangePicker({
                                 ? "text-red-500"
                                 : i === 6
                                   ? "text-blue-600"
-                                  : CAL_CLOSED_DOW.includes(i)
-                                    ? "text-gray-300"
-                                    : "text-gray-500"
+                                  : "text-gray-500"
                         }`}
                     >
                         {d}
@@ -575,11 +600,23 @@ const emptyNewForm: NewForm = {
 };
 
 // ── 料金計算（新規フォーム用） ──
-function calcFromForm(f: NewForm, expMap: Record<string, ExperienceOption>) {
+function calcFromForm(
+    f: NewForm,
+    expMap: Record<string, ExperienceOption>,
+    pricing: PricingSetting,
+) {
     const nights = calcNights(f.checkIn, f.checkOut);
-    const baseRate = getBaseRate(f.checkIn);
-    const baseAmount = baseRate * nights;
-    const guestExtra = f.guests > 5 ? (f.guests - 5) * 3000 * nights : 0;
+    const baseRate = getBaseRate(f.checkIn, pricing);
+    const baseAmount = Array.from({ length: nights }, (_, offset) => {
+        const date = new Date(`${f.checkIn}T00:00:00`);
+        date.setDate(date.getDate() + offset);
+        const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+        return getBaseRate(dateString, pricing);
+    }).reduce((total, rate) => total + rate, 0);
+    const guestExtra =
+        f.guests > 5
+            ? (f.guests - 5) * pricing.additionalGuestRate * nights
+            : 0;
     const petFee = (PET_FEES[f.pets] || 0) * nights;
     const supportFee = f.supportPlan ? 8000 : 0;
     const transferSurcharge = f.supportPlan && f.guests >= 5 ? 5000 : 0;
@@ -624,6 +661,7 @@ export default function Reservations({
     availabilities,
     bookedDates,
     experiences: experienceOptions,
+    pricingSetting,
 }: {
     reservations: Reservation[];
     priceAdjustmentRules: PriceRule[];
@@ -631,6 +669,7 @@ export default function Reservations({
     availabilities: Record<string, string>;
     bookedDates: string[];
     experiences: ExperienceOption[];
+    pricingSetting: PricingSetting;
 }) {
     const [searchQuery, setSearchQuery] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
@@ -835,8 +874,8 @@ export default function Reservations({
     }, [memberQuery, members]);
 
     const calc = useMemo(
-        () => calcFromForm(newForm, expPeriodMap),
-        [newForm, expPeriodMap],
+        () => calcFromForm(newForm, expPeriodMap, pricingSetting),
+        [newForm, expPeriodMap, pricingSetting],
     );
 
     // 詳細モーダル用 適用可能ルール
@@ -2385,6 +2424,7 @@ export default function Reservations({
                                                 <span className="font-medium text-gray-700">
                                                     {getDayTypeLabel(
                                                         newForm.checkIn,
+                                                        pricingSetting,
                                                     )}
                                                 </span>
                                                 {calc.nights > 0 && (
@@ -2416,7 +2456,7 @@ export default function Reservations({
                                                 <option key={n} value={n}>
                                                     {n}名
                                                     {n > 5
-                                                        ? `（追加料金 +¥${((n - 5) * 3000).toLocaleString()}）`
+                                                        ? `（追加料金 +¥${((n - 5) * pricingSetting.additionalGuestRate).toLocaleString()}）`
                                                         : "（推奨）"}
                                                 </option>
                                             ))}

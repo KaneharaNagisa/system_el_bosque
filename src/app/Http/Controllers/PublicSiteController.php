@@ -7,6 +7,7 @@ use App\Models\Contact;
 use App\Models\Experience;
 use App\Models\Faq;
 use App\Models\News;
+use App\Models\PricingSetting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -22,6 +23,7 @@ class PublicSiteController extends Controller
             'experiences' => $this->experiences($page),
             'faqs' => $this->faqs($page),
             'availability' => $this->availability($page),
+            'pricingSetting' => $page === 'pricing' ? PricingSetting::current()->toFrontend() : null,
             ...$props,
         ]);
     }

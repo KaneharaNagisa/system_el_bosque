@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Billing;
 use App\Models\Availability;
 use App\Models\Experience;
+use App\Models\PricingSetting;
 use App\Models\Reservation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -50,13 +51,7 @@ class MemberReservationController extends Controller
             ]);
         }
 
-        $month = $checkin->month;
-        $day = $checkin->day;
-        $isSpecialDay = ($month === 4 && $day >= 29)
-            || ($month === 5 && $day <= 5)
-            || ($month === 8 && $day >= 10 && $day <= 16)
-            || ($month === 12 && $day >= 28);
-        $baseRate = $isSpecialDay ? 33000 : (in_array($checkin->dayOfWeek, [5, 6], true) ? 26000 : 20000);
+        $pricingSetting = PricingSetting::current();
         $petRates = ['none' => 0, 'small1' => 2500, 'small2' => 4000, 'large1' => 3500, 'large2' => 6000];
         $selectedExperiences = collect($validated['experiences'] ?? [])->unique()->values();
         $experienceRates = Experience::query()
@@ -87,8 +82,8 @@ class MemberReservationController extends Controller
             return $option->price * ($option->pricing_type === 'per_person' ? $validated['guests'] : 1);
         });
         $breakdown = [
-            'baseAmount' => $baseRate * $nights,
-            'guestExtra' => max(0, $validated['guests'] - 5) * 3000 * $nights,
+            'baseAmount' => $pricingSetting->amountForStay($checkin, $nights),
+            'guestExtra' => max(0, $validated['guests'] - 5) * $pricingSetting->additional_guest_rate * $nights,
             'petFee' => $petRates[$validated['pets']] * $nights,
             'supportFee' => $validated['supportPlan'] === 'yes' ? 8000 : 0,
             'transferSurcharge' => $validated['supportPlan'] === 'yes' && $validated['guests'] >= 5 ? 5000 : 0,

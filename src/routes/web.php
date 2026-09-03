@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PriceAdjustmentController;
+use App\Http\Controllers\Admin\PricingSettingController;
 use App\Http\Controllers\Admin\ReservationController;
 use App\Http\Controllers\MemberAuthController;
 use App\Http\Controllers\MemberReservationController;
@@ -136,6 +137,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/master/faq/{id}', [FaqController::class, 'destroy'])->name('master.faq.destroy');
 
         // 料金調整管理
+        Route::get('/master/pricing-setting', [PricingSettingController::class, 'index'])->name('master.pricing-setting.index');
+        Route::patch('/master/pricing-setting', [PricingSettingController::class, 'update'])->name('master.pricing-setting.update');
+
         Route::get('/master/price-adjustment', [PriceAdjustmentController::class, 'index'])->name('master.price-adjustment.index');
         Route::post('/master/price-adjustment', [PriceAdjustmentController::class, 'store'])->name('master.price-adjustment.store');
         Route::patch('/master/price-adjustment/{id}', [PriceAdjustmentController::class, 'update'])->name('master.price-adjustment.update');

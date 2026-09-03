@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Billing;
 use App\Models\PriceAdjustment;
+use App\Models\PricingSetting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -14,32 +15,40 @@ class BillingController extends Controller
 {
     public function index(): Response
     {
+        $pricingSetting = PricingSetting::current();
         $billings = Billing::with(['reservation.user'])
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(fn($b) => [
-                'id'            => 'BIL-' . str_pad($b->id, 3, '0', STR_PAD_LEFT),
-                'dbId'          => $b->id,
-                'reservationId' => 'RSV-' . str_pad($b->reservation_id, 3, '0', STR_PAD_LEFT),
-                'memberName'    => $this->fullName($b->reservation->user ?? null),
-                'memberEmail'   => $b->reservation->user->email ?? '−',
-                'memberPhone'   => $b->reservation->user->phone ?? '−',
-                'checkIn'       => $b->reservation->check_in->format('Y-m-d'),
-                'checkOut'      => $b->reservation->check_out->format('Y-m-d'),
-                'nights'        => $b->reservation->check_in->diffInDays($b->reservation->check_out),
-                'guests'        => $b->reservation->guests,
-                'hasPet'        => $b->reservation->has_pet,
-                'petBreed'      => $b->reservation->pet_breed,
-                'supportFee'    => $b->reservation->support_fee,
-                'experiences'   => $b->reservation->experiences ?? [],
-                'breakdown'     => $b->breakdown ?? [],
-                'amount'        => $b->amount,
-                'status'        => $b->status,
-                'paidAt'        => $b->paid_at?->format('Y-m-d'),
-                'dueDate'       => $b->due_date->format('Y-m-d'),
-                'note'          => $b->note,
-                'createdAt'     => $b->created_at->format('Y-m-d'),
-            ]);
+            ->map(function ($b) use ($pricingSetting) {
+                $breakdown = $pricingSetting->priceBreakdown(
+                    $b->reservation,
+                    $b->breakdown ?? [],
+                );
+
+                return [
+                    'id'            => 'BIL-' . str_pad($b->id, 3, '0', STR_PAD_LEFT),
+                    'dbId'          => $b->id,
+                    'reservationId' => 'RSV-' . str_pad($b->reservation_id, 3, '0', STR_PAD_LEFT),
+                    'memberName'    => $this->fullName($b->reservation->user ?? null),
+                    'memberEmail'   => $b->reservation->user->email ?? '−',
+                    'memberPhone'   => $b->reservation->user->phone ?? '−',
+                    'checkIn'       => $b->reservation->check_in->format('Y-m-d'),
+                    'checkOut'      => $b->reservation->check_out->format('Y-m-d'),
+                    'nights'        => $b->reservation->check_in->diffInDays($b->reservation->check_out),
+                    'guests'        => $b->reservation->guests,
+                    'hasPet'        => $b->reservation->has_pet,
+                    'petBreed'      => $b->reservation->pet_breed,
+                    'supportFee'    => $b->reservation->support_fee,
+                    'experiences'   => $b->reservation->experiences ?? [],
+                    'breakdown'     => $breakdown,
+                    'amount'        => $pricingSetting->totalForBreakdown($breakdown),
+                    'status'        => $b->status,
+                    'paidAt'        => $b->paid_at?->format('Y-m-d'),
+                    'dueDate'       => $b->due_date->format('Y-m-d'),
+                    'note'          => $b->note,
+                    'createdAt'     => $b->created_at->format('Y-m-d'),
+                ];
+            });
 
         $priceAdjustmentRules = PriceAdjustment::where('status', 'active')
             ->orderBy('created_at')

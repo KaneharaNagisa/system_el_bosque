@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Availability;
 use App\Models\Billing;
 use App\Models\PriceAdjustment;
+use App\Models\PricingSetting;
 use App\Models\Reservation;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -18,31 +19,38 @@ class ReservationController extends Controller
 {
     public function index(): Response
     {
+        $pricingSetting = PricingSetting::current();
         $reservations = Reservation::with(['user', 'billing'])
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(fn($r) => [
-                'id'           => 'RSV-' . str_pad($r->id, 3, '0', STR_PAD_LEFT),
-                'dbId'         => $r->id,
-                'memberId'     => 'MBR-' . str_pad($r->user_id, 3, '0', STR_PAD_LEFT),
-                'memberName'   => $this->fullName($r->user),
-                'memberEmail'  => $r->user->email ?? '−',
-                'memberPhone'  => $r->user->phone ?? '−',
-                'checkIn'      => $r->check_in->format('Y-m-d'),
-                'checkOut'     => $r->check_out->format('Y-m-d'),
-                'nights'       => $r->check_in->diffInDays($r->check_out),
-                'guests'       => $r->guests,
-                'hasPet'       => $r->has_pet,
-                'petBreed'     => $r->pet_breed,
-                'supportFee'   => $r->support_fee,
-                'experiences'  => $r->experiences ?? [],
-                'breakdown'    => $r->billing?->breakdown ?? [],
-                'status'       => $r->status,
-                'payment'      => $r->billing?->status ?? 'unpaid',
-                'totalAmount'  => $r->billing?->amount ?? 0,
-                'note'         => $r->note,
-                'createdAt'    => $r->created_at->format('Y-m-d'),
-            ]);
+            ->map(function ($r) use ($pricingSetting) {
+                $breakdown = $r->billing
+                    ? $pricingSetting->priceBreakdown($r, $r->billing->breakdown ?? [])
+                    : [];
+
+                return [
+                    'id'           => 'RSV-' . str_pad($r->id, 3, '0', STR_PAD_LEFT),
+                    'dbId'         => $r->id,
+                    'memberId'     => 'MBR-' . str_pad($r->user_id, 3, '0', STR_PAD_LEFT),
+                    'memberName'   => $this->fullName($r->user),
+                    'memberEmail'  => $r->user->email ?? '−',
+                    'memberPhone'  => $r->user->phone ?? '−',
+                    'checkIn'      => $r->check_in->format('Y-m-d'),
+                    'checkOut'     => $r->check_out->format('Y-m-d'),
+                    'nights'       => $r->check_in->diffInDays($r->check_out),
+                    'guests'       => $r->guests,
+                    'hasPet'       => $r->has_pet,
+                    'petBreed'     => $r->pet_breed,
+                    'supportFee'   => $r->support_fee,
+                    'experiences'  => $r->experiences ?? [],
+                    'breakdown'    => $breakdown,
+                    'status'       => $r->status,
+                    'payment'      => $r->billing?->status ?? 'unpaid',
+                    'totalAmount'  => $r->billing ? $pricingSetting->totalForBreakdown($breakdown) : 0,
+                    'note'         => $r->note,
+                    'createdAt'    => $r->created_at->format('Y-m-d'),
+                ];
+            });
 
         $priceAdjustmentRules = PriceAdjustment::orderBy('created_at')
             ->get()
@@ -107,7 +115,9 @@ class ReservationController extends Controller
                 'period'      => $e->period,
             ]);
 
-        return Inertia::render('Admin/Reservations', compact('reservations', 'priceAdjustmentRules', 'members', 'availabilities', 'bookedDates', 'experiences'));
+        $pricingSetting = $pricingSetting->toFrontend();
+
+        return Inertia::render('Admin/Reservations', compact('reservations', 'priceAdjustmentRules', 'members', 'availabilities', 'bookedDates', 'experiences', 'pricingSetting'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -127,14 +137,11 @@ class ReservationController extends Controller
             'adjustment'       => ['nullable', 'integer'],
             'adjustment_note'  => ['nullable', 'string', 'max:255'],
             'adjustment_rule_id' => ['nullable', 'string', 'max:20'],
-            'base_amount'      => ['required', 'integer'],
-            'guest_extra'      => ['required', 'integer'],
             'pet_fee'          => ['required', 'integer'],
             'support_fee_amount' => ['required', 'integer'],
             'transfer_surcharge' => ['required', 'integer'],
             'experiences_total' => ['required', 'integer'],
             'deposit'          => ['required', 'integer'],
-            'total'            => ['required', 'integer'],
         ]);
 
         $code = 'RSV-' . strtoupper(Str::random(8));
@@ -153,15 +160,14 @@ class ReservationController extends Controller
             'note'             => $request->note,
         ]);
 
-        $breakdown = [
-            'baseAmount'        => $request->base_amount,
-            'guestExtra'        => $request->guest_extra,
+        $pricingSetting = PricingSetting::current();
+        $breakdown = $pricingSetting->priceBreakdown($reservation, [
             'petFee'            => $request->pet_fee,
             'supportFee'        => $request->support_fee_amount,
             'transferSurcharge' => $request->transfer_surcharge,
             'experiencesTotal'  => $request->experiences_total,
             'deposit'           => $request->deposit,
-        ];
+        ]);
         if ($request->adjustment) {
             $breakdown['adjustment']       = $request->adjustment;
             $breakdown['adjustmentNote']   = $request->adjustment_note ?? null;
@@ -171,7 +177,7 @@ class ReservationController extends Controller
         Billing::create([
             'billing_code'   => 'BIL-' . strtoupper(Str::random(8)),
             'reservation_id' => $reservation->id,
-            'amount'         => max(0, $request->total),
+            'amount'         => max(0, $pricingSetting->totalForBreakdown($breakdown)),
             'breakdown'      => $breakdown,
             'status'         => $request->payment,
             'due_date'       => $request->check_in,
