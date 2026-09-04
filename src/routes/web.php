@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ExperienceController;
 use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\ImageAssetController;
 use App\Http\Controllers\Admin\KpiController;
 use App\Http\Controllers\Admin\ManualController;
 use App\Http\Controllers\Admin\MemberController;
@@ -79,7 +80,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // 認証必要
     Route::middleware('admin.auth')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/kpi', [KpiController::class, 'index'])->name('kpi');
+        if (config('app.kpi_enabled')) {
+            Route::get('/kpi', [KpiController::class, 'index'])->name('kpi');
+        }
 
         // 会員管理
         Route::get('/members', [MemberController::class, 'index'])->name('members.index');
@@ -157,5 +160,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/manuals', [ManualController::class, 'store'])->name('manuals.store');
         Route::patch('/manuals/{id}', [ManualController::class, 'update'])->name('manuals.update');
         Route::delete('/manuals/{id}', [ManualController::class, 'destroy'])->name('manuals.destroy');
+
+        // 画像管理
+        Route::get('/images', [ImageAssetController::class, 'index'])->name('images.index');
+        Route::post('/images/{key}', [ImageAssetController::class, 'upload'])->where('key', '.*')->name('images.upload');
+        Route::delete('/images/{key}', [ImageAssetController::class, 'destroy'])->where('key', '.*')->name('images.destroy');
     });
 });

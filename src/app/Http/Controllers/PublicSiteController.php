@@ -6,6 +6,7 @@ use App\Models\Availability;
 use App\Models\Contact;
 use App\Models\Experience;
 use App\Models\Faq;
+use App\Models\ImageAsset;
 use App\Models\News;
 use App\Models\PricingSetting;
 use Illuminate\Http\RedirectResponse;
@@ -33,6 +34,16 @@ class PublicSiteController extends Controller
             'faqs' => $this->faqs($page),
             'availability' => $this->availability($page),
             'pricingSetting' => $usesPricing ? PricingSetting::current()->toFrontend() : null,
+            'images' => ImageAsset::query()->get()->mapWithKeys(function (ImageAsset $image) {
+                $variants = $image->variants ?? [];
+                return [$image->key => [
+                    'url' => asset('storage/' . $image->path),
+                    'srcSet' => collect($variants)
+                        ->map(fn(string $path, string $width) => asset('storage/' . $path) . ' ' . $width . 'w')
+                        ->implode(', ') ?: null,
+                    'sizes' => '(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 1440px',
+                ]];
+            })->all(),
             ...$props,
         ]);
     }

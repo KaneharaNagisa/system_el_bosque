@@ -11,6 +11,8 @@ import {
     FaYenSign,
 } from "react-icons/fa";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { usePage } from "@inertiajs/react";
+import { responsiveImage, type PublicImages } from "../image";
 
 import lakeImg from "../assets/22a4426011bdad96a789860b3ad337bbb50cb96f.png";
 
@@ -82,6 +84,12 @@ const spots = [
 ];
 
 export function Area() {
+    const { images = {} } = usePage().props as unknown as {
+        images?: PublicImages;
+    };
+    const lakeImage = responsiveImage(images, "about.lake", lakeImg);
+    const autumnImage = responsiveImage(images, "area.autumn", AUTUMN_IMG);
+
     return (
         <div>
             {/* Header */}
@@ -477,7 +485,7 @@ export function Area() {
                             }}
                         >
                             <ImageWithFallback
-                                src={lakeImg}
+                                {...lakeImage}
                                 alt="巣山湖"
                                 style={{
                                     width: "100%",
@@ -487,7 +495,7 @@ export function Area() {
                                 }}
                             />
                             <ImageWithFallback
-                                src={AUTUMN_IMG}
+                                {...autumnImage}
                                 alt="秋の紅葉"
                                 style={{
                                     width: "100%",

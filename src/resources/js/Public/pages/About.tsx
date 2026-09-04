@@ -27,6 +27,7 @@ import {
 } from "react-icons/fa";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { defaultPricingSetting, type PricingSetting } from "../pricing";
+import { responsiveImage, type PublicImages } from "../image";
 
 /* ── 画像 ── */
 const IMG_LIVING =
@@ -45,15 +46,36 @@ const IMG_STARS =
 /* ── ギャラリー ── */
 const gallery = [
     {
+        key: "about.living",
         src: livingPhoto,
         alt: "リビング・薪ストーブ",
         caption: "リビング・薪ストーブ",
     },
-    { src: kitchenPhoto, alt: "キッチン", caption: "フルキッチン" },
-    { src: loftPhoto, alt: "ロフト寝室", caption: "ロフト寝室" },
-    { src: IMG_LAKE, alt: "巣山湖", caption: "すぐそばの巣山湖" },
-    { src: bbqPhoto, alt: "BBQ", caption: "BBQ" },
-    { src: IMG_STARS, alt: "満天の星空", caption: "満天の星空" },
+    {
+        key: "about.kitchen",
+        src: kitchenPhoto,
+        alt: "キッチン",
+        caption: "フルキッチン",
+    },
+    {
+        key: "about.loft",
+        src: loftPhoto,
+        alt: "ロフト寝室",
+        caption: "ロフト寝室",
+    },
+    {
+        key: "about.lake",
+        src: IMG_LAKE,
+        alt: "巣山湖",
+        caption: "すぐそばの巣山湖",
+    },
+    { key: "about.bbq", src: bbqPhoto, alt: "BBQ", caption: "BBQ" },
+    {
+        key: "about.stars",
+        src: IMG_STARS,
+        alt: "満天の星空",
+        caption: "満天の星空",
+    },
 ];
 
 /* ── 設備・アメニティ ── */
@@ -182,9 +204,15 @@ const SectionHeading = ({
 );
 
 export function About() {
-    const { pricingSetting } = usePage().props as unknown as {
+    const { pricingSetting, images = {} } = usePage().props as unknown as {
         pricingSetting?: PricingSetting;
+        images?: PublicImages;
     };
+    const galleryImages = gallery.map((item) => ({
+        ...item,
+        ...responsiveImage(images, item.key, item.src),
+    }));
+    const exteriorImage = responsiveImage(images, "about.exterior", cabinPhoto);
     const rates = pricingSetting ?? defaultPricingSetting;
 
     return (
@@ -421,7 +449,7 @@ export function About() {
                         {/* 右：写真 */}
                         <div>
                             <img
-                                src={cabinPhoto}
+                                {...exteriorImage}
                                 alt="エルボスケ外観"
                                 style={{
                                     width: "100%",
@@ -451,7 +479,7 @@ export function About() {
                         }}
                         className="about-gallery-grid"
                     >
-                        {gallery.map((item, idx) => (
+                        {galleryImages.map((item, idx) => (
                             <div
                                 key={idx}
                                 style={{

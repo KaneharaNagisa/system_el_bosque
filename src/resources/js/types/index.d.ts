@@ -14,5 +14,12 @@ export interface SharedProps {
         message?: string;
         error?: string;
     };
-    images?: Record<string, string>;
+    images?: Record<
+        string,
+        {
+            url: string;
+            srcSet?: string | null;
+            sizes?: string | null;
+        }
+    >;
 }

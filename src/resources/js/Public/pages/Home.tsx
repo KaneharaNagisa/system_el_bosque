@@ -16,6 +16,7 @@ import {
 } from "react-icons/fa";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { defaultPricingSetting, type PricingSetting } from "../pricing";
+import { responsiveImage, type PublicImages } from "../image";
 
 const HERO_IMG =
     "https://images.unsplash.com/photo-1709209509834-d02055e6f9e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1920";
@@ -128,7 +129,11 @@ const fallbackTopNews: TopNewsItem[] = [
 
 export function Home() {
     const [expandedId, setExpandedId] = useState<string | null>(null);
-    const { news = [], pricingSetting } = usePage().props as unknown as {
+    const {
+        news = [],
+        pricingSetting,
+        images = {},
+    } = usePage().props as unknown as {
         news?: Array<{
             id: number;
             title: string;
@@ -136,7 +141,17 @@ export function Home() {
             publish_date: string;
         }>;
         pricingSetting?: PricingSetting;
+        images?: PublicImages;
     };
+    const heroImage = responsiveImage(images, "home.hero", HERO_IMG);
+    const lakeImage = responsiveImage(images, "home.lake", LAKE_IMG);
+    const interiorImage = responsiveImage(
+        images,
+        "home.interior",
+        INTERIOR_IMG,
+    );
+    const starsImage = responsiveImage(images, "home.stars", STARS_IMG);
+    const bbqImage = responsiveImage(images, "home.bbq", BBQ_IMG);
     const rates = pricingSetting ?? defaultPricingSetting;
     const topNews = news.map((item) => ({
         id: String(item.id),
@@ -159,7 +174,7 @@ export function Home() {
                 }}
             >
                 <ImageWithFallback
-                    src={HERO_IMG}
+                    {...heroImage}
                     alt="エルボスケ外観"
                     style={{
                         position: "absolute",
@@ -949,7 +964,7 @@ export function Home() {
                             }}
                         >
                             <ImageWithFallback
-                                src={INTERIOR_IMG}
+                                {...interiorImage}
                                 alt="ログハウス内装"
                                 style={{
                                     width: "100%",
@@ -967,7 +982,7 @@ export function Home() {
                                 className="home-img-subgrid"
                             >
                                 <ImageWithFallback
-                                    src={LAKE_IMG}
+                                    {...lakeImage}
                                     alt="巣山湖"
                                     style={{
                                         width: "100%",
@@ -977,7 +992,7 @@ export function Home() {
                                     }}
                                 />
                                 <ImageWithFallback
-                                    src={STARS_IMG}
+                                    {...starsImage}
                                     alt="星空"
                                     style={{
                                         width: "100%",
@@ -1171,7 +1186,7 @@ export function Home() {
                 }}
             >
                 <ImageWithFallback
-                    src={BBQ_IMG}
+                    {...bbqImage}
                     alt="BBQシーン"
                     style={{
                         width: "100%",

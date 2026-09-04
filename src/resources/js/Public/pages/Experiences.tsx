@@ -596,7 +596,7 @@ function ExperienceCard({ exp }: { exp: Experience }) {
 
 /* ── メインコンポーネント ── */
 export function Experiences() {
-    const { experiences: databaseExperiences = [] } = usePage()
+    const { experiences: databaseExperiences = [], images = {} } = usePage()
         .props as unknown as {
         experiences?: Array<{
             id: number;
@@ -617,47 +617,56 @@ export function Experiences() {
             image: string | null;
         }>;
     };
+    const fallbackExperiences = allExperiences;
     const displayedExperiences: Experience[] = databaseExperiences.map(
-        (item, index) => ({
-            img:
-                item.image || allExperiences[index % allExperiences.length].img,
-            headerColor:
-                allExperiences[index % allExperiences.length].headerColor,
-            badgeLabel: item.seasonTag || item.season || "通年",
-            requiresBooking: item.requiresReservation,
-            title: item.name,
-            specs: [
-                {
-                    icon: <FaYenSign size={13} />,
-                    label: "料金",
-                    value: item.priceNote || `¥${item.price.toLocaleString()}`,
-                },
-                {
-                    icon: <FaClock size={13} />,
-                    label: "所要時間",
-                    value: item.duration || "自由",
-                },
-                {
-                    icon: <FaUsers size={13} />,
-                    label: "推奨人数",
-                    value: item.recommendedPeople || "1〜6名",
-                },
-                {
-                    icon: <FaCalendarAlt size={13} />,
-                    label: "時期",
-                    value:
-                        item.period ||
-                        (item.periodStart && item.periodEnd
-                            ? `${item.periodStart}〜${item.periodEnd}`
-                            : item.season || "通年"),
-                },
-            ],
-            desc: item.description,
-            bullets: item.points ?? [],
-            note: item.notes || "詳細はご予約時にお問い合わせください。",
-            imgHeight: 400,
-        }),
+        (item, index) => {
+            const fallback =
+                fallbackExperiences[index % fallbackExperiences.length];
+            return {
+                img: item.image || fallback.img,
+                headerColor:
+                    allExperiences[index % allExperiences.length].headerColor,
+                badgeLabel: item.seasonTag || item.season || "通年",
+                requiresBooking: item.requiresReservation,
+                title: item.name,
+                specs: [
+                    {
+                        icon: <FaYenSign size={13} />,
+                        label: "料金",
+                        value:
+                            item.priceNote || `¥${item.price.toLocaleString()}`,
+                    },
+                    {
+                        icon: <FaClock size={13} />,
+                        label: "所要時間",
+                        value: item.duration || "自由",
+                    },
+                    {
+                        icon: <FaUsers size={13} />,
+                        label: "推奨人数",
+                        value: item.recommendedPeople || "1〜6名",
+                    },
+                    {
+                        icon: <FaCalendarAlt size={13} />,
+                        label: "時期",
+                        value:
+                            item.period ||
+                            (item.periodStart && item.periodEnd
+                                ? `${item.periodStart}〜${item.periodEnd}`
+                                : item.season || "通年"),
+                    },
+                ],
+                desc: item.description,
+                bullets: item.points ?? [],
+                note: item.notes || "詳細はご予約時にお問い合わせください。",
+                imgHeight: 400,
+            };
+        },
     );
+
+    const experiencesToDisplay = databaseExperiences.length
+        ? displayedExperiences
+        : fallbackExperiences;
 
     return (
         <div>
@@ -722,7 +731,7 @@ export function Experiences() {
                         gap: "2.5rem",
                     }}
                 >
-                    {displayedExperiences.map((exp) => (
+                    {experiencesToDisplay.map((exp) => (
                         <ExperienceCard key={exp.title} exp={exp} />
                     ))}
                 </div>
