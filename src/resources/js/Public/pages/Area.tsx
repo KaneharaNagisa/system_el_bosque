@@ -87,7 +87,7 @@ export function Area() {
     const { images = {} } = usePage().props as unknown as {
         images?: PublicImages;
     };
-    const lakeImage = responsiveImage(images, "about.lake", lakeImg);
+    const lakeImage = responsiveImage(images, "area.lake", lakeImg);
     const autumnImage = responsiveImage(images, "area.autumn", AUTUMN_IMG);
 
     return (

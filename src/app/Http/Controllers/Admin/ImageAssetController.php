@@ -27,6 +27,7 @@ class ImageAssetController extends Controller
         ['key' => 'about.bbq', 'label' => '施設紹介：BBQ'],
         ['key' => 'about.lake', 'label' => '施設紹介：湖'],
         ['key' => 'about.stars', 'label' => '施設紹介：星空'],
+        ['key' => 'area.lake', 'label' => '周辺情報：湖'],
         ['key' => 'area.autumn', 'label' => '周辺情報：秋の風景'],
     ];
 

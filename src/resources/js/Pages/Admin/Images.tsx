@@ -14,6 +14,11 @@ export default function Images({ images }: { images: ImageAsset[] }) {
     const [items, setItems] = useState(images);
     const [uploading, setUploading] = useState<string | null>(null);
     const inputs = useRef<Record<string, HTMLInputElement | null>>({});
+    const groups = [
+        { key: "home", label: "トップページ" },
+        { key: "about", label: "施設紹介" },
+        { key: "area", label: "周辺情報" },
+    ];
 
     const upload = async (item: ImageAsset, file: File) => {
         setUploading(item.key);
@@ -72,76 +77,110 @@ export default function Images({ images }: { images: ImageAsset[] }) {
                             </p>
                         </div>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 p-6">
-                        {items.map((item) => (
-                            <div
-                                key={item.key}
-                                className="border border-gray-200 rounded-lg overflow-hidden"
-                            >
-                                <div className="aspect-[16/9] bg-gray-100">
-                                    {item.url ? (
-                                        <img
-                                            src={item.url}
-                                            alt={item.label}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="h-full flex items-center justify-center text-gray-400 text-sm">
-                                            現在の画像を使用中
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="p-4">
-                                    <p className="text-sm font-medium text-gray-900">
-                                        {item.label}
-                                    </p>
-                                    <p className="mt-1 text-xs text-gray-400">
-                                        {item.key}
-                                    </p>
-                                    <input
-                                        ref={(element) => {
-                                            inputs.current[item.key] = element;
-                                        }}
-                                        type="file"
-                                        accept="image/jpeg,image/png,image/webp,image/gif"
-                                        className="hidden"
-                                        onChange={(event) => {
-                                            const file =
-                                                event.target.files?.[0];
-                                            if (file) void upload(item, file);
-                                            event.target.value = "";
-                                        }}
-                                    />
-                                    <div className="mt-3 flex gap-2">
-                                        <button
-                                            type="button"
-                                            disabled={uploading === item.key}
-                                            onClick={() =>
-                                                inputs.current[
-                                                    item.key
-                                                ]?.click()
-                                            }
-                                            className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-[#0a2105] text-white rounded-md text-xs disabled:opacity-50"
-                                        >
-                                            <Upload className="w-3.5 h-3.5" />
-                                            {uploading === item.key
-                                                ? "アップロード中"
-                                                : "画像を選択"}
-                                        </button>
-                                        {item.url && (
-                                            <button
-                                                type="button"
-                                                onClick={() => reset(item)}
-                                                title="初期画像に戻す"
-                                                className="p-2 border border-gray-200 rounded-md text-gray-500 hover:text-red-600"
-                                            >
-                                                <RotateCcw className="w-4 h-4" />
-                                            </button>
-                                        )}
+                    <div className="p-6 space-y-8">
+                        {groups.map((group) => {
+                            const groupItems = items.filter((item) =>
+                                item.key.startsWith(`${group.key}.`),
+                            );
+
+                            return (
+                                <section key={group.key}>
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <h3 className="text-sm font-semibold text-gray-900">
+                                            {group.label}
+                                        </h3>
+                                        <span className="text-xs text-gray-400">
+                                            {groupItems.length}件
+                                        </span>
                                     </div>
-                                </div>
-                            </div>
-                        ))}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                                        {groupItems.map((item) => (
+                                            <div
+                                                key={item.key}
+                                                className="border border-gray-200 rounded-lg overflow-hidden"
+                                            >
+                                                <div className="aspect-[16/9] bg-gray-100">
+                                                    {item.url ? (
+                                                        <img
+                                                            src={item.url}
+                                                            alt={item.label}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <div className="h-full flex items-center justify-center text-gray-400 text-sm">
+                                                            現在の画像を使用中
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="p-4">
+                                                    <p className="text-sm font-medium text-gray-900">
+                                                        {item.label}
+                                                    </p>
+                                                    <p className="mt-1 text-xs text-gray-400">
+                                                        {item.key}
+                                                    </p>
+                                                    <input
+                                                        ref={(element) => {
+                                                            inputs.current[
+                                                                item.key
+                                                            ] = element;
+                                                        }}
+                                                        type="file"
+                                                        accept="image/jpeg,image/png,image/webp,image/gif"
+                                                        className="hidden"
+                                                        onChange={(event) => {
+                                                            const file =
+                                                                event.target
+                                                                    .files?.[0];
+                                                            if (file)
+                                                                void upload(
+                                                                    item,
+                                                                    file,
+                                                                );
+                                                            event.target.value =
+                                                                "";
+                                                        }}
+                                                    />
+                                                    <div className="mt-3 flex gap-2">
+                                                        <button
+                                                            type="button"
+                                                            disabled={
+                                                                uploading ===
+                                                                item.key
+                                                            }
+                                                            onClick={() =>
+                                                                inputs.current[
+                                                                    item.key
+                                                                ]?.click()
+                                                            }
+                                                            className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-[#0a2105] text-white rounded-md text-xs disabled:opacity-50"
+                                                        >
+                                                            <Upload className="w-3.5 h-3.5" />
+                                                            {uploading ===
+                                                            item.key
+                                                                ? "アップロード中"
+                                                                : "画像を選択"}
+                                                        </button>
+                                                        {item.url && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() =>
+                                                                    reset(item)
+                                                                }
+                                                                title="初期画像に戻す"
+                                                                className="p-2 border border-gray-200 rounded-md text-gray-500 hover:text-red-600"
+                                                            >
+                                                                <RotateCcw className="w-4 h-4" />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
