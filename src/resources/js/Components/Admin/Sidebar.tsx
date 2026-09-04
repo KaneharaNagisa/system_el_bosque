@@ -15,6 +15,7 @@ import {
     MessageSquare,
     BookOpen,
     BarChart3,
+    Images,
 } from "lucide-react";
 import type { SharedProps } from "../../types";
 
@@ -34,7 +35,8 @@ export type AdminPage =
     | "master-cancel-policy"
     | "master-faq"
     | "accounts"
-    | "manuals";
+    | "manuals"
+    | "images";
 
 interface Props {
     currentPage: AdminPage;
@@ -51,6 +53,7 @@ export default function AdminSidebar({
     isCollapsed,
     onToggle,
 }: Props) {
+    const { kpiEnabled } = usePage<SharedProps>().props;
     const menuItems = [
         {
             id: "dashboard" as const,
@@ -58,12 +61,16 @@ export default function AdminSidebar({
             icon: LayoutDashboard,
             path: "/admin/dashboard",
         },
-        {
-            id: "kpi" as const,
-            label: "集計（KPI）",
-            icon: BarChart3,
-            path: "/admin/kpi",
-        },
+        ...(kpiEnabled
+            ? [
+                  {
+                      id: "kpi" as const,
+                      label: "集計（KPI）",
+                      icon: BarChart3,
+                      path: "/admin/kpi",
+                  },
+              ]
+            : []),
         {
             id: "members" as const,
             label: "会員管理",
@@ -384,6 +391,12 @@ export default function AdminSidebar({
                     label: "マニュアル管理",
                     icon: BookOpen,
                     path: "/admin/manuals",
+                })}
+                {renderMenuItem({
+                    id: "images",
+                    label: "画像管理",
+                    icon: Images,
+                    path: "/admin/images",
                 })}
             </nav>
 

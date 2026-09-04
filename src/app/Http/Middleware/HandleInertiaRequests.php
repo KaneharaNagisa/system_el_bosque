@@ -17,6 +17,7 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
+            'kpiEnabled' => config('app.kpi_enabled'),
             'auth' => [
                 'admin' => $request->session()->get('admin_user'),
                 'user' => fn() => $request->user() ? [

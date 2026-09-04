@@ -6,6 +6,7 @@ export interface AdminUser {
 }
 
 export interface SharedProps {
+    kpiEnabled: boolean;
     auth: {
         admin: AdminUser | null;
     };
@@ -13,4 +14,5 @@ export interface SharedProps {
         message?: string;
         error?: string;
     };
+    images?: Record<string, string>;
 }

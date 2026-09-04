@@ -1,5 +1,6 @@
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import AdminLayout from "../../Components/Admin/Layout";
+import type { SharedProps } from "../../types";
 import {
     FaUsers,
     FaChartLine,
@@ -87,6 +88,7 @@ export default function Dashboard({
     recentReservations,
     recentContacts,
 }: Props) {
+    const { kpiEnabled } = usePage<SharedProps>().props;
     const menuCards = [
         {
             icon: FaUsers,
@@ -116,13 +118,17 @@ export default function Dashboard({
             path: "/admin/contacts",
             color: "orange",
         },
-        {
-            icon: FaChartLine,
-            label: "集計（KPI）",
-            desc: "売上・予約集計グラフ",
-            path: "/admin/kpi",
-            color: "pink",
-        },
+        ...(kpiEnabled
+            ? [
+                  {
+                      icon: FaChartLine,
+                      label: "集計（KPI）",
+                      desc: "売上・予約集計グラフ",
+                      path: "/admin/kpi",
+                      color: "pink",
+                  },
+              ]
+            : []),
         {
             icon: FaDatabase,
             label: "予約枠管理",
