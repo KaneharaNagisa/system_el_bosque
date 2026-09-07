@@ -55,12 +55,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "03_prompts.md.md",
+                "file": "01_project_spec.md.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "03_prompts.md"
+              "title": "01_project_spec.md"
             }
           }
         ],
@@ -234,9 +234,9 @@
   "active": "7e639d470961c188",
   "lastOpenFiles": [
     "02_mistakes_log.md.md",
+    "03_prompts.md.md",
     "01_project_spec.md.md",
     "00_copilot_rules.md.md",
-    "03_prompts.md.md",
     "ai"
   ]
 }
