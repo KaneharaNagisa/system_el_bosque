@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import AdminLayout from "../../Components/Admin/Layout";
 import {
     FaCalendarAlt,
@@ -82,6 +82,9 @@ export default function Availability({
     availabilities,
     bookedReservations,
 }: Props) {
+    const { flash } = usePage<{
+        flash?: { message?: string; warning?: string };
+    }>().props;
     const today = new Date();
     const [currentMonth, setCurrentMonth] = useState(
         new Date(today.getFullYear(), today.getMonth(), 1),
@@ -254,6 +257,14 @@ export default function Availability({
                             {isSyncing ? "同期中..." : "Googleカレンダー同期"}
                         </button>
                     </div>
+                    {flash?.warning && (
+                        <p
+                            className="mt-3 text-xs text-amber-700 bg-amber-100 border border-amber-200 rounded px-3 py-2"
+                            role="alert"
+                        >
+                            {flash.warning}
+                        </p>
+                    )}
                     {syncError && (
                         <p className="mt-3 text-xs text-red-600" role="alert">
                             {syncError}

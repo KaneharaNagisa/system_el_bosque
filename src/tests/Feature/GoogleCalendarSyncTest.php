@@ -3,9 +3,14 @@
 namespace Tests\Feature;
 
 use App\Models\Availability;
+use App\Models\Admin;
+use App\Models\Reservation;
+use App\Models\User;
+use App\Mail\GoogleCalendarReservationConflictMail;
 use App\Services\GoogleCalendarSyncService;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -66,22 +71,78 @@ class GoogleCalendarSyncTest extends TestCase
             CarbonImmutable::parse('2026-09-30'),
         );
 
-        $this->assertSame(4, $count);
-        $this->assertDatabaseHas('availabilities', [
-            'date' => '2026-09-10',
-            'status' => 'manual_blocked',
-            'source' => null,
-        ]);
-        foreach (['2026-09-11', '2026-09-13', '2026-09-14'] as $date) {
-            $this->assertDatabaseHas('availabilities', [
-                'date' => $date,
-                'status' => 'manual_blocked',
-                'source' => 'google_calendar',
-            ]);
+        $this->assertSame(5, $count);
+
+        $manualBlock = Availability::query()->whereDate('date', '2026-09-10')->firstOrFail();
+        $this->assertSame('2026-09-10', $manualBlock->date->toDateString());
+        $this->assertSame('manual_blocked', $manualBlock->status);
+        $this->assertNull($manualBlock->source);
+        $this->assertSame('Owner block', $manualBlock->note);
+
+        foreach (['2026-09-11', '2026-09-13', '2026-09-14', '2026-09-16'] as $date) {
+            $googleBlock = Availability::query()->whereDate('date', $date)->firstOrFail();
+            $this->assertSame($date, $googleBlock->date->toDateString());
+            $this->assertSame('manual_blocked', $googleBlock->status);
+            $this->assertSame('google_calendar', $googleBlock->source);
         }
-        $this->assertDatabaseMissing('availabilities', ['date' => '2026-09-15']);
-        $this->assertDatabaseMissing('availabilities', ['date' => '2026-09-16']);
+
+        $this->assertFalse(Availability::query()->whereDate('date', '2026-09-15')->exists());
 
         Http::assertSentCount(2);
+    }
+
+    public function test_it_sends_admin_email_when_google_event_conflicts_with_confirmed_reservation(): void
+    {
+        Mail::fake();
+
+        Admin::create([
+            'name' => '管理者',
+            'email' => 'admin@elbosque.jp',
+            'password' => 'secret',
+            'role' => 'system_admin',
+        ]);
+
+        config()->set('services.google_calendar', [
+            'client_id' => 'client-id',
+            'client_secret' => 'client-secret',
+            'refresh_token' => 'refresh-token',
+            'calendar_id' => 'primary',
+        ]);
+
+        $user = User::factory()->create([
+            'name' => 'テスト宿泊者',
+            'email' => 'guest@example.com',
+        ]);
+
+        Reservation::create([
+            'reservation_code' => 'RSV-001',
+            'user_id' => $user->id,
+            'check_in' => '2026-09-20',
+            'check_out' => '2026-09-23',
+            'guests' => 2,
+            'status' => 'confirmed',
+        ]);
+
+        Http::fake([
+            'oauth2.googleapis.com/token' => Http::response(['access_token' => 'access-token']),
+            'www.googleapis.com/calendar/v3/*' => Http::response([
+                'items' => [
+                    [
+                        'status' => 'confirmed',
+                        'start' => ['date' => '2026-09-21'],
+                        'end' => ['date' => '2026-09-22'],
+                    ],
+                ],
+            ]),
+        ]);
+
+        app(GoogleCalendarSyncService::class)->sync(
+            CarbonImmutable::parse('2026-09-01'),
+            CarbonImmutable::parse('2026-09-30'),
+        );
+
+        Mail::assertSent(GoogleCalendarReservationConflictMail::class, function ($mail) {
+            return $mail->dates === ['2026-09-21'];
+        });
     }
 }

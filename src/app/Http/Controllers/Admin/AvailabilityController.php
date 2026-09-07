@@ -80,6 +80,11 @@ class AvailabilityController extends Controller
                 CarbonImmutable::parse($validated['start']),
                 CarbonImmutable::parse($validated['end']),
             );
+
+            $conflictedDates = $calendar->lastConflictDates();
+            if (!empty($conflictedDates)) {
+                return back()->with('warning', 'Googleカレンダーの予定が既存予約と重複しています: ' . implode(', ', $conflictedDates) . '。管理者へ通知しました。')->with('message', "Googleカレンダーを同期し、{$count}日を確認しました");
+            }
         } catch (Throwable $exception) {
             Log::error('Google Calendar sync failed', ['exception' => $exception]);
 

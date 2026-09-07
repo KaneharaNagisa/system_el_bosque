@@ -3,16 +3,22 @@
 namespace App\Services;
 
 use App\Models\Availability;
+use App\Models\Admin;
+use App\Models\Reservation;
+use App\Mail\GoogleCalendarReservationConflictMail;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
 class GoogleCalendarSyncService
 {
     private const SOURCE = 'google_calendar';
+
+    private array $lastConflictDates = [];
 
     public function sync(CarbonImmutable $start, CarbonImmutable $end): int
     {
@@ -21,6 +27,8 @@ class GoogleCalendarSyncService
         }
 
         $blockedDates = $this->blockedDates($start, $end);
+        $this->lastConflictDates = $this->conflictedReservationDates($blockedDates);
+        $conflictedDates = $this->lastConflictDates;
 
         DB::transaction(function () use ($start, $end, $blockedDates) {
             Availability::query()
@@ -29,22 +37,81 @@ class GoogleCalendarSyncService
                 ->delete();
 
             foreach ($blockedDates as $date) {
-                $availability = Availability::query()->whereDate('date', $date)->first()
-                    ?? new Availability(['date' => $date]);
+                $availability = Availability::query()
+                    ->whereDate('date', $date)
+                    ->first();
 
-                if ($availability->exists && $availability->status !== 'available') {
+                if ($availability?->status === 'manual_blocked' && $availability->source !== self::SOURCE) {
                     continue;
                 }
 
-                $availability->fill([
+                $values = [
                     'status' => 'manual_blocked',
                     'note' => 'Googleカレンダーの予定により予約不可',
                     'source' => self::SOURCE,
-                ])->save();
+                ];
+
+                if ($availability) {
+                    $availability->update($values);
+                } else {
+                    Availability::create(['date' => $date] + $values);
+                }
             }
         });
 
+        if (!empty($conflictedDates)) {
+            $adminEmails = Admin::query()
+                ->whereNotNull('email')
+                ->pluck('email')
+                ->filter()
+                ->unique()
+                ->values()
+                ->all();
+
+            if (!empty($adminEmails)) {
+                Mail::to($adminEmails)->send(new GoogleCalendarReservationConflictMail($conflictedDates));
+            }
+        }
+
         return count($blockedDates);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function lastConflictDates(): array
+    {
+        return $this->lastConflictDates;
+    }
+
+    /**
+     * @param  array<int, string>  $blockedDates
+     * @return array<int, string>
+     */
+    private function conflictedReservationDates(array $blockedDates): array
+    {
+        if (empty($blockedDates)) {
+            return [];
+        }
+
+        $calendarDates = collect($blockedDates)->unique()->values();
+        $confirmedReservations = Reservation::query()
+            ->where('status', 'confirmed')
+            ->get();
+
+        $conflicts = $calendarDates
+            ->filter(function (string $date) use ($confirmedReservations) {
+                return $confirmedReservations->contains(
+                    fn(Reservation $reservation): bool => $reservation->check_in->lte($date)
+                        && $reservation->check_out->gt($date)
+                );
+            })
+            ->unique()
+            ->sort()
+            ->values()
+            ->all();
+
+        return $conflicts;
     }
 
     private function blockedDates(CarbonImmutable $start, CarbonImmutable $end): array
@@ -69,7 +136,7 @@ class GoogleCalendarSyncService
         } while ($pageToken);
 
         return collect($events)
-            ->reject(fn(array $event) => ($event['status'] ?? null) === 'cancelled' || ($event['transparency'] ?? null) === 'transparent')
+            ->reject(fn(array $event) => ($event['status'] ?? null) === 'cancelled')
             ->flatMap(fn(array $event) => $this->eventDates($event, $start, $end))
             ->unique()
             ->sort()

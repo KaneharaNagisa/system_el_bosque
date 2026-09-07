@@ -13,6 +13,7 @@ export interface SharedProps {
     flash: {
         message?: string;
         error?: string;
+        warning?: string;
     };
     images?: Record<
         string,
