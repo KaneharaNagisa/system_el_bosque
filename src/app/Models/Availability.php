@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Availability extends Model
 {
-    protected $fillable = ['date', 'status', 'note'];
+    protected $fillable = ['date', 'status', 'note', 'source'];
 
     protected function casts(): array
     {

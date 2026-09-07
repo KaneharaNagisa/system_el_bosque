@@ -93,6 +93,8 @@ export default function Availability({
     });
     const [modalInfo, setModalInfo] = useState<BookedInfo | null>(null);
     const [cancelConfirm, setCancelConfirm] = useState(false);
+    const [isSyncing, setIsSyncing] = useState(false);
+    const [syncError, setSyncError] = useState<string | null>(null);
 
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
@@ -178,6 +180,26 @@ export default function Availability({
         );
     };
 
+    const handleGoogleCalendarSync = () => {
+        setSyncError(null);
+        setIsSyncing(true);
+        router.post(
+            "/admin/master/availability/google-calendar/sync",
+            bookablePeriod,
+            {
+                preserveScroll: true,
+                onError: (errors) =>
+                    setSyncError(
+                        String(
+                            errors.googleCalendar ??
+                                "入力した期間を確認してください。",
+                        ),
+                    ),
+                onFinish: () => setIsSyncing(false),
+            },
+        );
+    };
+
     return (
         <AdminLayout currentPage="master-availability" title="予約枠管理">
             <div className="max-w-5xl mx-auto">
@@ -220,11 +242,23 @@ export default function Availability({
                                 className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
                             />
                         </div>
-                        <button className="mt-5 flex items-center gap-1.5 px-4 py-2 bg-[#0a2105] text-white rounded-lg text-sm hover:bg-[#071a04]">
-                            <FaSyncAlt className="w-3 h-3" />{" "}
-                            Googleカレンダー同期
+                        <button
+                            type="button"
+                            onClick={handleGoogleCalendarSync}
+                            disabled={isSyncing}
+                            className="mt-5 flex items-center gap-1.5 px-4 py-2 bg-[#0a2105] text-white rounded-lg text-sm hover:bg-[#071a04] disabled:cursor-wait disabled:opacity-60"
+                        >
+                            <FaSyncAlt
+                                className={`w-3 h-3 ${isSyncing ? "animate-spin" : ""}`}
+                            />{" "}
+                            {isSyncing ? "同期中..." : "Googleカレンダー同期"}
                         </button>
                     </div>
+                    {syncError && (
+                        <p className="mt-3 text-xs text-red-600" role="alert">
+                            {syncError}
+                        </p>
+                    )}
                 </div>
 
                 {/* カレンダー */}

@@ -122,6 +122,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // マスタ管理
         Route::get('/master/availability', [AvailabilityController::class, 'index'])->name('master.availability.index');
         Route::post('/master/availability', [AvailabilityController::class, 'update'])->name('master.availability.update');
+        Route::post('/master/availability/google-calendar/sync', [AvailabilityController::class, 'syncGoogleCalendar'])->name('master.availability.google-calendar.sync');
 
         Route::get('/master/experiences', [ExperienceController::class, 'index'])->name('master.experiences.index');
         Route::post('/master/experiences/upload-image', [ExperienceController::class, 'uploadImage'])->name('master.experiences.upload-image');

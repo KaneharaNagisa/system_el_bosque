@@ -5,10 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Availability;
 use App\Models\Reservation;
+use App\Services\GoogleCalendarSyncService;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
+use Throwable;
 
 class AvailabilityController extends Controller
 {
@@ -55,9 +59,35 @@ class AvailabilityController extends Controller
 
         Availability::updateOrCreate(
             ['date' => $request->date],
-            ['status' => $request->status]
+            [
+                'status' => $request->status,
+                'source' => null,
+            ]
         );
 
         return back()->with('message', '予約枠を更新しました');
+    }
+
+    public function syncGoogleCalendar(Request $request, GoogleCalendarSyncService $calendar): RedirectResponse
+    {
+        $validated = $request->validate([
+            'start' => ['required', 'date'],
+            'end' => ['required', 'date', 'after_or_equal:start'],
+        ]);
+
+        try {
+            $count = $calendar->sync(
+                CarbonImmutable::parse($validated['start']),
+                CarbonImmutable::parse($validated['end']),
+            );
+        } catch (Throwable $exception) {
+            Log::error('Google Calendar sync failed', ['exception' => $exception]);
+
+            return back()->withErrors([
+                'googleCalendar' => 'Googleカレンダーを同期できませんでした。連携設定と通信状況を確認してください。',
+            ]);
+        }
+
+        return back()->with('message', "Googleカレンダーを同期し、{$count}日を確認しました");
     }
 }
