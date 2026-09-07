@@ -75,7 +75,7 @@ class GoogleCalendarSyncTest extends TestCase
         foreach (['2026-09-11', '2026-09-13', '2026-09-14'] as $date) {
             $this->assertDatabaseHas('availabilities', [
                 'date' => $date,
-                'status' => 'closed',
+                'status' => 'manual_blocked',
                 'source' => 'google_calendar',
             ]);
         }

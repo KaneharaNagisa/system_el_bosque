@@ -37,7 +37,7 @@ class GoogleCalendarSyncService
                 }
 
                 $availability->fill([
-                    'status' => 'closed',
+                    'status' => 'manual_blocked',
                     'note' => 'Googleカレンダーの予定により予約不可',
                     'source' => self::SOURCE,
                 ])->save();
