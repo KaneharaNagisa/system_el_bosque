@@ -19,6 +19,7 @@ class Reservation extends Model
         'support_fee',
         'experiences',
         'status',
+        'google_calendar_event_id',
         'note',
     ];
 

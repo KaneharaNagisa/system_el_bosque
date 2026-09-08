@@ -61,6 +61,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/reservation/confirm', fn() => app(PublicSiteController::class)->show('reservation-confirm'));
     Route::get('/reservation/complete', fn() => app(PublicSiteController::class)->show('reservation-complete'));
     Route::post('/reservations', [MemberReservationController::class, 'store'])->name('reservations.store');
+    Route::delete('/reservations/{reservation}/cancel', [MemberReservationController::class, 'cancel'])->name('reservations.cancel');
 });
 
 // ─────────────────────────────────────────────

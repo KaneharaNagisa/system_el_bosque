@@ -20,6 +20,7 @@ class MyPageController extends Controller
             ->latest('check_in')
             ->get()
             ->map(fn($reservation) => [
+                'dbId' => $reservation->id,
                 'id' => $reservation->reservation_code,
                 'checkin' => $reservation->check_in->format('Y-m-d'),
                 'checkout' => $reservation->check_out->format('Y-m-d'),

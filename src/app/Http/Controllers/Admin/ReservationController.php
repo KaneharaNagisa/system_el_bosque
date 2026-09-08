@@ -9,9 +9,12 @@ use App\Models\PriceAdjustment;
 use App\Models\PricingSetting;
 use App\Models\Reservation;
 use App\Models\User;
+use App\Services\GoogleCalendarSyncService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -142,21 +145,35 @@ class ReservationController extends Controller
             'deposit'          => ['required', 'integer'],
         ]);
 
-        $code = 'RSV-' . strtoupper(Str::random(8));
+        $reservation = DB::transaction(function () use ($request) {
+            Availability::query()->lockForUpdate()->get();
 
-        $reservation = Reservation::create([
-            'reservation_code' => $code,
-            'user_id'          => $request->member_db_id,
-            'check_in'         => $request->check_in,
-            'check_out'        => $request->check_out,
-            'guests'           => $request->guests,
-            'has_pet'          => $request->has_pet,
-            'pet_breed'        => $request->pet_breed,
-            'support_fee'      => $request->support_fee,
-            'experiences'      => $request->experiences ?? [],
-            'status'           => $request->status,
-            'note'             => $request->note,
-        ]);
+            $hasOverlap = Reservation::query()
+                ->whereIn('status', ['pending', 'confirmed'])
+                ->whereDate('check_in', '<', $request->check_out)
+                ->whereDate('check_out', '>', $request->check_in)
+                ->exists();
+
+            if ($hasOverlap) {
+                throw ValidationException::withMessages([
+                    'check_in' => '選択された日程は現在予約できません。空き状況を再確認してください。',
+                ]);
+            }
+
+            return Reservation::create([
+                'reservation_code' => 'RSV-' . strtoupper(Str::random(8)),
+                'user_id'          => $request->member_db_id,
+                'check_in'         => $request->check_in,
+                'check_out'        => $request->check_out,
+                'guests'           => $request->guests,
+                'has_pet'          => $request->has_pet,
+                'pet_breed'        => $request->pet_breed,
+                'support_fee'      => $request->support_fee,
+                'experiences'      => $request->experiences ?? [],
+                'status'           => $request->status,
+                'note'             => $request->note,
+            ]);
+        });
 
         $pricingSetting = PricingSetting::current();
         $breakdown = $pricingSetting->priceBreakdown($reservation, [
@@ -181,6 +198,8 @@ class ReservationController extends Controller
             'due_date'       => $request->check_in,
         ]);
 
+        app(GoogleCalendarSyncService::class)->createReservationEvent($reservation);
+
         return back()->with('message', '予約を登録しました');
     }
 
@@ -190,7 +209,15 @@ class ReservationController extends Controller
             'status' => ['required', 'in:pending,confirmed,cancelled,noshow'],
         ]);
 
-        Reservation::findOrFail($id)->update(['status' => $request->status]);
+        $reservation = Reservation::findOrFail($id);
+
+        if ($request->status === 'cancelled') {
+            app(GoogleCalendarSyncService::class)->deleteReservationEvent($reservation);
+        } else {
+            app(GoogleCalendarSyncService::class)->createReservationEvent($reservation);
+        }
+
+        $reservation->update(['status' => $request->status]);
 
         return back()->with('message', '予約を更新しました');
     }

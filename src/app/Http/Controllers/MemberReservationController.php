@@ -7,12 +7,14 @@ use App\Models\Availability;
 use App\Models\Experience;
 use App\Models\PricingSetting;
 use App\Models\Reservation;
+use App\Services\GoogleCalendarSyncService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class MemberReservationController extends Controller
 {
@@ -93,6 +95,20 @@ class MemberReservationController extends Controller
         $amount = array_sum($breakdown);
 
         $reservation = DB::transaction(function () use ($request, $validated, $amount, $breakdown) {
+            Availability::query()->lockForUpdate()->get();
+
+            $hasOverlap = Reservation::query()
+                ->whereIn('status', ['pending', 'confirmed'])
+                ->whereDate('check_in', '<', $validated['checkout'])
+                ->whereDate('check_out', '>', $validated['checkin'])
+                ->exists();
+
+            if ($hasOverlap) {
+                throw ValidationException::withMessages([
+                    'checkin' => '選択された日程は現在予約できません。空き状況を再確認してください。',
+                ]);
+            }
+
             $reservation = Reservation::create([
                 'reservation_code' => 'RSV-' . Str::upper(Str::random(8)),
                 'user_id' => $request->user()->id,
@@ -119,7 +135,29 @@ class MemberReservationController extends Controller
             return $reservation;
         });
 
+        try {
+            app(GoogleCalendarSyncService::class)->createReservationEvent($reservation);
+        } catch (Throwable $exception) {
+            report($exception);
+        }
+
         return back()->with('reservationCode', $reservation->reservation_code);
+    }
+
+    public function cancel(Request $request, Reservation $reservation): RedirectResponse
+    {
+        abort_unless($reservation->user_id === $request->user()->id, 403);
+
+        if ($reservation->status === 'cancelled') {
+            return back();
+        }
+
+        abort_unless(today()->diffInDays($reservation->check_in, false) >= 7, 422, 'キャンセル期限を過ぎています。');
+
+        app(GoogleCalendarSyncService::class)->deleteReservationEvent($reservation);
+        $reservation->update(['status' => 'cancelled']);
+
+        return back()->with('message', '予約をキャンセルしました。');
     }
 
     private function isExperienceAvailableOn(Experience $experience, Carbon $date): bool

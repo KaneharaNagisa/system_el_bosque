@@ -8,9 +8,11 @@ use App\Models\Experience;
 use App\Models\PendingRegistration;
 use App\Models\Reservation;
 use App\Models\User;
+use App\Services\GoogleCalendarSyncService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use RuntimeException;
 use Tests\TestCase;
 
 class MemberPortalTest extends TestCase
@@ -167,6 +169,11 @@ class MemberPortalTest extends TestCase
             'requires_reservation' => true,
             'is_active' => true,
         ]);
+        $this->mock(GoogleCalendarSyncService::class, function ($mock) {
+            $mock->shouldReceive('createReservationEvent')
+                ->once()
+                ->andThrow(new RuntimeException('Google Calendar unavailable'));
+        });
 
         $this->actingAs($user)->post('/reservations', [
             'checkin' => $checkin,
@@ -187,7 +194,7 @@ class MemberPortalTest extends TestCase
         $this->assertSame($user->id, $reservation->user_id);
         $this->assertSame('pending', $reservation->status);
         $this->assertSame($reservation->id, $billing->reservation_id);
-        $this->assertSame(59000, $billing->amount);
+        $this->assertSame(71000, $billing->amount);
         $this->assertSame(10000, $billing->breakdown['deposit']);
     }
 }

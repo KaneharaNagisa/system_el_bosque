@@ -145,4 +145,75 @@ class GoogleCalendarSyncTest extends TestCase
             return $mail->dates === ['2026-09-21'];
         });
     }
+
+    public function test_it_creates_a_reservation_event_and_stores_its_id(): void
+    {
+        config()->set('services.google_calendar', [
+            'client_id' => 'client-id',
+            'client_secret' => 'client-secret',
+            'refresh_token' => 'refresh-token',
+            'calendar_id' => 'primary',
+            'timezone' => 'Asia/Tokyo',
+        ]);
+
+        $user = User::factory()->create(['name' => '予約者']);
+        $reservation = Reservation::create([
+            'reservation_code' => 'RSV-CREATE',
+            'user_id' => $user->id,
+            'check_in' => '2026-09-20',
+            'check_out' => '2026-09-23',
+            'guests' => 2,
+            'status' => 'pending',
+        ]);
+
+        Http::fake([
+            'oauth2.googleapis.com/token' => Http::response(['access_token' => 'access-token']),
+            'www.googleapis.com/calendar/v3/calendars/*/events' => Http::response([
+                'id' => 'google-event-1',
+            ]),
+        ]);
+
+        app(GoogleCalendarSyncService::class)->createReservationEvent($reservation);
+
+        $reservation->refresh();
+        $this->assertSame('google-event-1', $reservation->google_calendar_event_id);
+        Http::assertSent(fn($request) => $request->method() === 'POST'
+            && str_contains($request->url(), '/calendar/v3/calendars/')
+            && $request['summary'] === 'エルボスケ予約'
+            && $request['start']['date'] === '2026-09-20'
+            && $request['end']['date'] === '2026-09-23');
+    }
+
+    public function test_it_deletes_a_stored_reservation_event(): void
+    {
+        config()->set('services.google_calendar', [
+            'client_id' => 'client-id',
+            'client_secret' => 'client-secret',
+            'refresh_token' => 'refresh-token',
+            'calendar_id' => 'primary',
+        ]);
+
+        $user = User::factory()->create();
+        $reservation = Reservation::create([
+            'reservation_code' => 'RSV-DELETE',
+            'user_id' => $user->id,
+            'check_in' => '2026-09-20',
+            'check_out' => '2026-09-23',
+            'guests' => 2,
+            'status' => 'confirmed',
+            'google_calendar_event_id' => 'google-event-2',
+        ]);
+
+        Http::fake([
+            'oauth2.googleapis.com/token' => Http::response(['access_token' => 'access-token']),
+            'www.googleapis.com/calendar/v3/calendars/*/events/*' => Http::response([], 204),
+        ]);
+
+        app(GoogleCalendarSyncService::class)->deleteReservationEvent($reservation);
+
+        $reservation->refresh();
+        $this->assertNull($reservation->google_calendar_event_id);
+        Http::assertSent(fn($request) => $request->method() === 'DELETE'
+            && str_ends_with($request->url(), '/events/google-event-2'));
+    }
 }

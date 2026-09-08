@@ -1,4 +1,5 @@
 ﻿import { router, usePage } from "@inertiajs/react";
+import { useState } from "react";
 import { useLocation, useNavigate, Link } from "../router";
 import {
     FaChevronLeft,
@@ -54,6 +55,7 @@ const dividerStyle: React.CSSProperties = {
 };
 
 export function ReservationConfirm() {
+    const [processing, setProcessing] = useState(false);
     const { experiences = [], pricingSetting } = usePage().props as unknown as {
         experiences?: Array<{
             name: string;
@@ -205,6 +207,8 @@ export function ReservationConfirm() {
     ];
 
     const handleConfirm = () => {
+        if (processing) return;
+
         router.post(
             "/reservations",
             {
@@ -218,6 +222,8 @@ export function ReservationConfirm() {
             },
             {
                 preserveScroll: true,
+                onStart: () => setProcessing(true),
+                onFinish: () => setProcessing(false),
                 onSuccess: (page) => {
                     const bookingRef = String(
                         page.props.flash?.reservationCode ?? "",
@@ -541,7 +547,8 @@ export function ReservationConfirm() {
                                                 key={exp}
                                                 label={exp}
                                                 value={(() => {
-                                                    const info = EXP_MAP[exp];
+                                                    const info =
+                                                        experienceRates[exp];
                                                     if (!info) return "";
                                                     if (info.perPerson)
                                                         return `¥${(info.amount * guestsNum).toLocaleString()}（¥${info.amount.toLocaleString()} × ${guestsNum}名）`;
@@ -738,6 +745,7 @@ export function ReservationConfirm() {
                             {/* Confirm button */}
                             <button
                                 onClick={handleConfirm}
+                                disabled={processing}
                                 style={{
                                     width: "100%",
                                     backgroundColor: "#5c2e12",
@@ -745,7 +753,8 @@ export function ReservationConfirm() {
                                     padding: "1.1rem",
                                     borderRadius: "3px",
                                     border: "none",
-                                    cursor: "pointer",
+                                    cursor: processing ? "wait" : "pointer",
+                                    opacity: processing ? 0.65 : 1,
                                     fontSize: "1rem",
                                     fontWeight: 700,
                                     fontFamily: "'Noto Sans JP', sans-serif",
@@ -757,6 +766,7 @@ export function ReservationConfirm() {
                                     transition: "background-color 0.2s",
                                 }}
                                 onMouseEnter={(e) =>
+                                    !processing &&
                                     (e.currentTarget.style.backgroundColor =
                                         "#7a3c18")
                                 }
@@ -765,7 +775,10 @@ export function ReservationConfirm() {
                                         "#5c2e12")
                                 }
                             >
-                                予約を確定する <FaChevronRight size={14} />
+                                {processing
+                                    ? "予約を確定中..."
+                                    : "予約を確定する"}
+                                {!processing && <FaChevronRight size={14} />}
                             </button>
                             <p
                                 style={{

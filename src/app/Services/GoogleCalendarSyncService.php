@@ -84,6 +84,55 @@ class GoogleCalendarSyncService
         return $this->lastConflictDates;
     }
 
+    public function createReservationEvent(Reservation $reservation): void
+    {
+        if ($reservation->google_calendar_event_id || $reservation->status === 'cancelled') {
+            return;
+        }
+
+        $reservation->loadMissing('user');
+        $timezone = config('services.google_calendar.timezone') ?: 'Asia/Tokyo';
+        $guestName = $reservation->user?->name ?: $reservation->user?->email ?: '会員';
+        $event = $this->calendarRequest()->post($this->eventsUrl(), [
+            'summary' => 'エルボスケ予約',
+            'description' => "予約番号: {$reservation->reservation_code}\n利用者: {$guestName}",
+            'start' => [
+                'date' => $reservation->check_in->toDateString(),
+                'timeZone' => $timezone,
+            ],
+            'end' => [
+                'date' => $reservation->check_out->toDateString(),
+                'timeZone' => $timezone,
+            ],
+            'extendedProperties' => [
+                'private' => ['reservation_code' => $reservation->reservation_code],
+            ],
+        ])->throw()->json();
+
+        if (empty($event['id'])) {
+            throw new RuntimeException('Google Calendarの予約予定IDを取得できませんでした。');
+        }
+
+        $reservation->update(['google_calendar_event_id' => $event['id']]);
+    }
+
+    public function deleteReservationEvent(Reservation $reservation): void
+    {
+        if (!$reservation->google_calendar_event_id) {
+            return;
+        }
+
+        $response = $this->calendarRequest()->delete(
+            $this->eventsUrl() . '/' . rawurlencode($reservation->google_calendar_event_id),
+        );
+
+        if (!$response->successful() && $response->status() !== 404) {
+            $response->throw();
+        }
+
+        $reservation->update(['google_calendar_event_id' => null]);
+    }
+
     /**
      * @param  array<int, string>  $blockedDates
      * @return array<int, string>
@@ -177,6 +226,12 @@ class GoogleCalendarSyncService
         }
 
         return Http::withToken($tokenResponse['access_token'])->acceptJson();
+    }
+
+    private function eventsUrl(): string
+    {
+        return 'https://www.googleapis.com/calendar/v3/calendars/'
+            . rawurlencode($this->calendarId()) . '/events';
     }
 
     private function calendarId(): string

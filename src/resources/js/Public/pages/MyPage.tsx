@@ -1,4 +1,4 @@
-﻿import { usePage } from "@inertiajs/react";
+﻿import { router, usePage } from "@inertiajs/react";
 import { useState } from "react";
 import { Link, useNavigate } from "../router";
 import {
@@ -2055,19 +2055,28 @@ export function MyPage() {
                                                                         </button>
                                                                         <button
                                                                             onClick={() => {
-                                                                                setCanceledIds(
-                                                                                    (
-                                                                                        prev,
-                                                                                    ) =>
-                                                                                        new Set(
-                                                                                            [
-                                                                                                ...prev,
-                                                                                                r.id,
-                                                                                            ],
-                                                                                        ),
-                                                                                );
-                                                                                setCancelingId(
-                                                                                    null,
+                                                                                router.delete(
+                                                                                    `/reservations/${r.dbId}/cancel`,
+                                                                                    {
+                                                                                        preserveScroll: true,
+                                                                                        onSuccess:
+                                                                                            () => {
+                                                                                                setCanceledIds(
+                                                                                                    (
+                                                                                                        prev,
+                                                                                                    ) =>
+                                                                                                        new Set(
+                                                                                                            [
+                                                                                                                ...prev,
+                                                                                                                r.id,
+                                                                                                            ],
+                                                                                                        ),
+                                                                                                );
+                                                                                                setCancelingId(
+                                                                                                    null,
+                                                                                                );
+                                                                                            },
+                                                                                    },
                                                                                 );
                                                                             }}
                                                                             style={{
