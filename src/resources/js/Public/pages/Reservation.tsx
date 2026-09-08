@@ -40,8 +40,10 @@ const labelStyle: React.CSSProperties = {
 };
 
 export function Reservation() {
-    const { pricingSetting } = usePage().props as unknown as {
+    const { pricingSetting, availability = [] } = usePage()
+        .props as unknown as {
         pricingSetting?: PricingSetting;
+        availability?: Array<{ date: string; status: string }>;
     };
     const rates = pricingSetting ?? defaultPricingSetting;
     const { isLoggedIn, user, logout } = useAuth();
@@ -50,6 +52,13 @@ export function Reservation() {
     const [checkout, setCheckout] = useState("");
     const [focusedField, setFocusedField] = useState("");
     const [checkoutError, setCheckoutError] = useState("");
+
+    // 管理画面＞予約枠管理で「空きあり」以外に設定された日付は選択不可
+    const unavailableDates = new Set(
+        availability
+            .filter((a) => a.status !== "available")
+            .map((a) => a.date.slice(0, 10)),
+    );
 
     // Max checkout = next Monday from checkin (max 3 nights)
     const checkoutMax = (() => {
@@ -319,6 +328,7 @@ export function Reservation() {
                                         setFocusedField(f ? "checkin" : "")
                                     }
                                     disabledDaysOfWeek={[1, 2, 3, 4]}
+                                    unavailableDates={unavailableDates}
                                 />
                             </div>
                             <div>
@@ -347,6 +357,7 @@ export function Reservation() {
                                     }}
                                     disabled={!checkin}
                                     disabledDaysOfWeek={[2, 3, 4, 5]}
+                                    unavailableDates={unavailableDates}
                                 />
                                 {checkoutError && (
                                     <p

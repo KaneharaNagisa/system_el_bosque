@@ -123,6 +123,21 @@ function getFirstDayOfMonth(year: number, month: number): number {
     return new Date(year, month, 1).getDay();
 }
 
+// 予約枠管理で未登録の日付は、営業期間内かつ本日以降であれば「空きあり」とみなす（火水木は定休日）
+function getDefaultStatus(
+    year: number,
+    month: number,
+    day: number,
+): DisplayStatus {
+    if (month < SEASON_START_MONTH || month > SEASON_END_MONTH) return "closed";
+    const date = new Date(year, month, day);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (date < today) return "closed";
+    if (CLOSED_DAYS.includes(date.getDay())) return "unavailable";
+    return "available";
+}
+
 function daysBetween(a: string, b: string): number {
     const da = parseDate(a);
     const db = parseDate(b);
@@ -324,7 +339,8 @@ export function AvailabilityCalendar({
                 year: YEAR,
                 isCurrentMonth: true,
                 status:
-                    availabilityByDate[fmtDate(YEAR, viewMonth, d)] ?? "closed",
+                    availabilityByDate[fmtDate(YEAR, viewMonth, d)] ??
+                    getDefaultStatus(YEAR, viewMonth, d),
                 dateStr: fmtDate(YEAR, viewMonth, d),
             });
         }
