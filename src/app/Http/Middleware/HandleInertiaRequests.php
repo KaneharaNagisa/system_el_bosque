@@ -43,6 +43,7 @@ class HandleInertiaRequests extends Middleware
                 'error'   => fn() => $request->session()->get('error'),
                 'warning' => fn() => $request->session()->get('warning'),
                 'reservationCode' => fn() => $request->session()->get('reservationCode'),
+                'reservationComplete' => fn() => $request->session()->get('reservationComplete'),
             ],
         ]);
     }

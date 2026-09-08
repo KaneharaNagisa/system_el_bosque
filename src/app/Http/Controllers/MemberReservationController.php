@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 use Throwable;
+use Yasumi\Yasumi;
 
 class MemberReservationController extends Controller
 {
@@ -141,7 +142,25 @@ class MemberReservationController extends Controller
             report($exception);
         }
 
-        return back()->with('reservationCode', $reservation->reservation_code);
+        return redirect('/reservation/complete')
+            ->with('reservationCode', $reservation->reservation_code)
+            ->with('reservationComplete', [
+                'form' => [
+                    'guests' => (string) $validated['guests'],
+                    'pets' => $validated['pets'],
+                    'petDetail' => $validated['petDetail'] ?? '',
+                    'petDetail2' => $request->input('petDetail2', ''),
+                    'supportPlan' => $validated['supportPlan'],
+                    'experiences' => $validated['experiences'] ?? [],
+                    'message' => $validated['message'] ?? '',
+                ],
+                'checkin' => $validated['checkin'],
+                'checkout' => $validated['checkout'],
+                'nights' => $nights,
+                'dayType' => $this->dayTypeLabel($checkin, $pricingSetting),
+                'grandTotal' => $amount,
+                'bookingRef' => $reservation->reservation_code,
+            ]);
     }
 
     public function cancel(Request $request, Reservation $reservation): RedirectResponse
@@ -173,5 +192,28 @@ class MemberReservationController extends Controller
         return $periodStart <= $periodEnd
             ? $monthDay >= $periodStart && $monthDay <= $periodEnd
             : $monthDay >= $periodStart || $monthDay <= $periodEnd;
+    }
+
+    private function dayTypeLabel(Carbon $date, PricingSetting $pricingSetting): string
+    {
+        $monthDay = $date->format('m-d');
+
+        foreach ($pricingSetting->period_rates ?? [] as $period) {
+            $start = $period['start'] ?? '';
+            $end = $period['end'] ?? '';
+            $isInPeriod = $start <= $end
+                ? $monthDay >= $start && $monthDay <= $end
+                : $monthDay >= $start || $monthDay <= $end;
+
+            if ($start && $end && $isInPeriod) {
+                return $period['name'] ?? '特別料金期間';
+            }
+        }
+
+        if ($date->isFriday() || $date->isWeekend() || Yasumi::create('Japan', $date->year, 'ja_JP')->isHoliday($date)) {
+            return '休日（金〜日、祝日）';
+        }
+
+        return '平日（月〜木）';
     }
 }

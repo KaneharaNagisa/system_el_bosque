@@ -186,7 +186,10 @@ class MemberPortalTest extends TestCase
             'message' => '',
             'grandTotal' => 1,
             'breakdown' => ['fake' => 1],
-        ])->assertSessionHasNoErrors()->assertSessionHas('reservationCode');
+        ])->assertRedirect('/reservation/complete')
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('reservationCode')
+            ->assertSessionHas('reservationComplete');
 
         $reservation = Reservation::firstOrFail();
         $billing = Billing::firstOrFail();
