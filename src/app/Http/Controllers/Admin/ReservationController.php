@@ -92,7 +92,7 @@ class ReservationController extends Controller
                 $a->date->format('Y-m-d') => $a->status,
             ]);
 
-        $bookedDates = Reservation::where('status', 'confirmed')
+        $bookedDates = Reservation::whereIn('status', ['pending', 'confirmed'])
             ->get()
             ->flatMap(
                 fn($r) => collect(range(0, $r->check_in->diffInDays($r->check_out) - 1))

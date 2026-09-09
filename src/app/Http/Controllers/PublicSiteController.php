@@ -9,6 +9,8 @@ use App\Models\Faq;
 use App\Models\ImageAsset;
 use App\Models\News;
 use App\Models\PricingSetting;
+use App\Models\Reservation;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -140,10 +142,36 @@ class PublicSiteController extends Controller
             return [];
         }
 
-        return Availability::query()
+        $availability = Availability::query()
             ->whereDate('date', '>=', today())
             ->orderBy('date')
             ->get()
+            ->mapWithKeys(fn(Availability $availability) => [
+                $availability->date->toDateString() => $availability->toArray(),
+            ]);
+
+        Reservation::query()
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->whereDate('check_out', '>', today())
+            ->get()
+            ->each(function (Reservation $reservation) use ($availability) {
+                foreach (CarbonPeriod::create($reservation->check_in, $reservation->check_out->copy()->subDay()) as $date) {
+                    $dateString = $date->format('Y-m-d');
+                    $availability[$dateString] = [
+                        'id' => $availability[$dateString]['id'] ?? null,
+                        'date' => $dateString,
+                        'status' => 'booked',
+                        'note' => '予約済み',
+                        'source' => 'reservation',
+                        'created_at' => $availability[$dateString]['created_at'] ?? null,
+                        'updated_at' => $availability[$dateString]['updated_at'] ?? null,
+                    ];
+                }
+            });
+
+        return $availability
+            ->sortKeys()
+            ->values()
             ->toArray();
     }
 }

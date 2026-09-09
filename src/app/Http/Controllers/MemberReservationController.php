@@ -36,25 +36,26 @@ class MemberReservationController extends Controller
         $checkin = Carbon::parse($validated['checkin']);
         $checkout = Carbon::parse($validated['checkout']);
         $nights = (int) $checkin->diffInDays($checkout);
-        $availableNights = Availability::query()
-            ->where('status', 'available')
+        $pricingSetting = PricingSetting::current();
+
+        $samePendingReservation = $this->samePendingReservation($request, $validated);
+
+        if ($samePendingReservation && !$this->hasConflictingReservation($checkin, $checkout, $samePendingReservation)) {
+            return $this->redirectToComplete($samePendingReservation, $pricingSetting, 0);
+        }
+
+        $availabilityByDate = Availability::query()
             ->whereDate('date', '>=', $checkin)
             ->whereDate('date', '<', $checkout)
-            ->count();
+            ->get()
+            ->keyBy(fn(Availability $availability) => $availability->date->toDateString());
 
-        $hasOverlap = Reservation::query()
-            ->whereIn('status', ['pending', 'confirmed'])
-            ->whereDate('check_in', '<', $checkout)
-            ->whereDate('check_out', '>', $checkin)
-            ->exists();
-
-        if ($availableNights !== $nights || $hasOverlap) {
+        if (!$this->hasAvailableNights($checkin, $checkout, $availabilityByDate)) {
             throw ValidationException::withMessages([
                 'checkin' => '選択された日程は現在予約できません。空き状況を再確認してください。',
             ]);
         }
 
-        $pricingSetting = PricingSetting::current();
         $petRates = ['none' => 0, 'small1' => 2500, 'small2' => 4000, 'large1' => 3500, 'large2' => 6000];
         $selectedExperiences = collect($validated['experiences'] ?? [])->unique()->values();
         $experienceRates = Experience::query()
@@ -95,16 +96,25 @@ class MemberReservationController extends Controller
         ];
         $amount = array_sum($breakdown);
 
-        $reservation = DB::transaction(function () use ($request, $validated, $amount, $breakdown) {
+        if ($this->hasConflictingReservation($checkin, $checkout, $samePendingReservation)) {
+            throw ValidationException::withMessages([
+                'checkin' => '選択された日程は現在予約できません。空き状況を再確認してください。',
+            ]);
+        }
+
+        $created = false;
+        $reservation = DB::transaction(function () use ($request, $validated, $amount, $breakdown, $pricingSetting, &$created) {
             Availability::query()->lockForUpdate()->get();
 
-            $hasOverlap = Reservation::query()
-                ->whereIn('status', ['pending', 'confirmed'])
-                ->whereDate('check_in', '<', $validated['checkout'])
-                ->whereDate('check_out', '>', $validated['checkin'])
-                ->exists();
+            $samePendingReservation = $this->samePendingReservation($request, $validated);
+            $checkin = Carbon::parse($validated['checkin']);
+            $checkout = Carbon::parse($validated['checkout']);
 
-            if ($hasOverlap) {
+            if ($samePendingReservation && !$this->hasConflictingReservation($checkin, $checkout, $samePendingReservation)) {
+                return $samePendingReservation;
+            }
+
+            if ($this->hasConflictingReservation($checkin, $checkout, $samePendingReservation)) {
                 throw ValidationException::withMessages([
                     'checkin' => '選択された日程は現在予約できません。空き状況を再確認してください。',
                 ]);
@@ -133,34 +143,20 @@ class MemberReservationController extends Controller
                 'due_date' => now()->addDays(7)->toDateString(),
             ]);
 
+            $created = true;
+
             return $reservation;
         });
 
-        try {
-            app(GoogleCalendarSyncService::class)->createReservationEvent($reservation);
-        } catch (Throwable $exception) {
-            report($exception);
+        if ($created) {
+            try {
+                app(GoogleCalendarSyncService::class)->createReservationEvent($reservation);
+            } catch (Throwable $exception) {
+                report($exception);
+            }
         }
 
-        return redirect('/reservation/complete')
-            ->with('reservationCode', $reservation->reservation_code)
-            ->with('reservationComplete', [
-                'form' => [
-                    'guests' => (string) $validated['guests'],
-                    'pets' => $validated['pets'],
-                    'petDetail' => $validated['petDetail'] ?? '',
-                    'petDetail2' => $request->input('petDetail2', ''),
-                    'supportPlan' => $validated['supportPlan'],
-                    'experiences' => $validated['experiences'] ?? [],
-                    'message' => $validated['message'] ?? '',
-                ],
-                'checkin' => $validated['checkin'],
-                'checkout' => $validated['checkout'],
-                'nights' => $nights,
-                'dayType' => $this->dayTypeLabel($checkin, $pricingSetting),
-                'grandTotal' => $amount,
-                'bookingRef' => $reservation->reservation_code,
-            ]);
+        return $this->redirectToComplete($reservation, $pricingSetting, $amount);
     }
 
     public function cancel(Request $request, Reservation $reservation): RedirectResponse
@@ -192,6 +188,75 @@ class MemberReservationController extends Controller
         return $periodStart <= $periodEnd
             ? $monthDay >= $periodStart && $monthDay <= $periodEnd
             : $monthDay >= $periodStart || $monthDay <= $periodEnd;
+    }
+
+    private function samePendingReservation(Request $request, array $validated): ?Reservation
+    {
+        return Reservation::with('billing')
+            ->where('status', 'pending')
+            ->where('user_id', $request->user()->id)
+            ->whereDate('check_in', $validated['checkin'])
+            ->whereDate('check_out', $validated['checkout'])
+            ->first();
+    }
+
+    private function hasConflictingReservation(Carbon $checkin, Carbon $checkout, ?Reservation $allowedReservation = null): bool
+    {
+        return Reservation::query()
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->when($allowedReservation, fn($query) => $query->whereKeyNot($allowedReservation->id))
+            ->whereDate('check_in', '<', $checkout)
+            ->whereDate('check_out', '>', $checkin)
+            ->exists();
+    }
+
+    private function hasAvailableNights(Carbon $checkin, Carbon $checkout, $availabilityByDate): bool
+    {
+        for ($date = $checkin->copy(); $date->lt($checkout); $date->addDay()) {
+            $availability = $availabilityByDate->get($date->toDateString());
+
+            if ($availability) {
+                if ($availability->status !== 'available') {
+                    return false;
+                }
+
+                continue;
+            }
+
+            if ($date->isPast() || $date->month < 3 || $date->month > 12 || in_array($date->dayOfWeek, [2, 3, 4], true)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function redirectToComplete(Reservation $reservation, PricingSetting $pricingSetting, int $fallbackAmount): RedirectResponse
+    {
+        $reservation->loadMissing('billing');
+        $checkin = $reservation->check_in;
+        $checkout = $reservation->check_out;
+        $nights = (int) $checkin->diffInDays($checkout);
+
+        return redirect('/reservation/complete')
+            ->with('reservationCode', $reservation->reservation_code)
+            ->with('reservationComplete', [
+                'form' => [
+                    'guests' => (string) $reservation->guests,
+                    'pets' => $reservation->has_pet,
+                    'petDetail' => $reservation->pet_breed ?? '',
+                    'petDetail2' => '',
+                    'supportPlan' => $reservation->support_fee ? 'yes' : 'no',
+                    'experiences' => $reservation->experiences ?? [],
+                    'message' => $reservation->note ?? '',
+                ],
+                'checkin' => $checkin->toDateString(),
+                'checkout' => $checkout->toDateString(),
+                'nights' => $nights,
+                'dayType' => $this->dayTypeLabel($checkin, $pricingSetting),
+                'grandTotal' => $reservation->billing?->amount ?? $fallbackAmount,
+                'bookingRef' => $reservation->reservation_code,
+            ]);
     }
 
     private function dayTypeLabel(Carbon $date, PricingSetting $pricingSetting): string

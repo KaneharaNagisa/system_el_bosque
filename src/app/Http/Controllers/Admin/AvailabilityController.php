@@ -25,7 +25,7 @@ class AvailabilityController extends Controller
             ]);
 
         $bookedReservations = Reservation::with('user')
-            ->where('status', 'confirmed')
+            ->whereIn('status', ['pending', 'confirmed'])
             ->get()
             ->flatMap(
                 fn($r) => collect(range(0, $r->check_in->diffInDays($r->check_out) - 1))

@@ -1,5 +1,5 @@
 ﻿import { router, usePage } from "@inertiajs/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate, Link } from "../router";
 import {
     FaChevronLeft,
@@ -54,15 +54,22 @@ const dividerStyle: React.CSSProperties = {
     margin: "1.25rem 0",
 };
 
+const CONFIRM_TIMEOUT_MS = 60 * 60 * 1000;
+
 export function ReservationConfirm() {
     const [processing, setProcessing] = useState(false);
-    const { experiences = [], pricingSetting } = usePage().props as unknown as {
+    const {
+        experiences = [],
+        pricingSetting,
+        errors = {},
+    } = usePage().props as unknown as {
         experiences?: Array<{
             name: string;
             price: number;
             pricingType?: "per_person" | "per_group";
         }>;
         pricingSetting?: PricingSetting;
+        errors?: Record<string, string>;
     };
     const rates = pricingSetting ?? defaultPricingSetting;
     const experienceRates = Object.fromEntries(
@@ -94,6 +101,14 @@ export function ReservationConfirm() {
             dayType: string;
         } | null;
     };
+
+    useEffect(() => {
+        const timeoutId = window.setTimeout(() => {
+            navigate("/reservation");
+        }, CONFIRM_TIMEOUT_MS);
+
+        return () => window.clearTimeout(timeoutId);
+    }, [navigate]);
 
     if (!state) {
         return (
@@ -152,6 +167,8 @@ export function ReservationConfirm() {
         transferSurcharge +
         expTotal +
         deposit;
+    const submitError =
+        errors.checkin ?? errors.checkout ?? errors.experiences ?? null;
 
     const petLabel = (() => {
         if (form.pets === "none") return "なし";
@@ -743,6 +760,23 @@ export function ReservationConfirm() {
                             </div>
 
                             {/* Confirm button */}
+                            {submitError && (
+                                <p
+                                    style={{
+                                        margin: "0 0 0.75rem",
+                                        padding: "0.85rem 1rem",
+                                        borderRadius: "4px",
+                                        backgroundColor: "#fff4ec",
+                                        border: "1px solid rgba(160,48,32,0.25)",
+                                        color: "#a03020",
+                                        fontSize: "0.82rem",
+                                        fontWeight: 700,
+                                        lineHeight: 1.7,
+                                    }}
+                                >
+                                    {submitError}
+                                </p>
+                            )}
                             <button
                                 onClick={handleConfirm}
                                 disabled={processing}
@@ -789,6 +823,17 @@ export function ReservationConfirm() {
                                 }}
                             >
                                 確定後、2〜3営業日以内にメールにてご連絡いたします
+                            </p>
+                            <p
+                                style={{
+                                    fontSize: "0.72rem",
+                                    color: "#8a7868",
+                                    textAlign: "center",
+                                    lineHeight: 1.7,
+                                    marginTop: "-0.45rem",
+                                }}
+                            >
+                                予約確定後、1時間以内に確定処理が完了しない場合は保留中の予約を取り消します。確認画面を1時間開いたままにした場合は予約フォームに戻ります。
                             </p>
 
                             {/* Policy reminder */}
