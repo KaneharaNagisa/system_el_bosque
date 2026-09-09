@@ -79,19 +79,20 @@ class PublicSiteController extends Controller
 
     private function news(string $page): array
     {
-        if (!in_array($page, ['home', 'mypage'], true)) {
+        if (!in_array($page, ['home', 'mypage', 'news'], true)) {
             return [];
         }
 
-        $target = $page === 'home' ? 'top' : 'mypage';
-
-        return News::query()
+        $query = News::query()
             ->where('status', 'published')
-            ->whereDate('publish_date', '<=', today())
-            ->whereIn('target', [$target, 'both'])
-            ->latest('publish_date')
-            ->get()
-            ->toArray();
+            ->whereDate('publish_date', '<=', today());
+
+        if ($page !== 'news') {
+            $target = $page === 'home' ? 'top' : 'mypage';
+            $query->whereIn('target', [$target, 'both']);
+        }
+
+        return $query->latest('publish_date')->get()->toArray();
     }
 
     private function experiences(string $page): array

@@ -161,6 +161,7 @@ export function Home() {
         isNew:
             Date.now() - new Date(item.publish_date).getTime() <= 7 * 86400000,
     }));
+    const displayedTopNews = topNews.slice(0, 3);
 
     return (
         <div>
@@ -426,10 +427,11 @@ export function Home() {
                             overflow: "hidden",
                         }}
                     >
-                        {topNews.map((item, idx) => {
+                        {displayedTopNews.map((item, idx) => {
                             const isExpanded = expandedId === item.id;
-                            const isLast = idx === topNews.length - 1;
+                            const isLast = idx === displayedTopNews.length - 1;
                             const [y, m, d] = item.publishDate
+                                .slice(0, 10)
                                 .split("-")
                                 .map(Number);
                             const dateStr = `${y}年${m}月${d}日`;
@@ -605,6 +607,32 @@ export function Home() {
                             );
                         })}
                     </div>
+
+                    {topNews.length > 3 && (
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                marginTop: "1.75rem",
+                            }}
+                        >
+                            <Link
+                                to="/news"
+                                style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: "0.4rem",
+                                    color: "#5c2e12",
+                                    fontSize: "0.85rem",
+                                    fontWeight: 700,
+                                    textDecoration: "none",
+                                    letterSpacing: "0.05em",
+                                }}
+                            >
+                                お知らせ一覧を見る <FaChevronRight size={12} />
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </section>
 

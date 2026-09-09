@@ -9,6 +9,7 @@ import { FAQ } from "../../Public/pages/FAQ";
 import { Home } from "../../Public/pages/Home";
 import { Login } from "../../Public/pages/Login";
 import { MyPage } from "../../Public/pages/MyPage";
+import { NewsList } from "../../Public/pages/NewsList";
 import { PasswordReset } from "../../Public/pages/PasswordReset";
 import { FixedPage } from "../../Public/pages/FixedPage";
 import { Pricing } from "../../Public/pages/Pricing";
@@ -26,6 +27,7 @@ const pages = {
     experiences: Experiences,
     area: Area,
     faq: FAQ,
+    news: NewsList,
     terms: FixedPage,
     privacy: FixedPage,
     reservation: Reservation,
@@ -47,6 +49,7 @@ const titles: Record<keyof typeof pages, string> = {
     experiences: "体験プログラム | 貸別荘エルボスケ",
     area: "周辺情報 | 貸別荘エルボスケ",
     faq: "よくある質問 | 貸別荘エルボスケ",
+    news: "お知らせ一覧 | 貸別荘エルボスケ",
     terms: "利用規約 | 貸別荘エルボスケ",
     privacy: "個人情報取り扱い | 貸別荘エルボスケ",
     reservation: "ご予約 | 貸別荘エルボスケ",

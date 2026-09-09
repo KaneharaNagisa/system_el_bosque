@@ -262,7 +262,7 @@ export function MyPage() {
         content: item.content,
         publishDate: item.publish_date,
     }));
-    const displayedNews = databaseNews;
+    const displayedNews = databaseNews.slice(0, 3);
     const navigate = useNavigate();
     const [editing, setEditing] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -643,10 +643,15 @@ export function MyPage() {
                                                                         flexShrink: 0,
                                                                     }}
                                                                 >
-                                                                    {item.publishDate.replace(
-                                                                        /-/g,
-                                                                        "/",
-                                                                    )}
+                                                                    {item.publishDate
+                                                                        .slice(
+                                                                            0,
+                                                                            10,
+                                                                        )
+                                                                        .replace(
+                                                                            /-/g,
+                                                                            "/",
+                                                                        )}
                                                                 </span>
                                                             </div>
                                                             <span
@@ -727,6 +732,31 @@ export function MyPage() {
                                         );
                                     })}
                                 </div>
+                                {databaseNews.length > 3 && (
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            marginTop: "1rem",
+                                        }}
+                                    >
+                                        <Link
+                                            to="/news"
+                                            style={{
+                                                display: "inline-flex",
+                                                alignItems: "center",
+                                                gap: "0.4rem",
+                                                color: "#1e3c0e",
+                                                fontSize: "0.83rem",
+                                                fontWeight: 700,
+                                                textDecoration: "none",
+                                                letterSpacing: "0.05em",
+                                            }}
+                                        >
+                                            お知らせ一覧を見る
+                                        </Link>
+                                    </div>
+                                )}
                             </>,
                         )}
 
