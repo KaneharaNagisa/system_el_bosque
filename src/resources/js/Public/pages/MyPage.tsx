@@ -242,7 +242,11 @@ function statusColor(status: string) {
 export function MyPage() {
     const { user, isLoggedIn, logout, updateProfile, deleteAccount } =
         useAuth();
-    const { news = [], reservations = [] } = usePage<{
+    const {
+        news = [],
+        reservations = [],
+        reservationCount = 0,
+    } = usePage<{
         news?: Array<{
             id: number;
             title: string;
@@ -250,6 +254,7 @@ export function MyPage() {
             publish_date: string;
         }>;
         reservations?: typeof mockReservations;
+        reservationCount?: number;
     }>().props;
     const databaseNews = news.map((item) => ({
         id: String(item.id),
@@ -2187,6 +2192,27 @@ export function MyPage() {
                                     textAlign: "center",
                                 }}
                             >
+                                {reservationCount > 3 && (
+                                    <Link
+                                        to="/reservation-history"
+                                        style={{
+                                            display: "inline-flex",
+                                            alignItems: "center",
+                                            gap: "0.4rem",
+                                            color: "#1e3c0e",
+                                            padding: "0.65rem 1.25rem",
+                                            marginRight: "0.5rem",
+                                            border: "1px solid rgba(30,60,14,0.25)",
+                                            borderRadius: "3px",
+                                            textDecoration: "none",
+                                            fontWeight: 700,
+                                            fontSize: "0.82rem",
+                                        }}
+                                    >
+                                        予約履歴をすべて見る
+                                        <FaChevronRight size={11} />
+                                    </Link>
+                                )}
                                 <Link
                                     to="/reservation"
                                     style={{

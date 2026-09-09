@@ -16,6 +16,7 @@ import { Reservation } from "../../Public/pages/Reservation";
 import { ReservationComplete } from "../../Public/pages/ReservationComplete";
 import { ReservationConfirm } from "../../Public/pages/ReservationConfirm";
 import { ReservationDetail } from "../../Public/pages/ReservationDetail";
+import { ReservationHistory } from "../../Public/pages/ReservationHistory";
 
 const pages = {
     home: Home,
@@ -32,6 +33,7 @@ const pages = {
     register: Register,
     contact: Contact,
     mypage: MyPage,
+    "reservation-history": ReservationHistory,
     "password-reset": PasswordReset,
 };
 
@@ -50,6 +52,7 @@ const titles: Record<keyof typeof pages, string> = {
     register: "会員登録 | 貸別荘エルボスケ",
     contact: "お問い合わせ | 貸別荘エルボスケ",
     mypage: "マイページ | 貸別荘エルボスケ",
+    "reservation-history": "予約履歴 | 貸別荘エルボスケ",
     "password-reset": "パスワード再設定 | 貸別荘エルボスケ",
 };
 

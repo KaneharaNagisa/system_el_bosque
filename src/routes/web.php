@@ -54,6 +54,7 @@ Route::get('/password-reset', fn() => app(PublicSiteController::class)->show('pa
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [MemberAuthController::class, 'logout'])->name('logout');
     Route::get('/mypage', [MyPageController::class, 'show'])->name('mypage');
+    Route::get('/reservation-history', [MyPageController::class, 'history'])->name('reservation-history');
     Route::patch('/mypage', [MyPageController::class, 'update'])->name('mypage.update');
     Route::patch('/mypage/password', [MyPageController::class, 'password'])->name('mypage.password');
     Route::delete('/mypage', [MyPageController::class, 'destroy'])->name('mypage.destroy');
