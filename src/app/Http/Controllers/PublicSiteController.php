@@ -8,6 +8,7 @@ use App\Models\Experience;
 use App\Models\Faq;
 use App\Models\ImageAsset;
 use App\Models\News;
+use App\Models\Page;
 use App\Models\PricingSetting;
 use App\Models\Reservation;
 use Carbon\CarbonPeriod;
@@ -20,6 +21,12 @@ class PublicSiteController extends Controller
 {
     public function show(string $page, array $props = []): Response
     {
+        $fixedPage = $this->fixedPage($page);
+
+        if (in_array($page, ['terms', 'privacy'], true) && $fixedPage === null) {
+            abort(404);
+        }
+
         $usesPricing = in_array($page, [
             'home',
             'about',
@@ -35,6 +42,7 @@ class PublicSiteController extends Controller
             'experiences' => $this->experiences($page),
             'faqs' => $this->faqs($page),
             'availability' => $this->availability($page),
+            'fixedPage' => $fixedPage,
             'pricingSetting' => $usesPricing ? PricingSetting::current()->toFrontend() : null,
             'images' => ImageAsset::query()->get()->mapWithKeys(function (ImageAsset $image) {
                 $variants = $image->variants ?? [];
@@ -134,6 +142,19 @@ class PublicSiteController extends Controller
             ->orderBy('sort_order')
             ->get()
             ->toArray();
+    }
+
+    private function fixedPage(string $page): ?array
+    {
+        if (!in_array($page, ['terms', 'privacy'], true)) {
+            return null;
+        }
+
+        return Page::query()
+            ->where('slug', $page)
+            ->where('status', 'published')
+            ->first(['title', 'content'])
+            ?->only(['title', 'content']);
     }
 
     private function availability(string $page): array

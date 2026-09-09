@@ -1244,6 +1244,40 @@ export function Register() {
                                     </div>
                                 </div>
 
+                                <label
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "flex-start",
+                                        gap: "0.6rem",
+                                        marginBottom: "1.75rem",
+                                        color: "#2c1e10",
+                                        fontSize: "0.85rem",
+                                        lineHeight: 1.7,
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    <input
+                                        type="checkbox"
+                                        required
+                                        style={{
+                                            marginTop: "0.25rem",
+                                            flexShrink: 0,
+                                        }}
+                                    />
+                                    <span>
+                                        <Link
+                                            to="/privacy"
+                                            style={{
+                                                color: "#7a4020",
+                                                fontWeight: 700,
+                                            }}
+                                        >
+                                            個人情報取り扱い
+                                        </Link>
+                                        を確認しました
+                                    </span>
+                                </label>
+
                                 <button
                                     type="submit"
                                     disabled={

@@ -32,6 +32,8 @@ Route::get('/pricing', fn() => app(PublicSiteController::class)->show('pricing')
 Route::get('/experiences', fn() => app(PublicSiteController::class)->show('experiences'));
 Route::get('/area', fn() => app(PublicSiteController::class)->show('area'));
 Route::get('/faq', fn() => app(PublicSiteController::class)->show('faq'));
+Route::get('/terms', fn() => app(PublicSiteController::class)->show('terms'));
+Route::get('/privacy', fn() => app(PublicSiteController::class)->show('privacy'));
 Route::get('/reservation', fn() => app(PublicSiteController::class)->show('reservation'));
 Route::get('/login', fn() => auth()->check()
     ? redirect('/mypage')

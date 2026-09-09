@@ -670,6 +670,48 @@ export function Layout({ children }: { children: ReactNode }) {
                                         </Link>
                                     </li>
                                 ))}
+                                <li>
+                                    <Link
+                                        to="/terms"
+                                        style={{
+                                            textDecoration: "none",
+                                            color: "#8a7a68",
+                                            fontSize: "0.85rem",
+                                            transition: "color 0.2s",
+                                        }}
+                                        onMouseEnter={(e) =>
+                                            ((e.target as HTMLElement).style.color =
+                                                "#d4b070")
+                                        }
+                                        onMouseLeave={(e) =>
+                                            ((e.target as HTMLElement).style.color =
+                                                "#8a7a68")
+                                        }
+                                    >
+                                        利用規約
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        to="/privacy"
+                                        style={{
+                                            textDecoration: "none",
+                                            color: "#8a7a68",
+                                            fontSize: "0.85rem",
+                                            transition: "color 0.2s",
+                                        }}
+                                        onMouseEnter={(e) =>
+                                            ((e.target as HTMLElement).style.color =
+                                                "#d4b070")
+                                        }
+                                        onMouseLeave={(e) =>
+                                            ((e.target as HTMLElement).style.color =
+                                                "#8a7a68")
+                                        }
+                                    >
+                                        個人情報取り扱い
+                                    </Link>
+                                </li>
                             </ul>
                         </div>
 

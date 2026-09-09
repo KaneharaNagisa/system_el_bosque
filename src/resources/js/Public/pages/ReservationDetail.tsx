@@ -892,7 +892,7 @@ export function ReservationDetail() {
                                         />
                                         <span>
                                             <Link
-                                                to="/faq"
+                                                to="/terms"
                                                 style={{
                                                     color: "#1e3c0e",
                                                     fontWeight: 700,

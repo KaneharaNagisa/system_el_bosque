@@ -830,7 +830,7 @@ export function ReservationConfirm() {
                                 <p style={{ margin: 0 }}>
                                     ご予約の確定をもって
                                     <Link
-                                        to="/faq"
+                                        to="/terms"
                                         style={{
                                             color: "#5c2e12",
                                             fontWeight: 700,
