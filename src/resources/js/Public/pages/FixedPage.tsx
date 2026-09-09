@@ -1,4 +1,5 @@
 import { usePage } from "@inertiajs/react";
+import ReactMarkdown from "react-markdown";
 
 type FixedPageData = {
     title: string;
@@ -49,14 +50,14 @@ export function FixedPage() {
                     }}
                 >
                     <div
+                        className="fixed-page-content"
                         style={{
                             color: "#2c1e10",
                             fontSize: "0.95rem",
                             lineHeight: 2,
-                            whiteSpace: "pre-wrap",
                         }}
                     >
-                        {fixedPage.content}
+                        <ReactMarkdown>{fixedPage.content}</ReactMarkdown>
                     </div>
                 </div>
             </section>
