@@ -10,7 +10,6 @@ use App\Models\Reservation;
 use App\Models\User;
 use App\Services\GoogleCalendarSyncService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -284,75 +283,6 @@ class MemberPortalTest extends TestCase
 
         $this->assertSame(1, Reservation::count());
         $this->assertSame(1, Billing::count());
-    }
-
-    public function test_expired_pending_reservations_are_deleted_after_one_hour(): void
-    {
-        $user = User::factory()->create(['status' => 'active']);
-        $expired = Reservation::create([
-            'reservation_code' => 'RSV-EXPIRED1',
-            'user_id' => $user->id,
-            'check_in' => '2026-10-09',
-            'check_out' => '2026-10-10',
-            'guests' => 2,
-            'has_pet' => 'none',
-            'support_fee' => false,
-            'experiences' => [],
-            'status' => 'pending',
-        ]);
-        $expired->forceFill([
-            'created_at' => now()->subMinutes(61),
-            'updated_at' => now()->subMinutes(61),
-        ])->save();
-        Billing::create([
-            'billing_code' => 'BIL-EXPIRED1',
-            'reservation_id' => $expired->id,
-            'amount' => 44000,
-            'breakdown' => ['deposit' => 10000],
-            'status' => 'unpaid',
-            'due_date' => '2026-10-16',
-        ]);
-        $recent = Reservation::create([
-            'reservation_code' => 'RSV-RECENT1',
-            'user_id' => $user->id,
-            'check_in' => '2026-10-10',
-            'check_out' => '2026-10-11',
-            'guests' => 2,
-            'has_pet' => 'none',
-            'support_fee' => false,
-            'experiences' => [],
-            'status' => 'pending',
-        ]);
-        $recent->forceFill([
-            'created_at' => now()->subMinutes(59),
-            'updated_at' => now()->subMinutes(59),
-        ])->save();
-        $confirmed = Reservation::create([
-            'reservation_code' => 'RSV-CONFIRMED1',
-            'user_id' => $user->id,
-            'check_in' => '2026-10-11',
-            'check_out' => '2026-10-12',
-            'guests' => 2,
-            'has_pet' => 'none',
-            'support_fee' => false,
-            'experiences' => [],
-            'status' => 'confirmed',
-        ]);
-        $confirmed->forceFill([
-            'created_at' => now()->subMinutes(61),
-            'updated_at' => now()->subMinutes(61),
-        ])->save();
-
-        $this->mock(GoogleCalendarSyncService::class, function ($mock) {
-            $mock->shouldReceive('deleteReservationEvent')->once();
-        });
-
-        Artisan::call('reservations:purge-expired-pending');
-
-        $this->assertDatabaseMissing('reservations', ['id' => $expired->id]);
-        $this->assertDatabaseMissing('billings', ['reservation_id' => $expired->id]);
-        $this->assertDatabaseHas('reservations', ['id' => $recent->id]);
-        $this->assertDatabaseHas('reservations', ['id' => $confirmed->id]);
     }
 
     public function test_reservation_page_marks_existing_member_reservations_as_booked(): void

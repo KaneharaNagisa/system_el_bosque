@@ -1,5 +1,5 @@
 ﻿import { router, usePage } from "@inertiajs/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate, Link } from "../router";
 import {
     FaChevronLeft,
@@ -54,8 +54,6 @@ const dividerStyle: React.CSSProperties = {
     margin: "1.25rem 0",
 };
 
-const CONFIRM_TIMEOUT_MS = 60 * 60 * 1000;
-
 export function ReservationConfirm() {
     const [processing, setProcessing] = useState(false);
     const {
@@ -101,14 +99,6 @@ export function ReservationConfirm() {
             dayType: string;
         } | null;
     };
-
-    useEffect(() => {
-        const timeoutId = window.setTimeout(() => {
-            navigate("/reservation");
-        }, CONFIRM_TIMEOUT_MS);
-
-        return () => window.clearTimeout(timeoutId);
-    }, [navigate]);
 
     if (!state) {
         return (
@@ -823,17 +813,6 @@ export function ReservationConfirm() {
                                 }}
                             >
                                 確定後、2〜3営業日以内にメールにてご連絡いたします
-                            </p>
-                            <p
-                                style={{
-                                    fontSize: "0.72rem",
-                                    color: "#8a7868",
-                                    textAlign: "center",
-                                    lineHeight: 1.7,
-                                    marginTop: "-0.45rem",
-                                }}
-                            >
-                                予約確定後、1時間以内に確定処理が完了しない場合は保留中の予約を取り消します。確認画面を1時間開いたままにした場合は予約フォームに戻ります。
                             </p>
 
                             {/* Policy reminder */}

@@ -15,7 +15,34 @@ class MyPageController extends Controller
 {
     public function show(Request $request): Response
     {
-        $reservations = $request->user()->reservations()
+        $reservations = $this->reservationsFor($request);
+
+        $news = News::query()
+            ->where('status', 'published')
+            ->whereDate('publish_date', '<=', today())
+            ->whereIn('target', ['mypage', 'both'])
+            ->latest('publish_date')
+            ->get();
+
+        return Inertia::render('Public/Page', [
+            'page' => 'mypage',
+            'news' => $news,
+            'reservations' => $reservations->take(3)->values(),
+            'reservationCount' => $reservations->count(),
+        ]);
+    }
+
+    public function history(Request $request): Response
+    {
+        return Inertia::render('Public/Page', [
+            'page' => 'reservation-history',
+            'reservations' => $this->reservationsFor($request),
+        ]);
+    }
+
+    private function reservationsFor(Request $request)
+    {
+        return $request->user()->reservations()
             ->with('billing')
             ->latest('check_in')
             ->get()
@@ -37,19 +64,6 @@ class MyPageController extends Controller
                 'supportPlan' => $reservation->support_fee ? 'yes' : 'no',
                 'totalAmount' => $reservation->billing?->amount ?? 0,
             ]);
-
-        $news = News::query()
-            ->where('status', 'published')
-            ->whereDate('publish_date', '<=', today())
-            ->whereIn('target', ['mypage', 'both'])
-            ->latest('publish_date')
-            ->get();
-
-        return Inertia::render('Public/Page', [
-            'page' => 'mypage',
-            'news' => $news,
-            'reservations' => $reservations,
-        ]);
     }
 
     public function update(Request $request): RedirectResponse
