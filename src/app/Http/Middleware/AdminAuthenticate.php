@@ -14,7 +14,7 @@ class AdminAuthenticate
             if ($request->expectsJson() || $request->header('X-Inertia')) {
                 return response()->json(['message' => 'Unauthenticated.'], 401);
             }
-            return redirect()->route('admin.login');
+            return redirect()->route('admin.root');
         }
 
         return $next($request);

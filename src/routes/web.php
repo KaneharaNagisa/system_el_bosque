@@ -86,7 +86,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         return $request->session()->has('admin_user')
             ? redirect()->route('admin.dashboard')
             : app(AuthController::class)->showLogin();
-    })->name('login');
+    })->name('root');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 

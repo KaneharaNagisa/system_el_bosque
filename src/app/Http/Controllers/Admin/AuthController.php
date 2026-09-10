@@ -51,6 +51,6 @@ class AuthController extends Controller
         $request->session()->forget('admin_user');
         $request->session()->regenerate();
 
-        return redirect()->route('admin.login');
+        return redirect()->route('admin.root');
     }
 }
