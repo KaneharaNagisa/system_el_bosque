@@ -26,6 +26,14 @@ use App\Models\PendingRegistration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/robots.txt', function () {
+    $content = config('app.env') === 'production'
+        ? "User-agent: *\nDisallow:\n"
+        : "User-agent: *\nDisallow: /\n";
+
+    return response($content, 200, ['Content-Type' => 'text/plain']);
+});
+
 Route::get('/', fn() => app(PublicSiteController::class)->show('home'));
 Route::get('/about', fn() => app(PublicSiteController::class)->show('about'));
 Route::get('/pricing', fn() => app(PublicSiteController::class)->show('pricing'));

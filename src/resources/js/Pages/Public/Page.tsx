@@ -64,12 +64,26 @@ const titles: Record<keyof typeof pages, string> = {
     "password-reset": "パスワード再設定 | 貸別荘エルボスケ",
 };
 
-export default function PublicPage({ page }: { page: keyof typeof pages }) {
+export default function PublicPage({
+    page,
+    isTestEnvironment,
+}: {
+    page: keyof typeof pages;
+    isTestEnvironment: boolean;
+}) {
     const CurrentPage = pages[page] ?? Home;
 
     return (
         <AuthProvider>
             <Head title={titles[page] ?? titles.home} />
+            {isTestEnvironment && (
+                <Head>
+                    <meta
+                        name="robots"
+                        content="noindex, nofollow, noarchive"
+                    />
+                </Head>
+            )}
             <Layout>
                 <CurrentPage />
             </Layout>

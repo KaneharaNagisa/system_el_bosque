@@ -2,12 +2,25 @@
 
 namespace App\Http\Middleware;
 
+use Closure;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
 {
     protected $rootView = 'app';
+
+    public function handle(Request $request, Closure $next): Response
+    {
+        $response = $next($request);
+
+        if (config('app.env') !== 'production') {
+            $response->headers->set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+        }
+
+        return $response;
+    }
 
     public function version(Request $request): ?string
     {
@@ -17,6 +30,7 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
+            'isTestEnvironment' => config('app.env') !== 'production',
             'kpiEnabled' => config('app.kpi_enabled'),
             'auth' => [
                 'admin' => $request->session()->get('admin_user'),

@@ -38,6 +38,7 @@ class PublicSiteController extends Controller
 
         return Inertia::render('Public/Page', [
             'page' => $page,
+            'isTestEnvironment' => config('app.env') !== 'production',
             'news' => $this->news($page),
             'experiences' => $this->experiences($page),
             'faqs' => $this->faqs($page),
