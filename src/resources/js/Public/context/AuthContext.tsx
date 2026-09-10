@@ -73,7 +73,9 @@ const defaultAuthContext: AuthContextType = {
 const AuthContext = createContext<AuthContextType>(defaultAuthContext);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const { auth } = usePage<{ auth: { user: UserProfile | null } }>().props;
+    const { auth } = usePage<{
+        auth?: { user: UserProfile | null };
+    }>().props;
     const login: AuthContextType["login"] = (
         email,
         password,
@@ -165,8 +167,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return (
         <AuthContext.Provider
             value={{
-                user: auth.user,
-                isLoggedIn: !!auth.user,
+                user: auth?.user ?? null,
+                isLoggedIn: !!auth?.user,
                 login,
                 logout,
                 sendRegistrationEmail,
