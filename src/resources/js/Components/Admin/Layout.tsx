@@ -15,7 +15,7 @@ interface Props {
 }
 
 export default function AdminLayout({ currentPage, title, children }: Props) {
-    const { auth } = usePage<SharedProps>().props;
+    const { auth = { admin: null } } = usePage<SharedProps>().props;
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
     useEffect(() => {
