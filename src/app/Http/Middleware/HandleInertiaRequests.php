@@ -13,7 +13,7 @@ class HandleInertiaRequests extends Middleware
 
     public function handle(Request $request, Closure $next): Response
     {
-        $response = $next($request);
+        $response = parent::handle($request, $next);
 
         if (config('app.env') !== 'production') {
             $response->headers->set('X-Robots-Tag', 'noindex, nofollow, noarchive');
