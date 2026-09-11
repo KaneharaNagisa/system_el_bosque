@@ -52,6 +52,8 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->call(ExperienceSeeder::class);
+        $this->call(PriceAdjustmentSeeder::class);
+        $this->call(PricingSettingSeeder::class);
 
         // 固定ページ
         $pages = [
