@@ -29,7 +29,7 @@ const roleLabels: Record<string, { label: string; cls: string }> = {
 };
 
 export default function Accounts({ accounts }: { accounts: AdminAccount[] }) {
-    const { auth } = usePage<SharedProps>().props;
+    const { auth = { admin: null } } = usePage<SharedProps>().props;
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<AdminAccount | null>(null);
     const [formData, setFormData] = useState({

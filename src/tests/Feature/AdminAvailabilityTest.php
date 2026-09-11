@@ -14,6 +14,13 @@ class AdminAvailabilityTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_unauthenticated_inertia_admin_request_redirects_to_login(): void
+    {
+        $this->withHeaders(['X-Inertia' => 'true'])
+            ->get('/admin/accounts')
+            ->assertRedirect(route('admin.root'));
+    }
+
     public function test_master_availability_marks_pending_reservations_as_booked(): void
     {
         $admin = Admin::create([

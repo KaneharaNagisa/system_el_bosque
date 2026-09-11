@@ -11,9 +11,6 @@ class AdminAuthenticate
     public function handle(Request $request, Closure $next): Response
     {
         if (!$request->session()->has('admin_user')) {
-            if ($request->expectsJson() || $request->header('X-Inertia')) {
-                return response()->json(['message' => 'Unauthenticated.'], 401);
-            }
             return redirect()->route('admin.root');
         }
 
