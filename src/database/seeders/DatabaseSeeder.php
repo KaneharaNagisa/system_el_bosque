@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Admin;
 use App\Models\CancelPolicy;
-use App\Models\Experience;
 use App\Models\Faq;
 use App\Models\Manual;
 use App\Models\News;
@@ -52,15 +51,7 @@ class DatabaseSeeder extends Seeder
             Faq::firstOrCreate(['question' => $f['question']], $f + ['is_active' => true]);
         }
 
-        // 体験オプション
-        $experiences = [
-            ['name' => '星空観察（ガイドなし）', 'description' => '双眼鏡の無料貸出あり。新野の満天の星をお楽しみください。', 'price' => 0,    'price_note' => '無料',      'season' => '通年（晴天時）', 'season_tag' => '通年', 'requires_reservation' => false, 'is_active' => true, 'popularity' => 95, 'sort_order' => 1],
-            ['name' => '星空ガイド付き観察',     'description' => '地元ガイドが星座・天体を解説。望遠鏡もご用意。',         'price' => 2000, 'price_note' => '1組¥2,000', 'season' => '通年（晴天時）', 'season_tag' => '通年', 'requires_reservation' => true,  'is_active' => true, 'popularity' => 82, 'sort_order' => 2],
-            ['name' => 'BBQプラン',              'description' => 'BBQグリル・炭・網のセットをご用意します。',              'price' => 3000, 'price_note' => '1組¥3,000', 'season' => '4月〜11月',      'season_tag' => '春',   'requires_reservation' => true,  'is_active' => true, 'popularity' => 78, 'sort_order' => 3],
-        ];
-        foreach ($experiences as $e) {
-            Experience::firstOrCreate(['name' => $e['name']], $e);
-        }
+        $this->call(ExperienceSeeder::class);
 
         // 固定ページ
         $pages = [
