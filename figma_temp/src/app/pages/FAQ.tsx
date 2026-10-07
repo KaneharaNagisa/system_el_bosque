@@ -165,7 +165,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
         </span>
         <FaChevronDown
           size={14}
-          color="#1e3c0e"
+          color="#7a4a1e"
           style={{
             flexShrink: 0,
             marginTop: "3px",
@@ -205,7 +205,7 @@ export function FAQ() {
       {/* Header */}
       <div
         style={{
-          background: "linear-gradient(135deg, #0e1a08 0%, #1b2f0e 60%, #254510 100%)",
+          background: "linear-gradient(135deg, #5c3317 0%, #7d4820 100%)",
           padding: "8rem 1.5rem 4rem",
           textAlign: "center",
         }}
@@ -246,7 +246,7 @@ export function FAQ() {
                 key={cat.label}
                 style={{
                   backgroundColor: "#faf5e8",
-                  borderRadius: "4px",
+                  borderRadius: "12px",
                   overflow: "hidden",
                   boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
                   border: "1px solid rgba(180,140,80,0.12)",
@@ -254,7 +254,7 @@ export function FAQ() {
               >
                 <div
                   style={{
-                    backgroundColor: "#1b2f0e",
+                    backgroundColor: "#256840",
                     padding: "1.1rem 1.75rem",
                     display: "flex",
                     alignItems: "center",
@@ -283,58 +283,55 @@ export function FAQ() {
             ))}
           </div>
 
-          {/* Contact CTA */}
-          <div
-            style={{
-              marginTop: "3rem",
-              backgroundColor: "#1b2f0e",
-              borderRadius: "4px",
-              padding: "2.5rem",
-              textAlign: "center",
-              border: "1px solid rgba(212,176,112,0.18)",
-            }}
-          >
-            <h3
-              style={{
-                fontFamily: "'Noto Serif JP', serif",
-                fontSize: "1.15rem",
-                fontWeight: 700,
-                color: "#f0e8d0",
-                marginBottom: "0.75rem",
-              }}
-            >
-              お探しの答えが見つかりませんでしたか？
-            </h3>
-            <p
-              style={{
-                color: "rgba(240,232,208,0.72)",
-                fontSize: "0.875rem",
-                lineHeight: 1.9,
-                marginBottom: "1.5rem",
-              }}
-            >
-              お気軽にお問い合わせください。
-              <br />
-              メールにてご返答いたします（通常2〜3営業日以内）。
-            </p>
-            <Link
-              to="/contact"
-              style={{
-                display: "inline-block",
-                backgroundColor: "#5c2e12",
-                color: "#f0e8d0",
-                padding: "0.875rem 2rem",
-                borderRadius: "3px",
-                textDecoration: "none",
-                fontWeight: 700,
-                fontSize: "0.95rem",
-                border: "1px solid rgba(212,176,112,0.2)",
-              }}
-            >
-              お問い合わせフォーム
-            </Link>
-          </div>
         </div>
+      </section>
+
+      {/* ── Contact CTA ── */}
+      <section
+        style={{
+          background: "linear-gradient(135deg, #55cce8 0%, #3abcb0 100%)",
+          padding: "4rem 1.5rem",
+          textAlign: "center",
+        }}
+      >
+        <h2
+          style={{
+            fontFamily: "'Noto Serif JP', serif",
+            fontSize: "clamp(1.3rem, 3vw, 1.8rem)",
+            fontWeight: 700,
+            color: "#ffffff",
+            marginBottom: "0.75rem",
+          }}
+        >
+          お探しの答えが見つかりませんでしたか？
+        </h2>
+        <p
+          style={{
+            color: "rgba(255,255,255,0.85)",
+            fontSize: "0.9rem",
+            lineHeight: 1.9,
+            marginBottom: "1.75rem",
+          }}
+        >
+          お気軽にお問い合わせください。
+          <br />
+          メールにてご返答いたします（通常2〜3営業日以内）。
+        </p>
+        <Link
+          to="/contact"
+          style={{
+            display: "inline-block",
+            backgroundColor: "#f5ede0",
+            color: "#5c3317",
+            padding: "0.875rem 2.5rem",
+            borderRadius: "12px",
+            textDecoration: "none",
+            fontWeight: 700,
+            fontSize: "1rem",
+          }}
+        >
+          お問い合わせフォーム
+        </Link>
       </section>
     </div>
   );

@@ -28,8 +28,8 @@ const inputStyle: React.CSSProperties = {
   width: "100%",
   padding: "0.75rem 1rem",
   backgroundColor: "#faf5e8",
-  border: "1px solid rgba(30,60,14,0.2)",
-  borderRadius: "3px",
+  border: "1px solid rgba(100,55,20,0.2)",
+  borderRadius: "12px",
   fontSize: "0.9rem",
   color: "#2c1e10",
   outline: "none",
@@ -42,7 +42,7 @@ const labelStyle: React.CSSProperties = {
   display: "block",
   fontSize: "0.8rem",
   fontWeight: 700,
-  color: "#1e3c0e",
+  color: "#7a4a1e",
   marginBottom: "0.4rem",
   letterSpacing: "0.04em",
 };
@@ -67,8 +67,8 @@ export function Contact() {
 
   const focusedInputStyle = (field: string): React.CSSProperties => ({
     ...inputStyle,
-    borderColor: focusedField === field ? "#1e3c0e" : "rgba(30,60,14,0.2)",
-    boxShadow: focusedField === field ? "0 0 0 3px rgba(30,60,14,0.1)" : "none",
+    borderColor: focusedField === field ? "#7a4a1e" : "rgba(100,55,20,0.2)",
+    boxShadow: focusedField === field ? "0 0 0 3px rgba(100,55,20,0.1)" : "none",
   });
 
   if (submitted) {
@@ -76,7 +76,7 @@ export function Contact() {
       <div>
         <div
           style={{
-            background: "linear-gradient(135deg, #0e1a08 0%, #1b2f0e 60%, #254510 100%)",
+            background: "linear-gradient(135deg, #5c3317 0%, #7d4820 100%)",
             padding: "8rem 1.5rem 4rem",
             textAlign: "center",
           }}
@@ -112,19 +112,19 @@ export function Contact() {
               margin: "0 auto",
               textAlign: "center",
               backgroundColor: "#faf5e8",
-              borderRadius: "4px",
+              borderRadius: "12px",
               padding: "3.5rem 2rem",
               boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
               border: "1px solid rgba(180,140,80,0.15)",
             }}
           >
-            <FaCheckCircle size={56} color="#1e3c0e" style={{ marginBottom: "1.5rem" }} />
+            <FaCheckCircle size={56} color="#7a4a1e" style={{ marginBottom: "1.5rem" }} />
             <h2
               style={{
                 fontFamily: "'Noto Serif JP', serif",
                 fontSize: "1.5rem",
                 fontWeight: 700,
-                color: "#1e3c0e",
+                color: "#7a4a1e",
                 marginBottom: "1rem",
               }}
             >
@@ -140,10 +140,10 @@ export function Contact() {
               to="/"
               style={{
                 display: "inline-block",
-                backgroundColor: "#1e3c0e",
+                backgroundColor: "#256840",
                 color: "#f0e8d0",
                 padding: "0.875rem 2rem",
-                borderRadius: "3px",
+                borderRadius: "12px",
                 textDecoration: "none",
                 fontWeight: 700,
                 fontSize: "0.95rem",
@@ -162,7 +162,7 @@ export function Contact() {
       {/* Header */}
       <div
         style={{
-          background: "linear-gradient(135deg, #0e1a08 0%, #1b2f0e 60%, #254510 100%)",
+          background: "linear-gradient(135deg, #5c3317 0%, #7d4820 100%)",
           padding: "8rem 1.5rem 4rem",
           textAlign: "center",
         }}
@@ -206,7 +206,7 @@ export function Contact() {
               <div
                 style={{
                   backgroundColor: "#faf5e8",
-                  borderRadius: "4px",
+                  borderRadius: "12px",
                   padding: "2.5rem",
                   boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
                   border: "1px solid rgba(180,140,80,0.15)",
@@ -217,7 +217,7 @@ export function Contact() {
                     fontFamily: "'Noto Serif JP', serif",
                     fontSize: "1.2rem",
                     fontWeight: 700,
-                    color: "#1e3c0e",
+                    color: "#7a4a1e",
                     marginBottom: "2rem",
                     paddingBottom: "1rem",
                     borderBottom: "2px solid rgba(180,140,80,0.2)",
@@ -326,10 +326,10 @@ export function Contact() {
                   style={{
                     width: "100%",
                     marginTop: "2rem",
-                    backgroundColor: "#5c2e12",
+                    backgroundColor: "#256840",
                     color: "#f0e8d0",
                     padding: "1rem",
-                    borderRadius: "3px",
+                    borderRadius: "12px",
                     border: "none",
                     cursor: "pointer",
                     fontSize: "1rem",
@@ -362,11 +362,11 @@ export function Contact() {
               {/* Contact Info */}
               <div
                 style={{
-                  backgroundColor: "#1b2f0e",
-                  borderRadius: "4px",
+                  backgroundColor: "#1e5c2e",
+                  borderRadius: "12px",
                   padding: "1.5rem",
                   color: "#f0e8d0",
-                  border: "1px solid rgba(212,176,112,0.18)",
+                  border: "1px solid rgba(80,180,100,0.25)",
                 }}
               >
                 <h3
@@ -374,7 +374,7 @@ export function Contact() {
                     fontFamily: "'Noto Serif JP', serif",
                     fontSize: "1rem",
                     fontWeight: 700,
-                    color: "#d4b070",
+                    color: "#ffffff",
                     marginBottom: "1.25rem",
                   }}
                 >
@@ -382,7 +382,7 @@ export function Contact() {
                 </h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                   <div style={{ display: "flex", alignItems: "flex-start", gap: "0.6rem" }}>
-                    <FaEnvelope size={14} color="#d4b070" style={{ flexShrink: 0, marginTop: "3px" }} />
+                    <FaEnvelope size={14} color="rgba(255,255,255,0.7)" style={{ flexShrink: 0, marginTop: "3px" }} />
                     <div>
                       <p style={{ fontSize: "0.82rem", color: "rgba(240,232,208,0.9)", margin: 0 }}>
                         info@elbosque.jp
@@ -393,7 +393,7 @@ export function Contact() {
                     </div>
                   </div>
                   <div style={{ display: "flex", alignItems: "flex-start", gap: "0.6rem" }}>
-                    <FaMapMarkerAlt size={14} color="#d4b070" style={{ flexShrink: 0, marginTop: "3px" }} />
+                    <FaMapMarkerAlt size={14} color="rgba(255,255,255,0.7)" style={{ flexShrink: 0, marginTop: "3px" }} />
                     <div>
                       <p style={{ fontSize: "0.82rem", color: "rgba(240,232,208,0.9)", margin: 0, lineHeight: 1.7 }}>
                         〒399-1612
@@ -403,7 +403,7 @@ export function Contact() {
                     </div>
                   </div>
                   <div style={{ display: "flex", alignItems: "flex-start", gap: "0.6rem" }}>
-                    <FaClock size={14} color="#d4b070" style={{ flexShrink: 0, marginTop: "3px" }} />
+                    <FaClock size={14} color="rgba(255,255,255,0.7)" style={{ flexShrink: 0, marginTop: "3px" }} />
                     <div>
                       <p style={{ fontSize: "0.82rem", color: "rgba(240,232,208,0.9)", margin: 0 }}>
                         返信：2〜3営業日以内
@@ -420,7 +420,7 @@ export function Contact() {
               <div
                 style={{
                   backgroundColor: "#faf5e8",
-                  borderRadius: "4px",
+                  borderRadius: "12px",
                   padding: "1.5rem",
                   border: "1px solid rgba(180,140,80,0.18)",
                   boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
@@ -431,7 +431,7 @@ export function Contact() {
                     fontFamily: "'Noto Serif JP', serif",
                     fontSize: "0.95rem",
                     fontWeight: 700,
-                    color: "#1e3c0e",
+                    color: "#7a4a1e",
                     marginBottom: "0.75rem",
                   }}
                 >
@@ -447,10 +447,10 @@ export function Contact() {
                     alignItems: "center",
                     justifyContent: "center",
                     gap: "0.4rem",
-                    backgroundColor: "#5c2e12",
+                    backgroundColor: "#256840",
                     color: "#f0e8d0",
                     padding: "0.75rem 1.25rem",
-                    borderRadius: "3px",
+                    borderRadius: "12px",
                     textDecoration: "none",
                     fontWeight: 700,
                     fontSize: "0.88rem",
@@ -465,7 +465,7 @@ export function Contact() {
               <div
                 style={{
                   backgroundColor: "#f2e8d0",
-                  borderRadius: "4px",
+                  borderRadius: "12px",
                   padding: "1.5rem",
                   border: "1px solid rgba(180,140,80,0.15)",
                 }}
@@ -475,7 +475,7 @@ export function Contact() {
                     fontFamily: "'Noto Serif JP', serif",
                     fontSize: "0.95rem",
                     fontWeight: 700,
-                    color: "#1e3c0e",
+                    color: "#7a4a1e",
                     marginBottom: "0.75rem",
                   }}
                 >
@@ -489,7 +489,7 @@ export function Contact() {
                   style={{
                     display: "block",
                     textAlign: "center",
-                    color: "#7a4020",
+                    color: "#7a4a1e",
                     fontSize: "0.82rem",
                     fontWeight: 700,
                     textDecoration: "none",

@@ -28,8 +28,8 @@ const inputStyle: React.CSSProperties = {
   width: "100%",
   padding: "0.75rem 1rem",
   backgroundColor: "#faf5e8",
-  border: "1px solid rgba(30,60,14,0.2)",
-  borderRadius: "3px",
+  border: "1px solid rgba(100,55,20,0.2)",
+  borderRadius: "12px",
   fontSize: "0.9rem",
   color: "#2c1e10",
   outline: "none",
@@ -42,7 +42,7 @@ const labelStyle: React.CSSProperties = {
   display: "block",
   fontSize: "0.8rem",
   fontWeight: 700,
-  color: "#1e3c0e",
+  color: "#7a4a1e",
   marginBottom: "0.4rem",
   letterSpacing: "0.04em",
 };
@@ -137,8 +137,8 @@ export function ReservationDetail() {
 
   const focusedInputStyle = (field: string): React.CSSProperties => ({
     ...inputStyle,
-    borderColor: focusedField === field ? "#1e3c0e" : "rgba(30,60,14,0.2)",
-    boxShadow: focusedField === field ? "0 0 0 3px rgba(30,60,14,0.1)" : "none",
+    borderColor: focusedField === field ? "#7a4a1e" : "rgba(100,55,20,0.2)",
+    boxShadow: focusedField === field ? "0 0 0 3px rgba(100,55,20,0.1)" : "none",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -164,7 +164,7 @@ export function ReservationDetail() {
       style={{
         fontSize: "0.92rem",
         fontWeight: 700,
-        color: "#1e3c0e",
+        color: "#7a4a1e",
         marginBottom: "1.25rem",
         display: "flex",
         alignItems: "center",
@@ -173,7 +173,7 @@ export function ReservationDetail() {
     >
       <span
         style={{
-          backgroundColor: "#1e3c0e",
+          backgroundColor: "#7a4a1e",
           color: "#f0e8d0",
           width: "24px",
           height: "24px",
@@ -200,7 +200,7 @@ export function ReservationDetail() {
       {/* Header */}
       <div
         style={{
-          background: "linear-gradient(135deg, #0e1a08 0%, #1b2f0e 60%, #254510 100%)",
+          background: "linear-gradient(135deg, #5c3317 0%, #7d4820 100%)",
           padding: "8rem 1.5rem 4rem",
           textAlign: "center",
         }}
@@ -245,7 +245,7 @@ export function ReservationDetail() {
               display: "inline-flex",
               alignItems: "center",
               gap: "0.35rem",
-              color: "#7a4020",
+              color: "#7a4a1e",
               fontSize: "0.85rem",
               fontWeight: 700,
               fontFamily: "'Noto Sans JP', sans-serif",
@@ -271,7 +271,7 @@ export function ReservationDetail() {
               <div
                 style={{
                   backgroundColor: "#faf5e8",
-                  borderRadius: "4px",
+                  borderRadius: "12px",
                   padding: "2.5rem",
                   boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
                   border: "1px solid rgba(180,140,80,0.15)",
@@ -282,7 +282,7 @@ export function ReservationDetail() {
                     fontFamily: "'Noto Serif JP', serif",
                     fontSize: "1.2rem",
                     fontWeight: 700,
-                    color: "#1e3c0e",
+                    color: "#7a4a1e",
                     marginBottom: "2rem",
                     paddingBottom: "1rem",
                     borderBottom: "2px solid rgba(180,140,80,0.2)",
@@ -293,7 +293,7 @@ export function ReservationDetail() {
 
                 {/* Step 1: Guests */}
                 <div style={{ marginBottom: "2rem" }}>
-                  {stepBadge(1, "宿泊人数", <FaUsers size={14} color="#5c2e12" />)}
+                  {stepBadge(1, "宿泊人数", <FaUsers size={14} color="#7a4a1e" />)}
                   <div>
                     <label style={labelStyle}>
                       人数 <span style={{ color: "#a03020" }}>*</span>
@@ -322,7 +322,7 @@ export function ReservationDetail() {
 
                 {/* Step 2: Pets */}
                 <div style={{ marginBottom: "2rem", marginTop: "1.5rem" }}>
-                  {stepBadge(2, "ペット同伴", <FaPaw size={14} color="#5c2e12" />)}
+                  {stepBadge(2, "ペット同伴", <FaPaw size={14} color="#7a4a1e" />)}
                   <div>
                     <label style={labelStyle}>ペット</label>
                     <select
@@ -372,7 +372,7 @@ export function ReservationDetail() {
                             display: "inline-flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            backgroundColor: "#5c2e12",
+                            backgroundColor: "#7a4a1e",
                             color: "#f0e8d0",
                             width: "18px",
                             height: "18px",
@@ -401,7 +401,7 @@ export function ReservationDetail() {
                             display: "inline-flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            backgroundColor: "#5c2e12",
+                            backgroundColor: "#7a4a1e",
                             color: "#f0e8d0",
                             width: "18px",
                             height: "18px",
@@ -433,11 +433,11 @@ export function ReservationDetail() {
                         marginTop: "0.75rem",
                         backgroundColor: "rgba(196,122,48,0.06)",
                         border: "1px solid rgba(196,122,48,0.15)",
-                        borderRadius: "3px",
+                        borderRadius: "12px",
                         padding: "0.75rem 1rem",
                       }}
                     >
-                      <p style={{ fontSize: "0.75rem", color: "#7a4020", margin: 0, lineHeight: 1.7 }}>
+                      <p style={{ fontSize: "0.75rem", color: "#7a4a1e", margin: 0, lineHeight: 1.7 }}>
                         ※ 小型犬2頭まで、または大型犬2頭まで。室内飼いに慣れたワンちゃんに限ります。
                         ケージ・トイレシートをご持参ください。
                       </p>
@@ -449,11 +449,11 @@ export function ReservationDetail() {
 
                 {/* Step 3: Stay Support */}
                 <div style={{ marginBottom: "2rem", marginTop: "1.5rem" }}>
-                  {stepBadge(3, "滞在サポート（任意）", <FaConciergeBell size={14} color="#5c2e12" />)}
+                  {stepBadge(3, "滞在サポート（任意）", <FaConciergeBell size={14} color="#7a4a1e" />)}
                   <div
                     style={{
                       backgroundColor: "#f2e8d0",
-                      borderRadius: "3px",
+                      borderRadius: "12px",
                       padding: "1rem 1.25rem",
                       border: "1px solid rgba(180,140,80,0.15)",
                       marginBottom: "1rem",
@@ -471,14 +471,14 @@ export function ReservationDetail() {
                       <br />
                       {parseInt(form.guests) >= 5 ? (
                         <>
-                          <span style={{ fontWeight: 700, color: "#5c2e12" }}>料金：¥13,000（¥8,000 + 送迎追加¥5,000）</span>
+                          <span style={{ fontWeight: 700, color: "#7a4a1e" }}>料金：¥13,000（¥8,000 + 送迎追加¥5,000）</span>
                           <br />
-                          <span style={{ color: "#7a4020" }}>
+                          <span style={{ color: "#7a4a1e" }}>
                             ※ {form.guests}名のため追加車両手配費¥5,000が加算されます（人数不問・一律）
                           </span>
                         </>
                       ) : (
-                        <span style={{ fontWeight: 700, color: "#5c2e12" }}>料金：¥8,000（1滞在あたり・任意）</span>
+                        <span style={{ fontWeight: 700, color: "#7a4a1e" }}>料金：¥8,000（1滞在あたり・任意）</span>
                       )}
                     </p>
                   </div>
@@ -501,7 +501,7 @@ export function ReservationDetail() {
 
                 {/* Step 4: Experiences */}
                 <div style={{ marginBottom: "2rem", marginTop: "1.5rem" }}>
-                  {stepBadge(4, "体験オプション（任意・複数選択可）", <FaMountain size={14} color="#5c2e12" />)}
+                  {stepBadge(4, "体験オプション（任意・複数選択可）", <FaMountain size={14} color="#7a4a1e" />)}
                   <div
                     style={{
                       display: "flex",
@@ -520,12 +520,12 @@ export function ReservationDetail() {
                             gap: "0.75rem",
                             padding: "0.85rem 1rem",
                             backgroundColor: isSelected
-                              ? "rgba(30,60,14,0.07)"
+                              ? "rgba(100,55,20,0.07)"
                               : "#f2e8d0",
-                            borderRadius: "3px",
+                            borderRadius: "12px",
                             border: `1px solid ${
                               isSelected
-                                ? "rgba(30,60,14,0.25)"
+                                ? "rgba(100,55,20,0.25)"
                                 : "rgba(180,140,80,0.15)"
                             }`,
                             cursor: "pointer",
@@ -541,7 +541,7 @@ export function ReservationDetail() {
                             style={{
                               width: "16px",
                               height: "16px",
-                              accentColor: "#1e3c0e",
+                              accentColor: "#7a4a1e",
                               flexShrink: 0,
                             }}
                           />
@@ -564,7 +564,7 @@ export function ReservationDetail() {
                                 style={{
                                   display: "block",
                                   fontSize: "0.68rem",
-                                  color: "#7a4020",
+                                  color: "#7a4a1e",
                                   marginTop: "0.15rem",
                                 }}
                               >
@@ -576,7 +576,7 @@ export function ReservationDetail() {
                             style={{
                               fontSize: "0.78rem",
                               fontWeight: 700,
-                              color: "#5c2e12",
+                              color: "#7a4a1e",
                               whiteSpace: "nowrap",
                             }}
                           >
@@ -595,7 +595,7 @@ export function ReservationDetail() {
 
                 {/* Step 5: Message */}
                 <div style={{ marginBottom: "2rem", marginTop: "1.5rem" }}>
-                  {stepBadge(5, "ご要望", <FaCommentDots size={14} color="#5c2e12" />)}
+                  {stepBadge(5, "ご要望", <FaCommentDots size={14} color="#7a4a1e" />)}
                   <textarea
                     name="message"
                     value={form.message}
@@ -636,7 +636,7 @@ export function ReservationDetail() {
                       style={{
                         width: "16px",
                         height: "16px",
-                        accentColor: "#1e3c0e",
+                        accentColor: "#7a4a1e",
                         flexShrink: 0,
                         marginTop: "2px",
                       }}
@@ -644,7 +644,7 @@ export function ReservationDetail() {
                     <span>
                       <Link
                         to="/faq"
-                        style={{ color: "#1e3c0e", fontWeight: 700 }}
+                        style={{ color: "#7a4a1e", fontWeight: 700 }}
                       >
                         利用規約
                       </Link>
@@ -658,10 +658,10 @@ export function ReservationDetail() {
                   disabled={!form.agreement}
                   style={{
                     width: "100%",
-                    backgroundColor: form.agreement ? "#5c2e12" : "#c8b8a0",
-                    color: form.agreement ? "#f0e8d0" : "#a09080",
+                    backgroundColor: form.agreement ? "#c8251a" : "#c8b8a0",
+                    color: form.agreement ? "#ffffff" : "#a09080",
                     padding: "1.1rem",
-                    borderRadius: "3px",
+                    borderRadius: "12px",
                     border: "none",
                     cursor: form.agreement ? "pointer" : "not-allowed",
                     fontSize: "1rem",
@@ -690,11 +690,11 @@ export function ReservationDetail() {
               {/* Stay Dates Card */}
               <div
                 style={{
-                  backgroundColor: "#1b2f0e",
-                  borderRadius: "4px",
+                  backgroundColor: "#1e5c2e",
+                  borderRadius: "12px",
                   padding: "1.5rem",
                   color: "#f0e8d0",
-                  border: "1px solid rgba(212,176,112,0.18)",
+                  border: "1px solid rgba(80,180,100,0.25)",
                 }}
               >
                 <div
@@ -705,13 +705,13 @@ export function ReservationDetail() {
                     marginBottom: "1.25rem",
                   }}
                 >
-                  <FaCalendarAlt size={14} color="#d4b070" />
+                  <FaCalendarAlt size={14} color="rgba(255,255,255,0.7)" />
                   <h3
                     style={{
                       fontFamily: "'Noto Serif JP', serif",
                       fontSize: "1rem",
                       fontWeight: 700,
-                      color: "#d4b070",
+                      color: "#ffffff",
                       margin: 0,
                     }}
                   >
@@ -726,13 +726,13 @@ export function ReservationDetail() {
                     fontSize: "0.85rem",
                   }}
                 >
-                  <div style={{ padding: "0.4rem 0", borderBottom: "1px solid rgba(240,232,208,0.1)" }}>
+                  <div style={{ padding: "0.4rem 0", borderBottom: "1px solid rgba(255,255,255,0.15)" }}>
                     <span style={{ color: "rgba(240,232,208,0.6)", fontSize: "0.72rem" }}>チェックイン</span>
                     <div style={{ fontWeight: 700, color: "#f0e8d0", marginTop: "0.2rem" }}>
                       {formatDateJP(checkin)}
                     </div>
                   </div>
-                  <div style={{ padding: "0.4rem 0", borderBottom: "1px solid rgba(240,232,208,0.1)" }}>
+                  <div style={{ padding: "0.4rem 0", borderBottom: "1px solid rgba(255,255,255,0.15)" }}>
                     <span style={{ color: "rgba(240,232,208,0.6)", fontSize: "0.72rem" }}>チェックアウト</span>
                     <div style={{ fontWeight: 700, color: "#f0e8d0", marginTop: "0.2rem" }}>
                       {formatDateJP(checkout)}
@@ -749,10 +749,10 @@ export function ReservationDetail() {
                     <div>
                       <span
                         style={{
-                          backgroundColor: "rgba(212,176,112,0.2)",
-                          color: "#d4b070",
+                          backgroundColor: "rgba(255,255,255,0.15)",
+                          color: "#ffffff",
                           padding: "0.25rem 0.65rem",
-                          borderRadius: "3px",
+                          borderRadius: "12px",
                           fontSize: "0.78rem",
                           fontWeight: 700,
                         }}
@@ -777,13 +777,13 @@ export function ReservationDetail() {
                     width: "100%",
                     textAlign: "center",
                     background: "none",
-                    border: "1px solid rgba(240,232,208,0.2)",
-                    color: "rgba(240,232,208,0.7)",
+                    border: "1px solid rgba(255,255,255,0.3)",
+                    color: "rgba(255,255,255,0.8)",
                     fontSize: "0.8rem",
                     fontWeight: 700,
                     fontFamily: "'Noto Sans JP', sans-serif",
                     padding: "0.55rem",
-                    borderRadius: "3px",
+                    borderRadius: "12px",
                     marginTop: "1rem",
                     cursor: "pointer",
                   }}
@@ -796,7 +796,7 @@ export function ReservationDetail() {
               <div
                 style={{
                   backgroundColor: "#faf5e8",
-                  borderRadius: "4px",
+                  borderRadius: "12px",
                   padding: "1.5rem",
                   border: "1px solid rgba(180,140,80,0.18)",
                   boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
@@ -810,13 +810,13 @@ export function ReservationDetail() {
                     marginBottom: "1rem",
                   }}
                 >
-                  <FaUser size={14} color="#1e3c0e" />
+                  <FaUser size={14} color="#7a4a1e" />
                   <h3
                     style={{
                       fontFamily: "'Noto Serif JP', serif",
                       fontSize: "0.95rem",
                       fontWeight: 700,
-                      color: "#1e3c0e",
+                      color: "#7a4a1e",
                       margin: 0,
                     }}
                   >
@@ -872,7 +872,7 @@ export function ReservationDetail() {
               <div
                 style={{
                   backgroundColor: "#faf5e8",
-                  borderRadius: "4px",
+                  borderRadius: "12px",
                   padding: "1.5rem",
                   border: "1px solid rgba(180,140,80,0.18)",
                   boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
@@ -883,7 +883,7 @@ export function ReservationDetail() {
                     fontFamily: "'Noto Serif JP', serif",
                     fontSize: "0.95rem",
                     fontWeight: 700,
-                    color: "#1e3c0e",
+                    color: "#7a4a1e",
                     marginBottom: "1rem",
                   }}
                 >
@@ -914,7 +914,7 @@ export function ReservationDetail() {
                       }}
                     >
                       <span>{item.label}</span>
-                      <span style={{ fontWeight: 700, color: "#1e3c0e" }}>
+                      <span style={{ fontWeight: 700, color: "#7a4a1e" }}>
                         {item.price}
                       </span>
                     </div>
@@ -934,7 +934,7 @@ export function ReservationDetail() {
                   style={{
                     display: "block",
                     textAlign: "center",
-                    color: "#7a4020",
+                    color: "#7a4a1e",
                     fontSize: "0.8rem",
                     fontWeight: 700,
                     textDecoration: "none",

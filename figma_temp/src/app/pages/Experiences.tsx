@@ -224,19 +224,19 @@ const allExperiences = [...experiences, starExp];
 /* ── 予約ステップ ── */
 const bookingSteps = [
   {
-    icon: <FaClipboardList size={22} color="#d4b070" />,
+    icon: <FaClipboardList size={22} color="#ffffff" />,
     step: "STEP 1",
     title: "宿泊予約時にお申込み",
     desc: "ご予約フォームまたはメールにて、体験プログラムの種類と人数をお知らせください。",
   },
   {
-    icon: <FaPhoneAlt size={22} color="#d4b070" />,
+    icon: <FaPhoneAlt size={22} color="#ffffff" />,
     step: "STEP 2",
     title: "前日に詳細を確認",
     desc: "天候・準備状況を踏まえ、前日に詳細な集合時間・場所をご案内いたします。",
   },
   {
-    icon: <FaStar size={22} color="#d4b070" />,
+    icon: <FaStar size={22} color="#ffffff" />,
     step: "STEP 3",
     title: "当日、体験スタート",
     desc: "スタッフが丁寧にサポートします。お気軽にお楽しみください。",
@@ -274,7 +274,7 @@ function ExperienceCard({ exp }: { exp: Experience }) {
     <div
       style={{
         backgroundColor: "#faf5e8",
-        borderRadius: "6px",
+        borderRadius: "10px",
         overflow: "hidden",
         boxShadow: "0 4px 24px rgba(0,0,0,0.09)",
       }}
@@ -310,7 +310,7 @@ function ExperienceCard({ exp }: { exp: Experience }) {
                 color: "#f0e8d0",
                 border: "1px solid rgba(242,232,208,0.35)",
                 padding: "0.2rem 0.6rem",
-                borderRadius: "2px",
+                borderRadius: "8px",
                 fontSize: "0.68rem",
                 fontWeight: 700,
                 letterSpacing: "0.06em",
@@ -322,9 +322,9 @@ function ExperienceCard({ exp }: { exp: Experience }) {
           <span
             style={{
               backgroundColor: "#d4b070",
-              color: "#1e3c0e",
+              color: "#7a4a1e",
               padding: "0.2rem 0.65rem",
-              borderRadius: "2px",
+              borderRadius: "8px",
               fontSize: "0.68rem",
               fontWeight: 700,
               letterSpacing: "0.06em",
@@ -379,7 +379,7 @@ function ExperienceCard({ exp }: { exp: Experience }) {
                 style={{
                   backgroundColor: "#f2e8d0",
                   border: "1px solid rgba(180,140,80,0.18)",
-                  borderRadius: "4px",
+                  borderRadius: "12px",
                   padding: "0.6rem 0.85rem",
                   display: "flex",
                   flexDirection: "column",
@@ -391,7 +391,7 @@ function ExperienceCard({ exp }: { exp: Experience }) {
                     display: "flex",
                     alignItems: "center",
                     gap: "0.3rem",
-                    color: "#7a4020",
+                    color: "#7a4a1e",
                     fontSize: "0.68rem",
                     fontWeight: 700,
                     letterSpacing: "0.06em",
@@ -400,7 +400,7 @@ function ExperienceCard({ exp }: { exp: Experience }) {
                   {spec.icon}
                   {spec.label}
                 </div>
-                <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#1e3c0e" }}>
+                <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#7a4a1e" }}>
                   {spec.value}
                 </div>
               </div>
@@ -419,7 +419,7 @@ function ExperienceCard({ exp }: { exp: Experience }) {
                 key={b}
                 style={{ display: "flex", alignItems: "flex-start", gap: "0.45rem", fontSize: "0.8rem", color: "#5a4838", lineHeight: 1.6 }}
               >
-                <FaCheckCircle size={13} color="#1e3c0e" style={{ flexShrink: 0, marginTop: "2px" }} />
+                <FaCheckCircle size={13} color="#7a4a1e" style={{ flexShrink: 0, marginTop: "2px" }} />
                 {b}
               </li>
             ))}
@@ -451,7 +451,7 @@ export function Experiences() {
       {/* ── ページヘッダー ── */}
       <div
         style={{
-          background: "linear-gradient(135deg, #0e1a08 0%, #1b2f0e 60%, #254510 100%)",
+          background: "linear-gradient(135deg, #5c3317 0%, #7d4820 100%)",
           padding: "8rem 1.5rem 4rem",
           textAlign: "center",
         }}
@@ -517,7 +517,7 @@ export function Experiences() {
           <div style={{ textAlign: "center", marginBottom: "3rem" }}>
             <p
               style={{
-                color: "#7a4020",
+                color: "#7a4a1e",
                 fontSize: "0.72rem",
                 letterSpacing: "0.25em",
                 fontWeight: 700,
@@ -532,7 +532,7 @@ export function Experiences() {
                 fontFamily: "'Noto Serif JP', serif",
                 fontSize: "clamp(1.4rem, 3vw, 1.9rem)",
                 fontWeight: 700,
-                color: "#1e3c0e",
+                color: "#256840",
               }}
             >
               体験の予約方法
@@ -576,7 +576,7 @@ export function Experiences() {
                   style={{
                     width: "56px",
                     height: "56px",
-                    backgroundColor: "#1b2f0e",
+                    backgroundColor: "#3abcb0",
                     borderRadius: "50%",
                     display: "flex",
                     alignItems: "center",
@@ -590,7 +590,7 @@ export function Experiences() {
                 <p
                   style={{
                     fontSize: "0.65rem",
-                    color: "#7a4020",
+                    color: "#7a4a1e",
                     fontWeight: 700,
                     letterSpacing: "0.12em",
                     marginBottom: "0.35rem",
@@ -603,7 +603,7 @@ export function Experiences() {
                     fontFamily: "'Noto Serif JP', serif",
                     fontSize: "0.95rem",
                     fontWeight: 700,
-                    color: "#1e3c0e",
+                    color: "#7a4a1e",
                     marginBottom: "0.5rem",
                     lineHeight: 1.4,
                   }}
@@ -619,10 +619,10 @@ export function Experiences() {
 
           <div
             style={{
-              backgroundColor: "rgba(30,60,14,0.06)",
-              border: "1px solid rgba(30,60,14,0.15)",
-              borderLeft: "4px solid #1e3c0e",
-              borderRadius: "4px",
+              backgroundColor: "rgba(100,55,20,0.06)",
+              border: "1px solid rgba(100,55,20,0.15)",
+              borderLeft: "4px solid #7a4a1e",
+              borderRadius: "12px",
               padding: "1rem 1.35rem",
             }}
           >
@@ -636,29 +636,27 @@ export function Experiences() {
       {/* ── CTA ── */}
       <section
         style={{
-          background: "linear-gradient(135deg, #1b2f0e 0%, #0e1a08 100%)",
+          background: "linear-gradient(135deg, #55cce8 0%, #3abcb0 100%)",
           padding: "4.5rem 1.5rem",
           textAlign: "center",
         }}
       >
         <p
           style={{
-            color: "#d4b070",
+            color: "#7a4e00",
             fontSize: "0.72rem",
             letterSpacing: "0.25em",
             fontWeight: 700,
             textTransform: "uppercase",
             marginBottom: "0.75rem",
           }}
-        >
-          Reservation
-        </p>
+        >Reservation</p>
         <h2
           style={{
             fontFamily: "'Noto Serif JP', serif",
             fontSize: "clamp(1.4rem, 3vw, 1.9rem)",
             fontWeight: 700,
-            color: "#f0e8d0",
+            color: "#ffffff",
             marginBottom: "0.75rem",
           }}
         >
@@ -666,7 +664,7 @@ export function Experiences() {
         </h2>
         <p
           style={{
-            color: "rgba(240,232,208,0.7)",
+            color: "rgba(255,255,255,0.85)",
             fontSize: "0.88rem",
             lineHeight: 1.9,
             marginBottom: "2rem",
@@ -684,11 +682,11 @@ export function Experiences() {
               display: "inline-flex",
               alignItems: "center",
               gap: "0.4rem",
-              backgroundColor: "transparent",
-              color: "#f0e8d0",
+              backgroundColor: "rgba(255,255,255,0.18)",
+              color: "#ffffff",
               padding: "0.8rem 1.75rem",
-              borderRadius: "4px",
-              border: "1px solid rgba(240,232,208,0.4)",
+              borderRadius: "12px",
+              border: "1px solid rgba(255,255,255,0.6)",
               textDecoration: "none",
               fontWeight: 700,
               fontSize: "0.9rem",
@@ -702,10 +700,10 @@ export function Experiences() {
               display: "inline-flex",
               alignItems: "center",
               gap: "0.4rem",
-              backgroundColor: "#c47a30",
-              color: "#fff",
+              backgroundColor: "#f5ede0",
+              color: "#5c3317",
               padding: "0.8rem 1.75rem",
-              borderRadius: "4px",
+              borderRadius: "12px",
               textDecoration: "none",
               fontWeight: 700,
               fontSize: "0.9rem",

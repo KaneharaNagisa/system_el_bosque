@@ -1,13 +1,17 @@
-import { useState } from "react";
+import image_260924_0103 from '@/imports/260924-0103.jpg'
+import image_260924_0074_1 from '@/imports/260924-0074-1.jpg'
+import image_260924_0074 from '@/imports/260924-0074.jpg'
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import {
   FaWifi, FaPaw, FaCar, FaStar, FaChevronRight,
   FaLeaf, FaFire, FaTree, FaBell, FaChevronDown, FaChevronUp,
 } from "react-icons/fa";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import heroLakeSrc from "../../imports/260924-0111.jpg";
+import heroCabinSrc from "../../imports/260924-0015.jpg";
 
-const HERO_IMG =
-  "https://images.unsplash.com/photo-1709209509834-d02055e6f9e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1920";
+const HERO_SLIDES = [heroLakeSrc, heroCabinSrc];
 const LAKE_IMG =
   "https://images.unsplash.com/photo-1762099375590-c0da4daa3d08?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080";
 const INTERIOR_IMG =
@@ -113,6 +117,14 @@ const topNews: TopNewsItem[] = [
 
 export function Home() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [heroIndex, setHeroIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setHeroIndex((i) => (i + 1) % HERO_SLIDES.length);
+    }, 8000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <div>
@@ -121,160 +133,178 @@ export function Home() {
         style={{
           position: "relative",
           height: "100vh",
-          minHeight: "600px",
+          minHeight: "640px",
           overflow: "hidden",
         }}
       >
-        <ImageWithFallback
-          src={HERO_IMG}
-          alt="エルボスケ外観"
-          style={{
-            position: "absolute",
-            inset: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
-        />
+        {/* 背景写真：クロスフェードスライドショー */}
+        {HERO_SLIDES.map((src, i) => (
+          <ImageWithFallback
+            key={src}
+            src={src}
+            alt="エルボスケの風景"
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: i === 1 ? "center 50%" : "center 40%",
+              opacity: heroIndex === i ? 1 : 0,
+              transition: "opacity 1.5s ease-in-out",
+              zIndex: heroIndex === i ? 1 : 0,
+            }}
+          />
+        ))}
+
+        {/* グラデーションオーバーレイ */}
         <div
           style={{
             position: "absolute",
             inset: 0,
-            background:
-              "linear-gradient(to bottom, rgba(5,12,3,0.55) 0%, rgba(5,12,3,0.35) 45%, rgba(10,22,5,0.78) 100%)",
+            zIndex: 2,
+            background: [
+              "linear-gradient(to bottom,",
+              "  rgba(255,255,255,0.72) 0%,",
+              "  rgba(255,255,255,0.42) 18%,",
+              "  rgba(255,255,255,0.08) 36%,",
+              "  rgba(0,0,0,0) 52%,",
+              "  rgba(0,0,0,0.18) 72%,",
+              "  rgba(0,0,0,0.48) 100%",
+              ")",
+            ].join(" "),
           }}
         />
+
+        {/* コンテンツ */}
         <div
           style={{
             position: "relative",
+            zIndex: 3,
             height: "100%",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            textAlign: "center",
-            padding: "0 1.5rem",
+            padding: "72px 1.5rem 3rem",
           }}
         >
-          {/* Badges */}
+          {/* ── メインコピー・CTA ── */}
           <div
             style={{
-              display: "flex",
-              gap: "0.5rem",
-              flexWrap: "wrap",
-              justifyContent: "center",
-              marginBottom: "1.75rem",
+              textAlign: "center",
             }}
-            className="hero-badges"
           >
-            {heroBadges.map((badge) => (
-              <span
-                key={badge}
+            {/* Badges */}
+            <div
+              style={{
+                display: "flex",
+                gap: "0.4rem",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                marginBottom: "1.25rem",
+              }}
+              className="hero-badges"
+            >
+              {heroBadges.map((badge) => (
+                <span
+                  key={badge}
+                  style={{
+                    backgroundColor: "rgba(80,40,15,0.75)",
+                    border: "1px solid rgba(255,255,255,0.3)",
+                    color: "#ffffff",
+                    padding: "0.28rem 0.9rem",
+                    borderRadius: "20px",
+                    fontSize: "0.73rem",
+                    letterSpacing: "0.08em",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.3rem",
+                    backdropFilter: "blur(6px)",
+                  }}
+                >
+                  <FaStar size={9} />
+                  {badge}
+                </span>
+              ))}
+            </div>
+
+            {/* Main Title */}
+            <h1
+              style={{
+                fontFamily: "'Noto Serif JP', serif",
+                fontSize: "clamp(1.85rem, 5.5vw, 3.6rem)",
+                fontWeight: 700,
+                color: "#ffffff",
+                lineHeight: 1.25,
+                marginBottom: "1rem",
+                textShadow: "0 2px 16px rgba(0,0,0,0.55)",
+              }}
+            >
+              深い森の中の
+              <br />
+              ログハウスへ
+            </h1>
+
+            {/* Sub */}
+            <p
+              style={{
+                fontSize: "clamp(0.85rem, 2vw, 1.05rem)",
+                color: "rgba(255,255,255,0.88)",
+                maxWidth: "520px",
+                margin: "0 auto 2rem",
+                lineHeight: 1.9,
+                textShadow: "0 1px 8px rgba(0,0,0,0.4)",
+              }}
+            >
+              長野県南信州・巣山湖畔。貸別荘エルボスケで過ごす、
+              <br />
+              自分だけの特別な時間。
+            </p>
+
+            {/* CTAs */}
+            <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", justifyContent: "center" }}>
+              <Link
+                to="/reservation"
                 style={{
-                  backgroundColor: "rgba(212,176,112,0.18)",
-                  border: "1px solid rgba(212,176,112,0.5)",
-                  color: "#d4b070",
-                  padding: "0.3rem 1rem",
-                  borderRadius: "2px",
-                  fontSize: "0.75rem",
-                  letterSpacing: "0.12em",
-                  display: "flex",
+                  display: "inline-flex",
                   alignItems: "center",
-                  gap: "0.3rem",
+                  gap: "0.4rem",
+                  backgroundColor: heroIndex === 1 ? "#256840" : "#c8251a",
+                  color: "#ffffff",
+                  padding: "0.85rem 2rem",
+                  borderRadius: "12px",
+                  textDecoration: "none",
+                  fontWeight: 700,
+                  fontSize: "0.92rem",
+                  letterSpacing: "0.04em",
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.25)",
+                  transition: "background-color 1.5s ease-in-out",
                 }}
               >
-                <FaStar size={10} />
-                {badge}
-              </span>
-            ))}
-          </div>
-
-          {/* Tagline */}
-          <p
-            style={{
-              fontSize: "clamp(0.85rem, 2vw, 1.1rem)",
-              color: "#d4b070",
-              letterSpacing: "0.3em",
-              marginBottom: "0.75rem",
-              fontWeight: 400,
-            }}
-          >
-            El bosque — 森の別荘
-          </p>
-
-          {/* Main Title */}
-          <h1
-            style={{
-              fontFamily: "'Noto Serif JP', serif",
-              fontSize: "clamp(2.2rem, 7vw, 4.5rem)",
-              fontWeight: 700,
-              color: "#f5f0e5",
-              lineHeight: 1.2,
-              marginBottom: "1.5rem",
-              textShadow: "0 2px 20px rgba(0,0,0,0.6)",
-            }}
-          >
-            深い森の中の
-            <br />
-            ログハウスへ
-          </h1>
-
-          {/* Sub */}
-          <p
-            style={{
-              fontSize: "clamp(0.9rem, 2.2vw, 1.15rem)",
-              color: "rgba(240,232,210,0.85)",
-              maxWidth: "560px",
-              lineHeight: 1.9,
-              marginBottom: "2.5rem",
-            }}
-          >
-            長野県南信州・巣山湖畔。貸別荘エルボスケで過ごす、
-            <br />
-            自分だけの特別な時間。
-          </p>
-
-          {/* CTAs */}
-          <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", justifyContent: "center" }}>
-            <Link
-              to="/reservation"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.4rem",
-                backgroundColor: "#5c2e12",
-                color: "#f5f0e5",
-                padding: "0.9rem 2.2rem",
-                borderRadius: "3px",
-                textDecoration: "none",
-                fontWeight: 700,
-                fontSize: "0.95rem",
-                letterSpacing: "0.05em",
-                border: "1px solid rgba(212,176,112,0.3)",
-                transition: "all 0.2s",
-              }}
-            >
-              ご予約はこちら <FaChevronRight size={13} />
-            </Link>
-            <Link
-              to="/about"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.4rem",
-                backgroundColor: "rgba(255,255,255,0.1)",
-                color: "#f5f0e5",
-                padding: "0.9rem 2rem",
-                borderRadius: "3px",
-                textDecoration: "none",
-                fontWeight: 500,
-                fontSize: "0.95rem",
-                border: "1px solid rgba(255,255,255,0.25)",
-                transition: "all 0.2s",
-              }}
-            >
-              施設を見る <FaChevronRight size={13} />
-            </Link>
+                ご予約はこちら <FaChevronRight size={13} />
+              </Link>
+              <Link
+                to="/about"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.4rem",
+                  backgroundColor: "rgba(255,255,255,0.18)",
+                  color: "#ffffff",
+                  padding: "0.85rem 1.75rem",
+                  borderRadius: "12px",
+                  textDecoration: "none",
+                  fontWeight: 500,
+                  fontSize: "0.92rem",
+                  border: "1px solid rgba(255,255,255,0.45)",
+                  backdropFilter: "blur(6px)",
+                  transition: "all 0.2s",
+                }}
+              >
+                施設を見る <FaChevronRight size={13} />
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -282,27 +312,27 @@ export function Home() {
         <div
           style={{
             position: "absolute",
-            bottom: "2rem",
+            bottom: "1.5rem",
             left: "50%",
             transform: "translateX(-50%)",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: "0.4rem",
+            gap: "0.35rem",
+            zIndex: 3,
           }}
         >
           <div
             style={{
               width: "1px",
-              height: "40px",
-              background:
-                "linear-gradient(to bottom, transparent, rgba(212,176,112,0.7))",
+              height: "36px",
+              background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.6))",
             }}
           />
           <span
             style={{
-              fontSize: "0.65rem",
-              color: "rgba(212,176,112,0.7)",
+              fontSize: "0.62rem",
+              color: "rgba(255,255,255,0.65)",
               letterSpacing: "0.2em",
             }}
           >
@@ -320,7 +350,7 @@ export function Home() {
             <div>
               <p
                 style={{
-                  color: "#7a4020",
+                  color: "#7a4a1e",
                   fontSize: "0.72rem",
                   letterSpacing: "0.25em",
                   fontWeight: 700,
@@ -331,7 +361,7 @@ export function Home() {
                   gap: "0.4rem",
                 }}
               >
-                <FaBell size={11} color="#7a4020" />
+                <FaBell size={11} color="#7a4a1e" />
                 News
               </p>
               <h2
@@ -339,7 +369,7 @@ export function Home() {
                   fontFamily: "'Noto Serif JP', serif",
                   fontSize: "clamp(1.35rem, 3vw, 1.75rem)",
                   fontWeight: 700,
-                  color: "#1e3c0e",
+                  color: "#7a4a1e",
                   lineHeight: 1.4,
                   margin: 0,
                 }}
@@ -353,7 +383,7 @@ export function Home() {
           <div
             style={{
               backgroundColor: "#faf5e8",
-              borderRadius: "4px",
+              borderRadius: "12px",
               border: "1px solid rgba(180,140,80,0.18)",
               overflow: "hidden",
             }}
@@ -395,8 +425,8 @@ export function Home() {
                       style={{
                         width: "3px",
                         alignSelf: "stretch",
-                        borderRadius: "2px",
-                        backgroundColor: isExpanded ? "#5c2e12" : "rgba(180,140,80,0.3)",
+                        borderRadius: "8px",
+                        backgroundColor: isExpanded ? "#7a4a1e" : "rgba(180,140,80,0.3)",
                         flexShrink: 0,
                         transition: "background-color 0.2s",
                       }}
@@ -424,7 +454,7 @@ export function Home() {
                               fontSize: "0.6rem",
                               fontWeight: 700,
                               padding: "0.1rem 0.45rem",
-                              borderRadius: "2px",
+                              borderRadius: "8px",
                               letterSpacing: "0.08em",
                             }}
                           >
@@ -437,7 +467,7 @@ export function Home() {
                         style={{
                           fontSize: "0.92rem",
                           fontWeight: isExpanded ? 700 : 500,
-                          color: isExpanded ? "#5c2e12" : "#2c1e10",
+                          color: isExpanded ? "#7a4a1e" : "#2c1e10",
                           lineHeight: 1.55,
                           display: "block",
                           transition: "color 0.2s",
@@ -465,7 +495,7 @@ export function Home() {
                           backgroundColor: "rgba(92,46,18,0.04)",
                           border: "1px solid rgba(92,46,18,0.1)",
                           borderLeft: "3px solid #d4b070",
-                          borderRadius: "2px",
+                          borderRadius: "8px",
                           padding: "1rem 1.25rem",
                         }}
                       >
@@ -497,7 +527,7 @@ export function Home() {
           <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
             <p
               style={{
-                color: "#7a4020",
+                color: "#7a4a1e",
                 fontSize: "0.72rem",
                 letterSpacing: "0.25em",
                 fontWeight: 700,
@@ -512,7 +542,7 @@ export function Home() {
                 fontFamily: "'Noto Serif JP', serif",
                 fontSize: "clamp(1.6rem, 3.5vw, 2.2rem)",
                 fontWeight: 700,
-                color: "#1e3c0e",
+                color: "#256840",
                 lineHeight: 1.4,
               }}
             >
@@ -533,7 +563,7 @@ export function Home() {
                 key={f.title}
                 style={{
                   backgroundColor: "#faf5e8",
-                  borderRadius: "4px",
+                  borderRadius: "12px",
                   padding: "2rem 1.75rem",
                   border: "1px solid rgba(180,140,80,0.18)",
                   borderLeft: "3px solid #d4b070",
@@ -554,7 +584,7 @@ export function Home() {
                     fontFamily: "'Noto Serif JP', serif",
                     fontSize: "1.05rem",
                     fontWeight: 700,
-                    color: "#1e3c0e",
+                    color: "#7a4a1e",
                     marginBottom: "0.6rem",
                   }}
                 >
@@ -571,10 +601,10 @@ export function Home() {
               style={{
                 marginTop: "1.5rem",
                 gridColumn: "1 / -1",
-                backgroundColor: "rgba(30,60,14,0.07)",
-                border: "1px solid rgba(30,60,14,0.18)",
-                borderLeft: "4px solid #1e3c0e",
-                borderRadius: "4px",
+                backgroundColor: "rgba(100,55,20,0.07)",
+                border: "1px solid rgba(100,55,20,0.18)",
+                borderLeft: "4px solid #7a4a1e",
+                borderRadius: "12px",
                 padding: "1.1rem 1.4rem",
                 display: "flex",
                 alignItems: "flex-start",
@@ -585,7 +615,7 @@ export function Home() {
                 style={{
                   width: "34px",
                   height: "34px",
-                  backgroundColor: "#1e3c0e",
+                  backgroundColor: "#3abcb0",
                   borderRadius: "50%",
                   display: "flex",
                   alignItems: "center",
@@ -594,9 +624,9 @@ export function Home() {
                   marginTop: "0.1rem",
                 }}
               >
-                <svg viewBox="0 0 20 20" width="15" height="15" fill="#d4b070">
+                <svg viewBox="0 0 20 20" width="15" height="15" fill="#ffffff">
                   <path d="M10 3L5 7H2a1 1 0 00-1 1v4a1 1 0 001 1h3l5 4V3z" />
-                  <path d="M14.07 5.93a7 7 0 010 8.14M16.95 3.05a11 11 0 010 13.9" stroke="#d4b070" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+                  <path d="M14.07 5.93a7 7 0 010 8.14M16.95 3.05a11 11 0 010 13.9" stroke="#ffffff" strokeWidth="1.3" fill="none" strokeLinecap="round" />
                 </svg>
               </div>
               <div>
@@ -604,7 +634,7 @@ export function Home() {
                   style={{
                     fontSize: "0.82rem",
                     fontWeight: 700,
-                    color: "#1e3c0e",
+                    color: "#7a4a1e",
                     marginBottom: "0.35rem",
                     letterSpacing: "0.02em",
                   }}
@@ -628,12 +658,12 @@ export function Home() {
       </section>
 
       {/* ── Seasons ── */}
-      <section style={{ backgroundColor: "#1b2f0e", padding: "6rem 1.5rem" }}>
+      <section style={{ backgroundColor: "#1e5c2e", padding: "6rem 1.5rem" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
             <p
               style={{
-                color: "#d4b070",
+                color: "rgba(255,255,255,0.6)",
                 fontSize: "0.72rem",
                 letterSpacing: "0.25em",
                 fontWeight: 700,
@@ -648,7 +678,7 @@ export function Home() {
                 fontFamily: "'Noto Serif JP', serif",
                 fontSize: "clamp(1.6rem, 3.5vw, 2.2rem)",
                 fontWeight: 700,
-                color: "#f0e8d0",
+                color: "#ffffff",
               }}
             >
               四季を感じる南信州
@@ -660,21 +690,21 @@ export function Home() {
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
               gap: "1px",
-              backgroundColor: "rgba(212,176,112,0.15)",
+              backgroundColor: "rgba(80,180,100,0.2)",
             }}
           >
             {seasons.map((season) => (
               <div
                 key={season.label}
                 style={{
-                  backgroundColor: "#1b2f0e",
+                  backgroundColor: "#1e5c2e",
                   padding: "2.5rem 1.75rem",
                   textAlign: "center",
                 }}
               >
                 <div
                   style={{
-                    color: "#d4b070",
+                    color: "rgba(255,255,255,0.6)",
                     fontSize: "0.72rem",
                     letterSpacing: "0.2em",
                     fontWeight: 700,
@@ -689,7 +719,7 @@ export function Home() {
                     fontFamily: "'Noto Serif JP', serif",
                     fontSize: "1.8rem",
                     fontWeight: 700,
-                    color: "#f0e8d0",
+                    color: "#ffffff",
                     marginBottom: "1rem",
                   }}
                 >
@@ -698,7 +728,7 @@ export function Home() {
                 <p
                   style={{
                     fontSize: "0.85rem",
-                    color: "rgba(240,232,208,0.72)",
+                    color: "rgba(255,255,255,0.68)",
                     lineHeight: 1.8,
                   }}
                 >
@@ -724,7 +754,7 @@ export function Home() {
             <div>
               <p
                 style={{
-                  color: "#7a4020",
+                  color: "#7a4a1e",
                   fontSize: "0.72rem",
                   letterSpacing: "0.25em",
                   fontWeight: 700,
@@ -739,7 +769,7 @@ export function Home() {
                   fontFamily: "'Noto Serif JP', serif",
                   fontSize: "clamp(1.5rem, 3vw, 2rem)",
                   fontWeight: 700,
-                  color: "#1e3c0e",
+                  color: "#256840",
                   lineHeight: 1.45,
                   marginBottom: "1.5rem",
                 }}
@@ -780,7 +810,7 @@ export function Home() {
                 <Link
                   to="/about"
                   style={{
-                    color: "#1e3c0e",
+                    color: "#7a4a1e",
                     textDecoration: "none",
                     fontSize: "0.88rem",
                     fontWeight: 700,
@@ -796,20 +826,20 @@ export function Home() {
 
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               <ImageWithFallback
-                src={INTERIOR_IMG}
+                src={image_260924_0074_1}
                 alt="ログハウス内装"
-                style={{ width: "100%", height: "260px", objectFit: "cover", borderRadius: "4px" }}
+                style={{ width: "100%", height: "260px", objectFit: "cover", borderRadius: "12px" }}
               />
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }} className="home-img-subgrid">
                 <ImageWithFallback
-                  src={LAKE_IMG}
+                  src={image_260924_0103}
                   alt="巣山湖"
-                  style={{ width: "100%", height: "150px", objectFit: "cover", borderRadius: "4px" }}
+                  style={{ width: "100%", height: "150px", objectFit: "cover", borderRadius: "12px" }}
                 />
                 <ImageWithFallback
                   src={STARS_IMG}
                   alt="星空"
-                  style={{ width: "100%", height: "150px", objectFit: "cover", borderRadius: "4px" }}
+                  style={{ width: "100%", height: "150px", objectFit: "cover", borderRadius: "12px" }}
                 />
               </div>
             </div>
@@ -820,14 +850,14 @@ export function Home() {
       {/* ── Price Intro ── */}
       <section
         style={{
-          background: "linear-gradient(135deg, #0e1a08 0%, #1b2f0e 60%, #254510 100%)",
+          background: "linear-gradient(135deg, #55cce8 0%, #3abcb0 100%)",
           padding: "6rem 1.5rem",
         }}
       >
         <div style={{ maxWidth: "900px", margin: "0 auto", textAlign: "center" }}>
           <p
             style={{
-              color: "#d4b070",
+              color: "rgba(255,255,255,0.7)",
               fontSize: "0.72rem",
               fontWeight: 700,
               letterSpacing: "0.25em",
@@ -842,7 +872,7 @@ export function Home() {
               fontFamily: "'Noto Serif JP', serif",
               fontSize: "clamp(1.6rem, 3.5vw, 2.2rem)",
               fontWeight: 700,
-              color: "#f0e8d0",
+              color: "#ffffff",
               marginBottom: "0.75rem",
             }}
           >
@@ -850,7 +880,7 @@ export function Home() {
           </h2>
           <p
             style={{
-              color: "rgba(240,232,208,0.65)",
+              color: "rgba(255,255,255,0.75)",
               fontSize: "0.88rem",
               marginBottom: "2.5rem",
             }}
@@ -863,7 +893,7 @@ export function Home() {
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
               gap: "1px",
-              backgroundColor: "rgba(212,176,112,0.15)",
+              backgroundColor: "rgba(255,255,255,0.2)",
               marginBottom: "2.5rem",
             }}
             className="price-grid"
@@ -876,14 +906,14 @@ export function Home() {
               <div
                 key={item.label}
                 style={{
-                  backgroundColor: "rgba(255,255,255,0.04)",
+                  backgroundColor: "rgba(255,255,255,0.1)",
                   padding: "2rem 1.5rem",
                   textAlign: "center",
                 }}
               >
                 <div
                   style={{
-                    color: "#d4b070",
+                    color: "rgba(255,255,255,0.8)",
                     fontSize: "0.72rem",
                     letterSpacing: "0.12em",
                     marginBottom: "0.25rem",
@@ -894,7 +924,7 @@ export function Home() {
                 </div>
                 <div
                   style={{
-                    color: "rgba(240,232,208,0.55)",
+                    color: "rgba(255,255,255,0.6)",
                     fontSize: "0.75rem",
                     marginBottom: "0.75rem",
                   }}
@@ -905,7 +935,7 @@ export function Home() {
                   style={{
                     fontSize: "2rem",
                     fontWeight: 700,
-                    color: "#f0e8d0",
+                    color: "#ffffff",
                     fontFamily: "'Noto Serif JP', serif",
                   }}
                 >
@@ -922,10 +952,10 @@ export function Home() {
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "0.4rem",
-                backgroundColor: "#d4b070",
-                color: "#1b2f0e",
+                backgroundColor: "#f5ede0",
+                color: "#5c3317",
                 padding: "0.85rem 2rem",
-                borderRadius: "3px",
+                borderRadius: "12px",
                 textDecoration: "none",
                 fontWeight: 700,
                 fontSize: "0.9rem",
@@ -939,14 +969,14 @@ export function Home() {
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "0.4rem",
-                backgroundColor: "transparent",
-                color: "#f0e8d0",
+                backgroundColor: "rgba(255,255,255,0.18)",
+                color: "#ffffff",
                 padding: "0.85rem 2rem",
-                borderRadius: "3px",
+                borderRadius: "12px",
                 textDecoration: "none",
                 fontWeight: 700,
                 fontSize: "0.9rem",
-                border: "1px solid rgba(240,232,208,0.35)",
+                border: "1px solid rgba(255,255,255,0.5)",
               }}
             >
               ご予約 <FaChevronRight size={12} />
@@ -966,7 +996,7 @@ export function Home() {
           style={{
             position: "absolute",
             inset: 0,
-            background: "rgba(10,22,5,0.65)",
+            background: "rgba(0,0,0,0.52)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -1009,7 +1039,7 @@ export function Home() {
               fontWeight: 700,
               border: "1px solid rgba(212,176,112,0.5)",
               padding: "0.6rem 1.5rem",
-              borderRadius: "3px",
+              borderRadius: "12px",
             }}
           >
             体験を見る <FaChevronRight size={11} />

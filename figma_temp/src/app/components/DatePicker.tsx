@@ -69,6 +69,14 @@ export function DatePicker({
   const [viewYear, setViewYear] = useState(initialMonth.getFullYear());
   const [viewMonth, setViewMonth] = useState(initialMonth.getMonth());
 
+  // Sync view to minDate when no value is selected (e.g. checkout resets)
+  useEffect(() => {
+    if (!value && minDate) {
+      setViewYear(minDate.getFullYear());
+      setViewMonth(minDate.getMonth());
+    }
+  }, [min, value]);
+
   // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {

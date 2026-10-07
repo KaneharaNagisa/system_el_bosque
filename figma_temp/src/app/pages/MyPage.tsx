@@ -26,8 +26,8 @@ const inputStyle: React.CSSProperties = {
   width: "100%",
   padding: "0.7rem 1rem",
   backgroundColor: "#faf5e8",
-  border: "1px solid rgba(30,60,14,0.2)",
-  borderRadius: "3px",
+  border: "1px solid rgba(100,55,20,0.2)",
+  borderRadius: "12px",
   fontSize: "0.88rem",
   color: "#2c1e10",
   outline: "none",
@@ -40,7 +40,7 @@ const labelStyle: React.CSSProperties = {
   display: "block",
   fontSize: "0.78rem",
   fontWeight: 700,
-  color: "#1e3c0e",
+  color: "#7a4a1e",
   marginBottom: "0.35rem",
   letterSpacing: "0.04em",
 };
@@ -190,9 +190,9 @@ function formatDateJP(dateStr: string): string {
 function statusColor(status: string) {
   switch (status) {
     case "confirmed":
-      return { bg: "rgba(30,60,14,0.08)", color: "#1e3c0e", border: "rgba(30,60,14,0.2)" };
+      return { bg: "rgba(100,55,20,0.08)", color: "#7a4a1e", border: "rgba(100,55,20,0.2)" };
     case "pending":
-      return { bg: "rgba(196,122,48,0.08)", color: "#7a4020", border: "rgba(196,122,48,0.2)" };
+      return { bg: "rgba(196,122,48,0.08)", color: "#7a4a1e", border: "rgba(196,122,48,0.2)" };
     case "completed":
       return { bg: "rgba(138,120,104,0.08)", color: "#8a7868", border: "rgba(138,120,104,0.2)" };
     default:
@@ -231,7 +231,7 @@ export function MyPage() {
       <div>
         <div
           style={{
-            background: "linear-gradient(135deg, #0e1a08 0%, #1b2f0e 60%, #254510 100%)",
+            background: "linear-gradient(135deg, #5c3317 0%, #7d4820 100%)",
             padding: "8rem 1.5rem 4rem",
             textAlign: "center",
           }}
@@ -257,10 +257,10 @@ export function MyPage() {
               display: "inline-flex",
               alignItems: "center",
               gap: "0.4rem",
-              backgroundColor: "#5c2e12",
+              backgroundColor: "#7a4a1e",
               color: "#f0e8d0",
               padding: "0.8rem 1.75rem",
-              borderRadius: "3px",
+              borderRadius: "12px",
               textDecoration: "none",
               fontWeight: 700,
               fontSize: "0.9rem",
@@ -331,7 +331,7 @@ export function MyPage() {
     <div
       style={{
         backgroundColor: "#faf5e8",
-        borderRadius: "4px",
+        borderRadius: "12px",
         padding: "2rem",
         boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
         border: "1px solid rgba(180,140,80,0.15)",
@@ -348,7 +348,7 @@ export function MyPage() {
         fontFamily: "'Noto Serif JP', serif",
         fontSize: "1.1rem",
         fontWeight: 700,
-        color: "#1e3c0e",
+        color: "#7a4a1e",
         marginBottom: "1.5rem",
         paddingBottom: "0.75rem",
         borderBottom: "2px solid rgba(180,140,80,0.2)",
@@ -367,7 +367,7 @@ export function MyPage() {
       {/* Header */}
       <div
         style={{
-          background: "linear-gradient(135deg, #0e1a08 0%, #1b2f0e 60%, #254510 100%)",
+          background: "linear-gradient(135deg, #5c3317 0%, #7d4820 100%)",
           padding: "8rem 1.5rem 4rem",
           textAlign: "center",
         }}
@@ -407,9 +407,9 @@ export function MyPage() {
           {editSaved && (
             <div
               style={{
-                backgroundColor: "rgba(30,60,14,0.08)",
-                border: "1px solid rgba(30,60,14,0.2)",
-                borderRadius: "4px",
+                backgroundColor: "rgba(100,55,20,0.08)",
+                border: "1px solid rgba(100,55,20,0.2)",
+                borderRadius: "12px",
                 padding: "1rem 1.25rem",
                 marginBottom: "1.5rem",
                 display: "flex",
@@ -417,8 +417,8 @@ export function MyPage() {
                 gap: "0.6rem",
               }}
             >
-              <FaCheckCircle size={16} color="#1e3c0e" />
-              <span style={{ fontSize: "0.88rem", color: "#1e3c0e", fontWeight: 500 }}>
+              <FaCheckCircle size={16} color="#7a4a1e" />
+              <span style={{ fontSize: "0.88rem", color: "#7a4a1e", fontWeight: 500 }}>
                 会員情報を更新しました。
               </span>
             </div>
@@ -427,7 +427,7 @@ export function MyPage() {
           {/* ========== 0. お知らせ ========== */}
           {mypageNews.length > 0 && sectionCard(
             <>
-              {sectionTitle(<FaBell size={16} color="#1e3c0e" />, "お知らせ")}
+              {sectionTitle(<FaBell size={16} color="#7a4a1e" />, "お知らせ")}
               <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
                 {mypageNews.map((item, idx) => {
                   const isExpanded = expandedNewsId === item.id;
@@ -467,7 +467,7 @@ export function MyPage() {
                                     fontSize: "0.62rem",
                                     fontWeight: 700,
                                     padding: "0.1rem 0.45rem",
-                                    borderRadius: "2px",
+                                    borderRadius: "8px",
                                     letterSpacing: "0.05em",
                                     flexShrink: 0,
                                   }}
@@ -489,7 +489,7 @@ export function MyPage() {
                               style={{
                                 fontSize: "0.9rem",
                                 fontWeight: isExpanded ? 700 : 500,
-                                color: isExpanded ? "#1e3c0e" : "#2c1e10",
+                                color: isExpanded ? "#7a4a1e" : "#2c1e10",
                                 lineHeight: 1.5,
                                 transition: "color 0.2s",
                               }}
@@ -512,9 +512,9 @@ export function MyPage() {
                         >
                           <div
                             style={{
-                              backgroundColor: "rgba(30,60,14,0.04)",
-                              border: "1px solid rgba(30,60,14,0.1)",
-                              borderRadius: "3px",
+                              backgroundColor: "rgba(100,55,20,0.04)",
+                              border: "1px solid rgba(100,55,20,0.1)",
+                              borderRadius: "12px",
                               padding: "1rem 1.25rem",
                             }}
                           >
@@ -543,7 +543,7 @@ export function MyPage() {
           {sectionCard(
             <>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.5rem" }}>
-                {sectionTitle(<FaUser size={16} color="#1e3c0e" />, "会員情報")}
+                {sectionTitle(<FaUser size={16} color="#7a4a1e" />, "会員情報")}
                 {!editing && (
                   <button
                     onClick={() => {
@@ -568,10 +568,10 @@ export function MyPage() {
                       display: "inline-flex",
                       alignItems: "center",
                       gap: "0.35rem",
-                      backgroundColor: "rgba(30,60,14,0.06)",
-                      color: "#1e3c0e",
-                      border: "1px solid rgba(30,60,14,0.15)",
-                      borderRadius: "3px",
+                      backgroundColor: "rgba(100,55,20,0.06)",
+                      color: "#7a4a1e",
+                      border: "1px solid rgba(100,55,20,0.15)",
+                      borderRadius: "12px",
                       padding: "0.5rem 1rem",
                       fontSize: "0.82rem",
                       fontWeight: 700,
@@ -593,7 +593,7 @@ export function MyPage() {
                   <div
                     style={{
                       backgroundColor: "#f2e8d0",
-                      borderRadius: "3px",
+                      borderRadius: "12px",
                       padding: "1rem 1.25rem",
                       border: "1px solid rgba(180,140,80,0.12)",
                     }}
@@ -693,7 +693,7 @@ export function MyPage() {
                               display: "inline-flex",
                               alignItems: "center",
                               justifyContent: "center",
-                              backgroundColor: "#5c2e12",
+                              backgroundColor: "#7a4a1e",
                               color: "#f0e8d0",
                               width: "18px",
                               height: "18px",
@@ -719,7 +719,7 @@ export function MyPage() {
                               display: "inline-flex",
                               alignItems: "center",
                               justifyContent: "center",
-                              backgroundColor: "#5c2e12",
+                              backgroundColor: "#7a4a1e",
                               color: "#f0e8d0",
                               width: "18px",
                               height: "18px",
@@ -800,7 +800,7 @@ export function MyPage() {
                         backgroundColor: "transparent",
                         color: "#8a7868",
                         border: "1px solid rgba(180,140,80,0.2)",
-                        borderRadius: "3px",
+                        borderRadius: "12px",
                         padding: "0.6rem 1.25rem",
                         fontSize: "0.85rem",
                         fontFamily: "'Noto Sans JP', sans-serif",
@@ -816,10 +816,10 @@ export function MyPage() {
                         display: "inline-flex",
                         alignItems: "center",
                         gap: "0.3rem",
-                        backgroundColor: "#1e3c0e",
+                        backgroundColor: "#7a4a1e",
                         color: "#f0e8d0",
                         border: "none",
-                        borderRadius: "3px",
+                        borderRadius: "12px",
                         padding: "0.6rem 1.25rem",
                         fontSize: "0.85rem",
                         fontWeight: 700,
@@ -873,7 +873,7 @@ export function MyPage() {
           {/* ========== 2. Password Reset & 3. Withdrawal ========== */}
           {sectionCard(
             <>
-              {sectionTitle(<FaKey size={16} color="#1e3c0e" />, "アカウント管理")}
+              {sectionTitle(<FaKey size={16} color="#7a4a1e" />, "アカウント管理")}
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 {/* Password Reset */}
                 <div
@@ -883,7 +883,7 @@ export function MyPage() {
                     justifyContent: "space-between",
                     padding: "1rem 1.25rem",
                     backgroundColor: "#f2e8d0",
-                    borderRadius: "3px",
+                    borderRadius: "12px",
                     border: "1px solid rgba(180,140,80,0.15)",
                     flexWrap: "wrap",
                     gap: "0.75rem",
@@ -903,10 +903,10 @@ export function MyPage() {
                       display: "inline-flex",
                       alignItems: "center",
                       gap: "0.35rem",
-                      backgroundColor: "#5c2e12",
+                      backgroundColor: "#7a4a1e",
                       color: "#f0e8d0",
                       padding: "0.55rem 1.1rem",
-                      borderRadius: "3px",
+                      borderRadius: "12px",
                       textDecoration: "none",
                       fontWeight: 700,
                       fontSize: "0.82rem",
@@ -926,7 +926,7 @@ export function MyPage() {
                     justifyContent: "space-between",
                     padding: "1rem 1.25rem",
                     backgroundColor: "#f2e8d0",
-                    borderRadius: "3px",
+                    borderRadius: "12px",
                     border: "1px solid rgba(180,140,80,0.15)",
                     flexWrap: "wrap",
                     gap: "0.75rem",
@@ -949,7 +949,7 @@ export function MyPage() {
                       backgroundColor: "transparent",
                       color: "#5a4838",
                       padding: "0.55rem 1.1rem",
-                      borderRadius: "3px",
+                      borderRadius: "12px",
                       border: "1px solid rgba(180,140,80,0.25)",
                       fontWeight: 700,
                       fontSize: "0.82rem",
@@ -970,7 +970,7 @@ export function MyPage() {
                     justifyContent: "space-between",
                     padding: "1rem 1.25rem",
                     backgroundColor: showDeleteConfirm ? "rgba(160,48,32,0.04)" : "#f2e8d0",
-                    borderRadius: "3px",
+                    borderRadius: "12px",
                     border: showDeleteConfirm ? "1px solid rgba(160,48,32,0.15)" : "1px solid rgba(180,140,80,0.15)",
                     flexWrap: "wrap",
                     gap: "0.75rem",
@@ -996,7 +996,7 @@ export function MyPage() {
                           backgroundColor: "transparent",
                           color: "#5a4838",
                           padding: "0.5rem 0.85rem",
-                          borderRadius: "3px",
+                          borderRadius: "12px",
                           border: "1px solid rgba(180,140,80,0.25)",
                           fontSize: "0.78rem",
                           fontFamily: "'Noto Sans JP', sans-serif",
@@ -1014,7 +1014,7 @@ export function MyPage() {
                           backgroundColor: "#a03020",
                           color: "#fff",
                           padding: "0.5rem 0.85rem",
-                          borderRadius: "3px",
+                          borderRadius: "12px",
                           border: "none",
                           fontWeight: 700,
                           fontSize: "0.78rem",
@@ -1036,7 +1036,7 @@ export function MyPage() {
                         backgroundColor: "transparent",
                         color: "#a03020",
                         padding: "0.55rem 1.1rem",
-                        borderRadius: "3px",
+                        borderRadius: "12px",
                         border: "1px solid rgba(160,48,32,0.2)",
                         fontWeight: 700,
                         fontSize: "0.82rem",
@@ -1056,7 +1056,7 @@ export function MyPage() {
           {/* ========== 4. Reservation History ========== */}
           {sectionCard(
             <>
-              {sectionTitle(<FaCalendarAlt size={16} color="#1e3c0e" />, "予約履歴")}
+              {sectionTitle(<FaCalendarAlt size={16} color="#7a4a1e" />, "予約履歴")}
               {mockReservations.length === 0 ? (
                 <p style={{ fontSize: "0.88rem", color: "#8a7868", textAlign: "center", padding: "2rem 0" }}>
                   予約履歴はありません。
@@ -1078,7 +1078,7 @@ export function MyPage() {
                         key={r.id}
                         style={{
                           backgroundColor: "#f2e8d0",
-                          borderRadius: "4px",
+                          borderRadius: "12px",
                           border: isCanceled ? "1px solid rgba(160,48,32,0.18)" : "1px solid rgba(180,140,80,0.15)",
                           overflow: "hidden",
                           opacity: isCanceled ? 0.75 : 1,
@@ -1092,22 +1092,22 @@ export function MyPage() {
                             alignItems: "center",
                             justifyContent: "space-between",
                             padding: "0.75rem 1.25rem",
-                            backgroundColor: "rgba(30,60,14,0.04)",
-                            borderBottom: "1px solid rgba(180,140,80,0.12)",
+                            backgroundColor: "#256840",
+                            borderBottom: "none",
                             flexWrap: "wrap",
                             gap: "0.5rem",
                           }}
                         >
-                          <span style={{ fontSize: "0.78rem", fontWeight: 700, color: "#5a4838", letterSpacing: "0.04em" }}>
+                          <span style={{ fontSize: "0.78rem", fontWeight: 700, color: "#ffffff", letterSpacing: "0.04em" }}>
                             {r.id}
                           </span>
                           <span
                             style={{
-                              backgroundColor: sc.bg,
-                              color: sc.color,
-                              border: `1px solid ${sc.border}`,
+                              backgroundColor: isCanceled ? "rgba(255,80,60,0.18)" : "rgba(255,255,255,0.18)",
+                              color: isCanceled ? "#ffb0a8" : "#ffffff",
+                              border: isCanceled ? "1px solid rgba(255,100,80,0.4)" : "1px solid rgba(255,255,255,0.4)",
                               padding: "0.2rem 0.6rem",
-                              borderRadius: "3px",
+                              borderRadius: "12px",
                               fontSize: "0.72rem",
                               fontWeight: 700,
                             }}
@@ -1117,7 +1117,7 @@ export function MyPage() {
                         </div>
 
                         {/* Reservation Body */}
-                        <div style={{ padding: "1rem 1.25rem" }}>
+                        <div style={{ padding: "1rem 1.25rem", backgroundColor: "#ffffff" }}>
                           <div
                             style={{
                               display: "grid",
@@ -1148,7 +1148,7 @@ export function MyPage() {
                             <div>
                               <span style={{ color: "#8a7868", fontSize: "0.7rem" }}>ペット</span>
                               <div style={{ fontWeight: 500, color: "#2c1e10", marginTop: "0.15rem", display: "flex", alignItems: "center", gap: "0.3rem" }}>
-                                {r.pets !== "なし" && <FaPaw size={11} color="#7a4020" />}
+                                {r.pets !== "なし" && <FaPaw size={11} color="#7a4a1e" />}
                                 {r.pets}
                               </div>
                             </div>
@@ -1157,7 +1157,7 @@ export function MyPage() {
                                 <FaConciergeBell size={10} />
                                 滞在サポート
                               </span>
-                              <div style={{ fontWeight: 500, color: r.supportPlan === "yes" ? "#1e3c0e" : "#8a7868", marginTop: "0.15rem" }}>
+                              <div style={{ fontWeight: 500, color: r.supportPlan === "yes" ? "#7a4a1e" : "#8a7868", marginTop: "0.15rem" }}>
                                 {r.supportPlan === "yes" ? "あり" : "なし"}
                               </div>
                             </div>
@@ -1171,11 +1171,11 @@ export function MyPage() {
                                   <span
                                     key={exp}
                                     style={{
-                                      backgroundColor: "rgba(30,60,14,0.06)",
-                                      color: "#1e3c0e",
-                                      border: "1px solid rgba(30,60,14,0.12)",
+                                      backgroundColor: "rgba(100,55,20,0.06)",
+                                      color: "#7a4a1e",
+                                      border: "1px solid rgba(100,55,20,0.12)",
                                       padding: "0.15rem 0.5rem",
-                                      borderRadius: "2px",
+                                      borderRadius: "8px",
                                       fontSize: "0.72rem",
                                       fontWeight: 500,
                                     }}
@@ -1194,7 +1194,7 @@ export function MyPage() {
                               padding: "0.65rem 1rem",
                               backgroundColor: "rgba(212,176,112,0.14)",
                               border: "1px solid rgba(212,176,112,0.35)",
-                              borderRadius: "3px",
+                              borderRadius: "12px",
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "space-between",
@@ -1204,7 +1204,7 @@ export function MyPage() {
                               <FaYenSign size={10} color="#c47a30" />
                               お支払い合計（税込・保証料含む）
                             </span>
-                            <span style={{ fontFamily: "'Noto Serif JP', serif", fontSize: "1.1rem", fontWeight: 700, color: "#5c2e12" }}>
+                            <span style={{ fontFamily: "'Noto Serif JP', serif", fontSize: "1.1rem", fontWeight: 700, color: "#7a4a1e" }}>
                               ¥{r.totalAmount.toLocaleString()}
                             </span>
                           </div>
@@ -1217,7 +1217,7 @@ export function MyPage() {
                                   style={{
                                     backgroundColor: "rgba(160,48,32,0.05)",
                                     border: "1px solid rgba(160,48,32,0.18)",
-                                    borderRadius: "3px",
+                                    borderRadius: "12px",
                                     padding: "0.85rem 1rem",
                                   }}
                                 >
@@ -1234,7 +1234,7 @@ export function MyPage() {
                                         backgroundColor: "transparent",
                                         color: "#5a4838",
                                         padding: "0.4rem 0.85rem",
-                                        borderRadius: "3px",
+                                        borderRadius: "12px",
                                         border: "1px solid rgba(180,140,80,0.25)",
                                         fontSize: "0.78rem",
                                         fontFamily: "'Noto Sans JP', sans-serif",
@@ -1255,7 +1255,7 @@ export function MyPage() {
                                         backgroundColor: "#a03020",
                                         color: "#fff",
                                         padding: "0.4rem 0.85rem",
-                                        borderRadius: "3px",
+                                        borderRadius: "12px",
                                         border: "none",
                                         fontWeight: 700,
                                         fontSize: "0.78rem",
@@ -1278,7 +1278,7 @@ export function MyPage() {
                                     backgroundColor: "transparent",
                                     color: "#a03020",
                                     padding: "0.4rem 0.85rem",
-                                    borderRadius: "3px",
+                                    borderRadius: "12px",
                                     border: "1px solid rgba(160,48,32,0.22)",
                                     fontWeight: 700,
                                     fontSize: "0.78rem",
@@ -1315,10 +1315,10 @@ export function MyPage() {
                     display: "inline-flex",
                     alignItems: "center",
                     gap: "0.4rem",
-                    backgroundColor: "#5c2e12",
-                    color: "#f0e8d0",
+                    backgroundColor: "#256840",
+                    color: "#ffffff",
                     padding: "0.75rem 1.5rem",
-                    borderRadius: "3px",
+                    borderRadius: "12px",
                     textDecoration: "none",
                     fontWeight: 700,
                     fontSize: "0.88rem",

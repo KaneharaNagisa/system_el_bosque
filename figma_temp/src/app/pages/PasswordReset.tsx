@@ -13,8 +13,8 @@ const inputStyle: React.CSSProperties = {
   width: "100%",
   padding: "0.75rem 1rem",
   backgroundColor: "#faf5e8",
-  border: "1px solid rgba(30,60,14,0.2)",
-  borderRadius: "3px",
+  border: "1px solid rgba(100,55,20,0.2)",
+  borderRadius: "12px",
   fontSize: "0.9rem",
   color: "#2c1e10",
   outline: "none",
@@ -27,7 +27,7 @@ const labelStyle: React.CSSProperties = {
   display: "block",
   fontSize: "0.8rem",
   fontWeight: 700,
-  color: "#1e3c0e",
+  color: "#7a4a1e",
   marginBottom: "0.4rem",
   letterSpacing: "0.04em",
 };
@@ -47,8 +47,8 @@ export function PasswordReset() {
 
   const focusedInputStyle = (field: string): React.CSSProperties => ({
     ...inputStyle,
-    borderColor: focusedField === field ? "#1e3c0e" : "rgba(30,60,14,0.2)",
-    boxShadow: focusedField === field ? "0 0 0 3px rgba(30,60,14,0.1)" : "none",
+    borderColor: focusedField === field ? "#7a4a1e" : "rgba(100,55,20,0.2)",
+    boxShadow: focusedField === field ? "0 0 0 3px rgba(100,55,20,0.1)" : "none",
     paddingRight: "2.75rem",
   });
 
@@ -57,7 +57,7 @@ export function PasswordReset() {
       <div>
         <div
           style={{
-            background: "linear-gradient(135deg, #0e1a08 0%, #1b2f0e 60%, #254510 100%)",
+            background: "linear-gradient(135deg, #5c3317 0%, #7d4820 100%)",
             padding: "8rem 1.5rem 4rem",
             textAlign: "center",
           }}
@@ -81,10 +81,10 @@ export function PasswordReset() {
             to="/login"
             style={{
               display: "inline-block",
-              backgroundColor: "#5c2e12",
+              backgroundColor: "#7a4a1e",
               color: "#f0e8d0",
               padding: "0.8rem 1.75rem",
-              borderRadius: "3px",
+              borderRadius: "12px",
               textDecoration: "none",
               fontWeight: 700,
               fontSize: "0.9rem",
@@ -128,7 +128,7 @@ export function PasswordReset() {
       <div>
         <div
           style={{
-            background: "linear-gradient(135deg, #0e1a08 0%, #1b2f0e 60%, #254510 100%)",
+            background: "linear-gradient(135deg, #5c3317 0%, #7d4820 100%)",
             padding: "8rem 1.5rem 4rem",
             textAlign: "center",
           }}
@@ -164,19 +164,19 @@ export function PasswordReset() {
               margin: "0 auto",
               textAlign: "center",
               backgroundColor: "#faf5e8",
-              borderRadius: "4px",
+              borderRadius: "12px",
               padding: "3rem 2rem",
               boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
               border: "1px solid rgba(180,140,80,0.15)",
             }}
           >
-            <FaCheckCircle size={48} color="#1e3c0e" style={{ marginBottom: "1.25rem" }} />
+            <FaCheckCircle size={48} color="#7a4a1e" style={{ marginBottom: "1.25rem" }} />
             <h2
               style={{
                 fontFamily: "'Noto Serif JP', serif",
                 fontSize: "1.3rem",
                 fontWeight: 700,
-                color: "#1e3c0e",
+                color: "#7a4a1e",
                 marginBottom: "0.75rem",
               }}
             >
@@ -191,10 +191,10 @@ export function PasswordReset() {
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "0.4rem",
-                backgroundColor: "#1e3c0e",
+                backgroundColor: "#7a4a1e",
                 color: "#f0e8d0",
                 padding: "0.8rem 1.75rem",
-                borderRadius: "3px",
+                borderRadius: "12px",
                 textDecoration: "none",
                 fontWeight: 700,
                 fontSize: "0.9rem",
@@ -214,7 +214,7 @@ export function PasswordReset() {
       {/* Header */}
       <div
         style={{
-          background: "linear-gradient(135deg, #0e1a08 0%, #1b2f0e 60%, #254510 100%)",
+          background: "linear-gradient(135deg, #5c3317 0%, #7d4820 100%)",
           padding: "8rem 1.5rem 4rem",
           textAlign: "center",
         }}
@@ -256,7 +256,7 @@ export function PasswordReset() {
               display: "inline-flex",
               alignItems: "center",
               gap: "0.35rem",
-              color: "#7a4020",
+              color: "#7a4a1e",
               fontSize: "0.85rem",
               fontWeight: 700,
               textDecoration: "none",
@@ -271,7 +271,7 @@ export function PasswordReset() {
             onSubmit={handleSubmit}
             style={{
               backgroundColor: "#faf5e8",
-              borderRadius: "4px",
+              borderRadius: "12px",
               padding: "2.5rem",
               boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
               border: "1px solid rgba(180,140,80,0.15)",
@@ -282,7 +282,7 @@ export function PasswordReset() {
                 fontFamily: "'Noto Serif JP', serif",
                 fontSize: "1.15rem",
                 fontWeight: 700,
-                color: "#1e3c0e",
+                color: "#7a4a1e",
                 marginBottom: "2rem",
                 paddingBottom: "0.75rem",
                 borderBottom: "2px solid rgba(180,140,80,0.2)",
@@ -291,7 +291,7 @@ export function PasswordReset() {
                 gap: "0.5rem",
               }}
             >
-              <FaKey size={16} color="#7a4020" />
+              <FaKey size={16} color="#7a4a1e" />
               パスワード変更
             </h2>
 
@@ -300,7 +300,7 @@ export function PasswordReset() {
                 style={{
                   backgroundColor: "rgba(160,48,32,0.06)",
                   border: "1px solid rgba(160,48,32,0.15)",
-                  borderRadius: "3px",
+                  borderRadius: "12px",
                   padding: "0.75rem 1rem",
                   marginBottom: "1.5rem",
                   fontSize: "0.82rem",
@@ -430,10 +430,10 @@ export function PasswordReset() {
               style={{
                 width: "100%",
                 marginTop: "2rem",
-                backgroundColor: currentPassword && newPassword && confirmPassword ? "#5c2e12" : "#c8b8a0",
+                backgroundColor: currentPassword && newPassword && confirmPassword ? "#7a4a1e" : "#c8b8a0",
                 color: currentPassword && newPassword && confirmPassword ? "#f0e8d0" : "#a09080",
                 padding: "1rem",
-                borderRadius: "3px",
+                borderRadius: "12px",
                 border: "none",
                 cursor: currentPassword && newPassword && confirmPassword ? "pointer" : "not-allowed",
                 fontSize: "1rem",

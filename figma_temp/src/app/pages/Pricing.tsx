@@ -28,7 +28,7 @@ const SectionHeading = ({
   <div style={{ textAlign: "center", marginBottom: "3rem" }}>
     <p
       style={{
-        color: dark ? "#d4b070" : "#7a4020",
+        color: dark ? "#d4b070" : "#7a4a1e",
         fontSize: "0.72rem",
         letterSpacing: "0.25em",
         fontWeight: 700,
@@ -43,7 +43,7 @@ const SectionHeading = ({
         fontFamily: "'Noto Serif JP', serif",
         fontSize: "clamp(1.4rem, 3vw, 1.9rem)",
         fontWeight: 700,
-        color: dark ? "#f0e8d0" : "#1e3c0e",
+        color: dark ? "#f0e8d0" : "#256840",
       }}
     >
       {ja}
@@ -104,7 +104,7 @@ export function Pricing() {
     padding: "0.75rem 1rem",
     backgroundColor: "rgba(242,232,208,0.08)",
     border: "1px solid rgba(212,176,112,0.3)",
-    borderRadius: "3px",
+    borderRadius: "12px",
     color: "#f0e8d0",
     fontSize: "0.9rem",
     appearance: "none",
@@ -151,6 +151,12 @@ export function Pricing() {
     },
   ];
 
+  const cardThemes = [
+    { bg: "#f5ebe8", border: "rgba(180,100,80,0.18)", topBorder: "#b87070", iconBg: "#fdf5f3", innerBg: "#fdf5f2" },
+    { bg: "#e8f0eb", border: "rgba(70,140,90,0.18)", topBorder: "#5a8a6a", iconBg: "#f0f7f2", innerBg: "#f0f7f2" },
+    { bg: "#e5f0f2", border: "rgba(50,150,150,0.18)", topBorder: "#3a9a90", iconBg: "#eef8f7", innerBg: "#eef8f7" },
+  ];
+
   /* ── キャンセルポリシーデータ ── */
   const cancelPolicies = [
     { timing: "8日前以前", rate: "無料", rateNum: 0, free: true },
@@ -164,7 +170,7 @@ export function Pricing() {
       {/* ── ページヘッダー ── */}
       <div
         style={{
-          background: "linear-gradient(135deg, #0e1a08 0%, #1b2f0e 60%, #254510 100%)",
+          background: "linear-gradient(135deg, #5c3317 0%, #7d4820 100%)",
           padding: "8rem 1.5rem 4rem",
           textAlign: "center",
         }}
@@ -264,7 +270,7 @@ export function Pricing() {
             style={{
               marginTop: "2rem",
               backgroundColor: "#faf5e8",
-              borderRadius: "4px",
+              borderRadius: "12px",
               padding: "2rem",
               border: "1px solid rgba(180,140,80,0.3)",
             }}
@@ -273,9 +279,9 @@ export function Pricing() {
               <div
                 style={{
                   backgroundColor: "#e8dfc0",
-                  color: "#5c2e12",
+                  color: "#7a4a1e",
                   padding: "0.25rem 0.75rem",
-                  borderRadius: "2px",
+                  borderRadius: "8px",
                   fontSize: "0.72rem",
                   fontWeight: 700,
                   whiteSpace: "nowrap",
@@ -292,7 +298,7 @@ export function Pricing() {
                     fontFamily: "'Noto Serif JP', serif",
                     fontSize: "1.1rem",
                     fontWeight: 700,
-                    color: "#1e3c0e",
+                    color: "#7a4a1e",
                     marginBottom: "0.5rem",
                   }}
                 >
@@ -300,7 +306,7 @@ export function Pricing() {
                 </h3>
                 <p style={{ fontSize: "0.875rem", color: "#5a4838", lineHeight: 1.9 }}>
                   買い出しサポート（飯田市スーパーでの代行購入）・送迎（1〜4名）・各種コンシェルジュサービスを含みます。<br />
-                  <strong style={{ color: "#7a4020" }}>5名以上の送迎追加：</strong>+¥5,000（人数に関係なく一律・追加車両手配費）
+                  <strong style={{ color: "#7a4a1e" }}>5名以上の送迎追加：</strong>+¥5,000（人数に関係なく一律・追加車両手配費）
                 </p>
               </div>
             </div>
@@ -316,7 +322,7 @@ export function Pricing() {
               style={{
                 width: "32px",
                 height: "32px",
-                backgroundColor: "#1e3c0e",
+                backgroundColor: "#3abcb0",
                 borderRadius: "50%",
                 display: "flex",
                 alignItems: "center",
@@ -324,14 +330,14 @@ export function Pricing() {
                 flexShrink: 0,
               }}
             >
-              <FaDog size={15} color="#d4b070" />
+              <FaDog size={15} color="#ffffff" />
             </div>
             <h2
               style={{
                 fontFamily: "'Noto Serif JP', serif",
                 fontSize: "clamp(1.2rem, 2.5vw, 1.5rem)",
                 fontWeight: 700,
-                color: "#1e3c0e",
+                color: "#7a4a1e",
               }}
             >
               ペット料金
@@ -344,14 +350,14 @@ export function Pricing() {
                 width: "100%",
                 borderCollapse: "collapse",
                 backgroundColor: "#f2e8d0",
-                borderRadius: "4px",
+                borderRadius: "12px",
                 overflow: "hidden",
                 boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
                 maxWidth: "560px",
               }}
             >
               <thead>
-                <tr style={{ backgroundColor: "#1b2f0e" }}>
+                <tr style={{ backgroundColor: "#256840" }}>
                   <th style={{ padding: "1rem 1.5rem", textAlign: "left", color: "#d4b070", fontSize: "0.82rem", fontWeight: 700 }}>
                     ペット種別
                   </th>
@@ -374,7 +380,7 @@ export function Pricing() {
                     <td style={{ padding: "1rem 1.5rem", fontSize: "0.9rem", color: "#2c1e10" }}>
                       {row.label}
                     </td>
-                    <td style={{ padding: "1rem 1.5rem", textAlign: "center", fontSize: "1rem", color: "#1e3c0e", fontWeight: 700 }}>
+                    <td style={{ padding: "1rem 1.5rem", textAlign: "center", fontSize: "1rem", color: "#7a4a1e", fontWeight: 700 }}>
                       {row.price}
                     </td>
                   </tr>
@@ -396,7 +402,7 @@ export function Pricing() {
               style={{
                 width: "32px",
                 height: "32px",
-                backgroundColor: "#1e3c0e",
+                backgroundColor: "#3abcb0",
                 borderRadius: "50%",
                 display: "flex",
                 alignItems: "center",
@@ -404,14 +410,14 @@ export function Pricing() {
                 flexShrink: 0,
               }}
             >
-              <FaLeaf size={14} color="#d4b070" />
+              <FaLeaf size={14} color="#ffffff" />
             </div>
             <h2
               style={{
                 fontFamily: "'Noto Serif JP', serif",
                 fontSize: "clamp(1.2rem, 2.5vw, 1.5rem)",
                 fontWeight: 700,
-                color: "#1e3c0e",
+                color: "#7a4a1e",
               }}
             >
               体験オプション料金
@@ -425,13 +431,13 @@ export function Pricing() {
                 minWidth: "560px",
                 borderCollapse: "collapse",
                 backgroundColor: "#faf5e8",
-                borderRadius: "4px",
+                borderRadius: "12px",
                 overflow: "hidden",
                 boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
               }}
             >
               <thead>
-                <tr style={{ backgroundColor: "#1b2f0e" }}>
+                <tr style={{ backgroundColor: "#256840" }}>
                   {["体験名", "料金", "時期", "備考"].map((h, i) => (
                     <th
                       key={h}
@@ -498,13 +504,13 @@ export function Pricing() {
                       <div style={{ fontSize: "0.9rem", color: "#2c1e10", fontWeight: 600 }}>{row.name}</div>
                       <div style={{ fontSize: "0.75rem", color: "#7a6858", marginTop: "0.15rem" }}>{row.desc}</div>
                     </td>
-                    <td style={{ padding: "1.1rem 1.5rem", textAlign: "center", fontSize: "0.95rem", color: "#1e3c0e", fontWeight: 700, whiteSpace: "nowrap" }}>
+                    <td style={{ padding: "1.1rem 1.5rem", textAlign: "center", fontSize: "0.95rem", color: "#7a4a1e", fontWeight: 700, whiteSpace: "nowrap" }}>
                       {row.price}
                     </td>
                     <td style={{ padding: "1.1rem 1.5rem", textAlign: "center", fontSize: "0.82rem", color: "#5a4838", whiteSpace: "nowrap" }}>
                       {row.season}
                     </td>
-                    <td style={{ padding: "1.1rem 1.5rem", textAlign: "center", fontSize: "0.78rem", color: "#7a4020", fontWeight: 600 }}>
+                    <td style={{ padding: "1.1rem 1.5rem", textAlign: "center", fontSize: "0.78rem", color: "#7a4a1e", fontWeight: 600 }}>
                       {row.note}
                     </td>
                   </tr>
@@ -519,16 +525,16 @@ export function Pricing() {
       </section>
 
       {/* ── 料金かんたん計算機 ── */}
-      <section style={{ backgroundColor: "#1b2f0e", padding: "5rem 1.5rem" }}>
+      <section style={{ backgroundColor: "#256840", padding: "5rem 1.5rem" }}>
         <div style={{ maxWidth: "820px", margin: "0 auto" }}>
           <SectionHeading en="Calculator" ja="料金かんたん計算機" dark />
 
           <div
             style={{
-              backgroundColor: "rgba(242,232,208,0.06)",
-              borderRadius: "4px",
+              backgroundColor: "rgba(255,255,255,0.06)",
+              borderRadius: "12px",
               padding: "2.5rem",
-              border: "1px solid rgba(212,176,112,0.18)",
+              border: "1px solid rgba(255,255,255,0.15)",
             }}
             className="pricing-calculator"
           >
@@ -544,7 +550,7 @@ export function Pricing() {
               <div>
                 <label
                   style={{
-                    color: "#d4b070",
+                    color: "rgba(255,255,255,0.75)",
                     fontSize: "0.78rem",
                     fontWeight: 700,
                     display: "block",
@@ -559,13 +565,13 @@ export function Pricing() {
                   onChange={(e) => setDayType(e.target.value as typeof dayType)}
                   style={selectStyle}
                 >
-                  <option value="weekday" style={{ backgroundColor: "#1b2f0e" }}>
+                  <option value="weekday" style={{ backgroundColor: "#256840" }}>
                     平日（日〜木）¥20,000
                   </option>
-                  <option value="weekend" style={{ backgroundColor: "#1b2f0e" }}>
+                  <option value="weekend" style={{ backgroundColor: "#256840" }}>
                     休前日（金・土）¥26,000
                   </option>
-                  <option value="special" style={{ backgroundColor: "#1b2f0e" }}>
+                  <option value="special" style={{ backgroundColor: "#256840" }}>
                     特別日（GW等）¥33,000
                   </option>
                 </select>
@@ -574,7 +580,7 @@ export function Pricing() {
               <div>
                 <label
                   style={{
-                    color: "#d4b070",
+                    color: "rgba(255,255,255,0.75)",
                     fontSize: "0.78rem",
                     fontWeight: 700,
                     display: "block",
@@ -590,7 +596,7 @@ export function Pricing() {
                   style={selectStyle}
                 >
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
-                    <option key={n} value={n} style={{ backgroundColor: "#1b2f0e" }}>
+                    <option key={n} value={n} style={{ backgroundColor: "#256840" }}>
                       {n}名{n <= 5 ? "（基本料金）" : `（+¥${((n - 5) * 3000).toLocaleString()}）`}
                     </option>
                   ))}
@@ -602,7 +608,7 @@ export function Pricing() {
             <div style={{ marginBottom: "1.5rem" }}>
               <label
                 style={{
-                  color: "#d4b070",
+                  color: "rgba(255,255,255,0.75)",
                   fontSize: "0.78rem",
                   fontWeight: 700,
                   display: "block",
@@ -618,7 +624,7 @@ export function Pricing() {
                 style={selectStyle}
               >
                 {petOptions.map((opt) => (
-                  <option key={opt.label} value={opt.value} style={{ backgroundColor: "#1b2f0e" }}>
+                  <option key={opt.label} value={opt.value} style={{ backgroundColor: "#256840" }}>
                     {opt.label}
                   </option>
                 ))}
@@ -629,7 +635,7 @@ export function Pricing() {
             <div style={{ marginBottom: "1.5rem" }}>
               <label
                 style={{
-                  color: "#d4b070",
+                  color: "rgba(255,255,255,0.75)",
                   fontSize: "0.78rem",
                   fontWeight: 700,
                   display: "block",
@@ -646,14 +652,14 @@ export function Pricing() {
                   alignItems: "center",
                   gap: "0.6rem",
                   padding: "0.75rem 1.25rem",
-                  borderRadius: "3px",
+                  borderRadius: "12px",
                   border: supportEnabled
-                    ? "1px solid rgba(212,176,112,0.6)"
-                    : "1px solid rgba(212,176,112,0.2)",
+                    ? "1px solid rgba(255,255,255,0.5)"
+                    : "1px solid rgba(255,255,255,0.2)",
                   backgroundColor: supportEnabled
-                    ? "rgba(212,176,112,0.15)"
-                    : "rgba(242,232,208,0.05)",
-                  color: supportEnabled ? "#d4b070" : "rgba(240,232,208,0.6)",
+                    ? "rgba(255,255,255,0.15)"
+                    : "rgba(255,255,255,0.05)",
+                  color: supportEnabled ? "#ffffff" : "rgba(255,255,255,0.55)",
                   fontSize: "0.88rem",
                   fontWeight: supportEnabled ? 700 : 400,
                   cursor: "pointer",
@@ -664,9 +670,9 @@ export function Pricing() {
                   style={{
                     width: "18px",
                     height: "18px",
-                    borderRadius: "3px",
-                    border: supportEnabled ? "none" : "1.5px solid rgba(212,176,112,0.5)",
-                    backgroundColor: supportEnabled ? "#d4b070" : "transparent",
+                    borderRadius: "12px",
+                    border: supportEnabled ? "none" : "1.5px solid rgba(255,255,255,0.4)",
+                    backgroundColor: supportEnabled ? "rgba(255,255,255,0.85)" : "transparent",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -676,7 +682,7 @@ export function Pricing() {
                 >
                   {supportEnabled && (
                     <svg viewBox="0 0 12 12" width="12" height="12">
-                      <path d="M2 6l3 3 5-5" stroke="#1b2f0e" strokeWidth="2" fill="none" strokeLinecap="round" />
+                      <path d="M2 6l3 3 5-5" stroke="#256840" strokeWidth="2" fill="none" strokeLinecap="round" />
                     </svg>
                   )}
                 </div>
@@ -695,7 +701,7 @@ export function Pricing() {
             <div style={{ marginBottom: "2rem" }}>
               <label
                 style={{
-                  color: "#d4b070",
+                  color: "rgba(255,255,255,0.75)",
                   fontSize: "0.78rem",
                   fontWeight: 700,
                   display: "block",
@@ -718,14 +724,14 @@ export function Pricing() {
                     onClick={() => toggleExperience(idx)}
                     style={{
                       padding: "0.7rem 1rem",
-                      borderRadius: "3px",
+                      borderRadius: "12px",
                       border: selectedExperiences.includes(idx)
-                        ? "1px solid rgba(212,176,112,0.6)"
-                        : "1px solid rgba(212,176,112,0.2)",
+                        ? "1px solid rgba(255,255,255,0.5)"
+                        : "1px solid rgba(255,255,255,0.2)",
                       backgroundColor: selectedExperiences.includes(idx)
-                        ? "rgba(212,176,112,0.18)"
-                        : "rgba(242,232,208,0.05)",
-                      color: selectedExperiences.includes(idx) ? "#d4b070" : "rgba(240,232,208,0.75)",
+                        ? "rgba(255,255,255,0.18)"
+                        : "rgba(255,255,255,0.05)",
+                      color: selectedExperiences.includes(idx) ? "#ffffff" : "rgba(255,255,255,0.65)",
                       fontSize: "0.8rem",
                       fontWeight: selectedExperiences.includes(idx) ? 700 : 400,
                       cursor: "pointer",
@@ -757,9 +763,9 @@ export function Pricing() {
             {/* Result */}
             <div
               style={{
-                backgroundColor: "rgba(212,176,112,0.08)",
-                border: "1px solid rgba(212,176,112,0.3)",
-                borderRadius: "4px",
+                backgroundColor: "rgba(255,255,255,0.08)",
+                border: "1px solid rgba(255,255,255,0.2)",
+                borderRadius: "12px",
                 padding: "1.5rem",
               }}
             >
@@ -789,7 +795,7 @@ export function Pricing() {
                 ))}
                 <div
                   style={{
-                    borderTop: "1px solid rgba(212,176,112,0.25)",
+                    borderTop: "1px solid rgba(255,255,255,0.2)",
                     paddingTop: "0.75rem",
                     display: "flex",
                     justifyContent: "space-between",
@@ -797,8 +803,8 @@ export function Pricing() {
                     marginTop: "0.25rem",
                   }}
                 >
-                  <span style={{ color: "#d4b070", fontWeight: 700, fontSize: "1rem" }}>合計</span>
-                  <span style={{ color: "#d4b070", fontWeight: 700, fontSize: "1.75rem" }}>
+                  <span style={{ color: "#ffffff", fontWeight: 700, fontSize: "1rem" }}>合計</span>
+                  <span style={{ color: "#ffffff", fontWeight: 700, fontSize: "1.75rem" }}>
                     ¥{total.toLocaleString()}
                   </span>
                 </div>
@@ -807,15 +813,15 @@ export function Pricing() {
                 to="/reservation"
                 style={{
                   display: "block",
-                  backgroundColor: "#5c2e12",
-                  color: "#f0e8d0",
+                  backgroundColor: "#f5ede0",
+                  color: "#256840",
                   padding: "0.875rem",
-                  borderRadius: "3px",
+                  borderRadius: "12px",
                   textDecoration: "none",
                   fontWeight: 700,
                   textAlign: "center",
                   fontSize: "0.95rem",
-                  border: "1px solid rgba(212,176,112,0.2)",
+                  border: "none",
                 }}
               >
                 この内容で予約する
@@ -848,14 +854,16 @@ export function Pricing() {
               gap: "1.5rem",
             }}
           >
-            {priceExamples.map((ex, i) => (
+            {priceExamples.map((ex, i) => {
+              const theme = cardThemes[i];
+              return (
               <div
                 key={i}
                 style={{
-                  backgroundColor: "#f2e8d0",
-                  border: "1px solid rgba(180,140,80,0.2)",
-                  borderTop: "3px solid #1e3c0e",
-                  borderRadius: "6px",
+                  backgroundColor: theme.bg,
+                  border: `1px solid ${theme.border}`,
+                  borderTop: `3px solid ${theme.topBorder}`,
+                  borderRadius: "10px",
                   padding: "1.75rem",
                   display: "flex",
                   flexDirection: "column",
@@ -866,8 +874,8 @@ export function Pricing() {
                     style={{
                       width: "36px",
                       height: "36px",
-                      backgroundColor: "#faf5e8",
-                      border: "1px solid rgba(180,140,80,0.25)",
+                      backgroundColor: theme.iconBg,
+                      border: `1px solid ${theme.border}`,
                       borderRadius: "50%",
                       display: "flex",
                       alignItems: "center",
@@ -882,7 +890,7 @@ export function Pricing() {
                       fontFamily: "'Noto Serif JP', serif",
                       fontSize: "0.97rem",
                       fontWeight: 700,
-                      color: "#1e3c0e",
+                      color: "#7a4a1e",
                       marginBottom: "0.35rem",
                       lineHeight: 1.5,
                     }}
@@ -894,10 +902,10 @@ export function Pricing() {
 
                 <div
                   style={{
-                    backgroundColor: "#faf5e8",
-                    borderRadius: "4px",
+                    backgroundColor: theme.innerBg,
+                    borderRadius: "12px",
                     padding: "1rem",
-                    border: "1px solid rgba(180,140,80,0.15)",
+                    border: `1px solid ${theme.border}`,
                     flexGrow: 1,
                     marginBottom: "1rem",
                   }}
@@ -943,7 +951,8 @@ export function Pricing() {
                   </span>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
           <p
             style={{
@@ -966,7 +975,7 @@ export function Pricing() {
               fontFamily: "'Noto Serif JP', serif",
               fontSize: "1.1rem",
               fontWeight: 700,
-              color: "#1e3c0e",
+              color: "#7a4a1e",
               marginBottom: "1.25rem",
             }}
           >
@@ -1000,7 +1009,7 @@ export function Pricing() {
                   lineHeight: 1.7,
                 }}
               >
-                <FaChevronRight size={13} color="#7a4020" style={{ flexShrink: 0, marginTop: "3px" }} />
+                <FaChevronRight size={13} color="#7a4a1e" style={{ flexShrink: 0, marginTop: "3px" }} />
                 {note}
               </li>
             ))}
@@ -1011,14 +1020,14 @@ export function Pricing() {
       {/* ── CTA ── */}
       <section
         style={{
-          background: "linear-gradient(135deg, #1b2f0e 0%, #0e1a08 100%)",
+          background: "linear-gradient(135deg, #55cce8 0%, #3abcb0 100%)",
           padding: "4.5rem 1.5rem",
           textAlign: "center",
         }}
       >
         <p
           style={{
-            color: "#d4b070",
+            color: "#7a4e00",
             fontSize: "0.72rem",
             letterSpacing: "0.25em",
             fontWeight: 700,
@@ -1033,7 +1042,7 @@ export function Pricing() {
             fontFamily: "'Noto Serif JP', serif",
             fontSize: "clamp(1.5rem, 3vw, 2rem)",
             fontWeight: 700,
-            color: "#f0e8d0",
+            color: "#ffffff",
             marginBottom: "0.75rem",
           }}
         >
@@ -1041,7 +1050,7 @@ export function Pricing() {
         </h2>
         <p
           style={{
-            color: "rgba(240,232,208,0.7)",
+            color: "rgba(255,255,255,0.85)",
             marginBottom: "2rem",
             fontSize: "0.88rem",
             lineHeight: 1.9,
@@ -1056,11 +1065,11 @@ export function Pricing() {
               display: "inline-flex",
               alignItems: "center",
               gap: "0.4rem",
-              backgroundColor: "transparent",
-              color: "#f0e8d0",
+              backgroundColor: "rgba(255,255,255,0.18)",
+              color: "#ffffff",
               padding: "0.8rem 1.75rem",
-              borderRadius: "4px",
-              border: "1px solid rgba(240,232,208,0.4)",
+              borderRadius: "12px",
+              border: "1px solid rgba(255,255,255,0.6)",
               textDecoration: "none",
               fontWeight: 700,
               fontSize: "0.9rem",
@@ -1074,10 +1083,10 @@ export function Pricing() {
               display: "inline-flex",
               alignItems: "center",
               gap: "0.4rem",
-              backgroundColor: "#c47a30",
-              color: "#fff",
+              backgroundColor: "#f5ede0",
+              color: "#5c3317",
               padding: "0.8rem 1.75rem",
-              borderRadius: "4px",
+              borderRadius: "12px",
               textDecoration: "none",
               fontWeight: 700,
               fontSize: "0.9rem",
@@ -1092,14 +1101,14 @@ export function Pricing() {
         /* ── 基本宿泊料テーブル ── */
         .rate-table-wrap {
           background: #faf5e8;
-          border-radius: 4px;
+          border-radius: 12px;
           overflow: hidden;
           box-shadow: 0 4px 20px rgba(0,0,0,0.07);
         }
         .rate-header-row {
           display: flex;
           align-items: center;
-          background: #1b2f0e;
+          background: #256840;
           padding: 1rem 1.5rem;
           gap: 1rem;
           color: #d4b070;
@@ -1148,12 +1157,12 @@ export function Pricing() {
         .rate-base-value {
           font-size: 1.05rem;
           font-weight: 700;
-          color: #1e3c0e;
+          color: #7a4a1e;
         }
         .rate-extra-value {
           font-size: 0.9rem;
           font-weight: 600;
-          color: #7a4020;
+          color: #7a4a1e;
         }
         .rate-cell-mobile-label {
           display: none;
@@ -1179,7 +1188,7 @@ export function Pricing() {
             width: 100%;
             padding: 0.45rem 0.75rem;
             background: rgba(180,140,80,0.07);
-            border-radius: 3px;
+            border-radius: 8px;
           }
           .rate-cell-mobile-label { display: inline; }
           .rate-base-value { font-size: 1rem; }

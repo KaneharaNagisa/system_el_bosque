@@ -1,8 +1,9 @@
-import bbqPhoto from "figma:asset/c232c6053b1490db7b5dc90637581a4da86b4682.png";
+import image_260924_0007_3 from '@/imports/260924-0007-3.jpg'
+import bbqPhoto from "../../imports/260924-0027.jpg";
 import cabinPhoto from "figma:asset/0b3064ec72e9db4af32817c032fdcc52faa8d748.png";
-import livingPhoto from "figma:asset/cefee1687153313be4a93e924c2d47762b764e35.png";
-import kitchenPhoto from "figma:asset/051ba647ed3b30d30bbf8b5eb0e7a7d11aa5aa53.png";
-import loftPhoto from "figma:asset/4776090ab6a75676e3ccee00c2cda4a78c0952e8.png";
+import livingPhoto from "../../imports/260924-0052.jpg";
+import kitchenPhoto from "../../imports/260924-0041.jpg";
+import loftPhoto from "../../imports/260924-0065.jpg";
 import { Link } from "react-router";
 import {
   FaChevronRight,
@@ -35,8 +36,8 @@ const IMG_LOFT =
   "https://images.unsplash.com/photo-1706048111522-e4865f909940?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080";
 const IMG_BBQ =
   "https://images.unsplash.com/photo-1703782997446-fba282cbfce6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080";
-const IMG_LAKE =
-  "https://images.unsplash.com/photo-1760243875402-57c8dd5a8cf5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080";
+import lakePhoto from "../../imports/260924-0109.jpg";
+const IMG_LAKE = lakePhoto;
 const IMG_STARS =
   "https://images.unsplash.com/photo-1715535478808-8b01355c7c8b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080";
 
@@ -54,7 +55,7 @@ const gallery = [
 const amenityCategories = [
   {
     label: "リビング・ダイニング",
-    icon: <FaCouch size={15} color="#1e3c0e" />,
+    icon: <FaCouch size={15} color="#7a4a1e" />,
     items: [
       "ソファ・ダイニングテーブル",
       "薪ストーブ",
@@ -64,7 +65,7 @@ const amenityCategories = [
   },
   {
     label: "キッチン",
-    icon: <FaUtensils size={15} color="#1e3c0e" />,
+    icon: <FaUtensils size={15} color="#7a4a1e" />,
     items: [
       "冷蔵庫（大型）",
       "IHコンロ（2口）",
@@ -77,7 +78,7 @@ const amenityCategories = [
   },
   {
     label: "バス・トイレ",
-    icon: <FaBath size={15} color="#1e3c0e" />,
+    icon: <FaBath size={15} color="#7a4a1e" />,
     items: [
       "バスルーム（浴槽あり）",
       "シャワー",
@@ -89,7 +90,7 @@ const amenityCategories = [
   },
   {
     label: "寝室",
-    icon: <FaBed size={15} color="#1e3c0e" />,
+    icon: <FaBed size={15} color="#7a4a1e" />,
     items: [
       "ロフト寝室（布団6セット）",
       "毛布・枕（全員分）",
@@ -97,7 +98,7 @@ const amenityCategories = [
   },
   {
     label: "タオル・寝具",
-    icon: <FaLayerGroup size={15} color="#1e3c0e" />,
+    icon: <FaLayerGroup size={15} color="#7a4a1e" />,
     items: [
       "バスタオル（全員分）",
       "フェイスタオル（全員分）",
@@ -107,7 +108,7 @@ const amenityCategories = [
   },
   {
     label: "ベランダ・屋外",
-    icon: <FaLeaf size={15} color="#1e3c0e" />,
+    icon: <FaLeaf size={15} color="#7a4a1e" />,
     items: [
       "ウッドデッキ",
       "アウトドテーブル・チェア",
@@ -121,23 +122,23 @@ const amenityCategories = [
 /* ── 利用ルール ── */
 const rules = [
   {
-    icon: <FaSmokingBan size={15} color="#7a4020" />,
+    icon: <FaSmokingBan size={15} color="#7a4a1e" />,
     text: "施設内は全館禁煙です。喫煙は指定の屋外スペースにてお願いします。",
   },
   {
-    icon: <FaDog size={15} color="#7a4020" />,
+    icon: <FaDog size={15} color="#7a4a1e" />,
     text: "ペットは小型犬2頭または大型犬2頭まで。就寝時はケージをご用ください。",
   },
   {
-    icon: <FaTrash size={15} color="#7a4020" />,
+    icon: <FaTrash size={15} color="#7a4a1e" />,
     text: "ゴミは分別のうえ、指定の回収袋に入れてご退去時にまとめて所定の場所へ。",
   },
   {
-    icon: <FaFire size={15} color="#7a4020" />,
+    icon: <FaFire size={15} color="#7a4a1e" />,
     text: "BBQ・焚き火は指定エリアのみ可。火の後始末は必ず完全に消火してください。",
   },
   {
-    icon: <FaExclamationTriangle size={15} color="#7a4020" />,
+    icon: <FaExclamationTriangle size={15} color="#7a4a1e" />,
     text: "定員を超えての宿泊はお断りしています。追加ゲストは事前にご相談ください。",
   },
 ];
@@ -155,7 +156,7 @@ const SectionHeading = ({
   <div style={{ textAlign: "center", marginBottom: "3rem" }}>
     <p
       style={{
-        color: dark ? "#d4b070" : "#7a4020",
+        color: dark ? "#d4b070" : "#7a4a1e",
         fontSize: "0.72rem",
         letterSpacing: "0.25em",
         fontWeight: 700,
@@ -170,7 +171,7 @@ const SectionHeading = ({
         fontFamily: "'Noto Serif JP', serif",
         fontSize: "clamp(1.4rem, 3vw, 1.9rem)",
         fontWeight: 700,
-        color: dark ? "#f0e8d0" : "#1e3c0e",
+        color: dark ? "#f0e8d0" : "#256840",
       }}
     >
       {ja}
@@ -184,7 +185,7 @@ export function About() {
       {/* ── ページヘッダー ── */}
       <div
         style={{
-          background: "linear-gradient(135deg, #0e1a08 0%, #1b2f0e 60%, #254510 100%)",
+          background: "linear-gradient(135deg, #5c3317 0%, #7d4820 100%)",
           padding: "8rem 1.5rem 4rem",
           textAlign: "center",
         }}
@@ -254,7 +255,7 @@ export function About() {
                   fontFamily: "'Noto Serif JP', serif",
                   fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
                   fontWeight: 700,
-                  color: "#1e3c0e",
+                  color: "#256840",
                   lineHeight: 1.45,
                   marginBottom: "1.5rem",
                 }}
@@ -287,10 +288,10 @@ export function About() {
               {/* 周囲に住居なし メリットバナー */}
               <div
                 style={{
-                  backgroundColor: "rgba(30,60,14,0.07)",
-                  border: "1px solid rgba(30,60,14,0.18)",
-                  borderLeft: "4px solid #1e3c0e",
-                  borderRadius: "4px",
+                  backgroundColor: "rgba(100,55,20,0.07)",
+                  border: "1px solid rgba(100,55,20,0.18)",
+                  borderLeft: "4px solid #7a4a1e",
+                  borderRadius: "12px",
                   padding: "1rem 1.25rem",
                   marginBottom: "2rem",
                   display: "flex",
@@ -302,7 +303,7 @@ export function About() {
                   style={{
                     width: "32px",
                     height: "32px",
-                    backgroundColor: "#1e3c0e",
+                    backgroundColor: "#3abcb0",
                     borderRadius: "50%",
                     display: "flex",
                     alignItems: "center",
@@ -311,14 +312,14 @@ export function About() {
                     marginTop: "0.1rem",
                   }}
                 >
-                  <FaVolumeUp size={14} color="#d4b070" />
+                  <FaVolumeUp size={14} color="#ffffff" />
                 </div>
                 <div>
                   <p
                     style={{
                       fontSize: "0.78rem",
                       fontWeight: 700,
-                      color: "#1e3c0e",
+                      color: "#7a4a1e",
                       marginBottom: "0.35rem",
                       letterSpacing: "0.03em",
                     }}
@@ -345,7 +346,7 @@ export function About() {
                   gridTemplateColumns: "1fr 1fr",
                   gap: "0",
                   border: "1px solid rgba(180,140,80,0.25)",
-                  borderRadius: "4px",
+                  borderRadius: "12px",
                   overflow: "hidden",
                 }}
                 className="about-spec-grid"
@@ -393,13 +394,13 @@ export function About() {
             {/* 右：写真 */}
             <div>
               <img
-                src={cabinPhoto}
+                src={image_260924_0007_3}
                 alt="エルボスケ外観"
                 style={{
                   width: "100%",
                   height: "460px",
                   objectFit: "cover",
-                  borderRadius: "4px",
+                  borderRadius: "12px",
                   display: "block",
                 }}
               />
@@ -492,8 +493,8 @@ export function About() {
                 style={{
                   backgroundColor: "#faf5e8",
                   border: "1px solid rgba(180,140,80,0.18)",
-                  borderTop: "3px solid #1e3c0e",
-                  borderRadius: "6px",
+                  borderTop: "3px solid #7a4a1e",
+                  borderRadius: "10px",
                   padding: "1.5rem",
                 }}
               >
@@ -509,8 +510,8 @@ export function About() {
                     style={{
                       width: "28px",
                       height: "28px",
-                      backgroundColor: "rgba(30,60,14,0.08)",
-                      borderRadius: "6px",
+                      backgroundColor: "rgba(100,55,20,0.08)",
+                      borderRadius: "10px",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -524,7 +525,7 @@ export function About() {
                       fontFamily: "'Noto Serif JP', serif",
                       fontSize: "0.95rem",
                       fontWeight: 700,
-                      color: "#1e3c0e",
+                      color: "#7a4a1e",
                     }}
                   >
                     {cat.label}
@@ -560,7 +561,7 @@ export function About() {
       </section>
 
       {/* ── チェックイン・チェックアウト ── */}
-      <section style={{ backgroundColor: "#1b2f0e", padding: "5rem 1.5rem" }}>
+      <section style={{ backgroundColor: "#256840", padding: "5rem 1.5rem" }}>
         <div style={{ maxWidth: "800px", margin: "0 auto" }}>
           <SectionHeading en="Check-in / Check-out" ja="チェックイン・チェックアウト" dark />
           <div
@@ -573,8 +574,8 @@ export function About() {
             {/* チェックイン */}
             <div
               style={{
-                backgroundColor: "rgba(242,232,208,0.07)",
-                border: "1px solid rgba(212,176,112,0.2)",
+                backgroundColor: "rgba(255,255,255,0.08)",
+                border: "1px solid rgba(255,255,255,0.18)",
                 borderRadius: "8px",
                 padding: "2rem",
                 textAlign: "center",
@@ -584,7 +585,7 @@ export function About() {
                 style={{
                   width: "52px",
                   height: "52px",
-                  backgroundColor: "#d4b070",
+                  backgroundColor: "#3abcb0",
                   borderRadius: "50%",
                   display: "flex",
                   alignItems: "center",
@@ -597,7 +598,7 @@ export function About() {
               <div
                 style={{
                   fontSize: "0.7rem",
-                  color: "#d4b070",
+                  color: "rgba(255,255,255,0.7)",
                   fontWeight: 700,
                   letterSpacing: "0.15em",
                   textTransform: "uppercase",
@@ -611,7 +612,7 @@ export function About() {
                   fontFamily: "'Noto Serif JP', serif",
                   fontSize: "2.2rem",
                   fontWeight: 700,
-                  color: "#f0e8d0",
+                  color: "#ffffff",
                   lineHeight: 1.2,
                 }}
               >
@@ -620,7 +621,7 @@ export function About() {
               <p
                 style={{
                   fontSize: "0.78rem",
-                  color: "rgba(240,232,208,0.6)",
+                  color: "rgba(255,255,255,0.75)",
                   marginTop: "0.75rem",
                   lineHeight: 1.8,
                 }}
@@ -632,8 +633,8 @@ export function About() {
             {/* チェックアウト */}
             <div
               style={{
-                backgroundColor: "rgba(242,232,208,0.07)",
-                border: "1px solid rgba(212,176,112,0.2)",
+                backgroundColor: "rgba(255,255,255,0.08)",
+                border: "1px solid rgba(255,255,255,0.18)",
                 borderRadius: "8px",
                 padding: "2rem",
                 textAlign: "center",
@@ -643,7 +644,7 @@ export function About() {
                 style={{
                   width: "52px",
                   height: "52px",
-                  backgroundColor: "#d4b070",
+                  backgroundColor: "#3abcb0",
                   borderRadius: "50%",
                   display: "flex",
                   alignItems: "center",
@@ -656,7 +657,7 @@ export function About() {
               <div
                 style={{
                   fontSize: "0.7rem",
-                  color: "#d4b070",
+                  color: "rgba(255,255,255,0.7)",
                   fontWeight: 700,
                   letterSpacing: "0.15em",
                   textTransform: "uppercase",
@@ -670,7 +671,7 @@ export function About() {
                   fontFamily: "'Noto Serif JP', serif",
                   fontSize: "2.2rem",
                   fontWeight: 700,
-                  color: "#f0e8d0",
+                  color: "#ffffff",
                   lineHeight: 1.2,
                 }}
               >
@@ -679,7 +680,7 @@ export function About() {
               <p
                 style={{
                   fontSize: "0.78rem",
-                  color: "rgba(240,232,208,0.6)",
+                  color: "rgba(255,255,255,0.75)",
                   marginTop: "0.75rem",
                   lineHeight: 1.8,
                 }}
@@ -693,20 +694,20 @@ export function About() {
           <div
             style={{
               marginTop: "1.5rem",
-              backgroundColor: "rgba(212,176,112,0.08)",
-              border: "1px solid rgba(212,176,112,0.2)",
-              borderRadius: "6px",
+              backgroundColor: "rgba(255,255,255,0.08)",
+              border: "1px solid rgba(255,255,255,0.18)",
+              borderRadius: "10px",
               padding: "1rem 1.5rem",
               display: "flex",
               alignItems: "center",
               gap: "0.75rem",
             }}
           >
-            <FaClock size={15} color="#d4b070" style={{ flexShrink: 0 }} />
+<FaClock size={15} color="rgba(255,255,255,0.7)" style={{ flexShrink: 0 }} />
             <p
               style={{
                 fontSize: "0.8rem",
-                color: "rgba(240,232,208,0.7)",
+                color: "rgba(255,255,255,0.85)",
                 margin: 0,
                 lineHeight: 1.8,
               }}
@@ -789,14 +790,14 @@ export function About() {
       {/* ── CTA ── */}
       <section
         style={{
-          background: "linear-gradient(135deg, #1b2f0e 0%, #0e1a08 100%)",
+          background: "linear-gradient(135deg, #55cce8 0%, #3abcb0 100%)",
           padding: "4.5rem 1.5rem",
           textAlign: "center",
         }}
       >
         <p
           style={{
-            color: "#d4b070",
+            color: "#7a4e00",
             fontSize: "0.72rem",
             letterSpacing: "0.25em",
             fontWeight: 700,
@@ -811,7 +812,7 @@ export function About() {
             fontFamily: "'Noto Serif JP', serif",
             fontSize: "clamp(1.5rem, 3vw, 2rem)",
             fontWeight: 700,
-            color: "#f0e8d0",
+            color: "#ffffff",
             marginBottom: "0.75rem",
             lineHeight: 1.45,
           }}
@@ -820,7 +821,7 @@ export function About() {
         </h2>
         <p
           style={{
-            color: "rgba(240,232,208,0.7)",
+            color: "rgba(255,255,255,0.85)",
             marginBottom: "2rem",
             fontSize: "0.88rem",
             lineHeight: 1.9,
@@ -842,11 +843,11 @@ export function About() {
               display: "inline-flex",
               alignItems: "center",
               gap: "0.4rem",
-              backgroundColor: "transparent",
-              color: "#f0e8d0",
+              backgroundColor: "rgba(255,255,255,0.18)",
+              color: "#ffffff",
               padding: "0.8rem 1.75rem",
-              borderRadius: "4px",
-              border: "1px solid rgba(240,232,208,0.4)",
+              borderRadius: "12px",
+              border: "1px solid rgba(255,255,255,0.6)",
               textDecoration: "none",
               fontWeight: 700,
               fontSize: "0.9rem",
@@ -860,10 +861,10 @@ export function About() {
               display: "inline-flex",
               alignItems: "center",
               gap: "0.4rem",
-              backgroundColor: "#c47a30",
-              color: "#fff",
+              backgroundColor: "#f5ede0",
+              color: "#5c3317",
               padding: "0.8rem 1.75rem",
-              borderRadius: "4px",
+              borderRadius: "12px",
               textDecoration: "none",
               fontWeight: 700,
               fontSize: "0.9rem",

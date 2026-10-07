@@ -18,8 +18,8 @@ const inputStyle: React.CSSProperties = {
   width: "100%",
   padding: "0.75rem 1rem",
   backgroundColor: "#faf5e8",
-  border: "1px solid rgba(30,60,14,0.2)",
-  borderRadius: "3px",
+  border: "1px solid rgba(100,55,20,0.2)",
+  borderRadius: "12px",
   fontSize: "0.9rem",
   color: "#2c1e10",
   outline: "none",
@@ -32,7 +32,7 @@ const labelStyle: React.CSSProperties = {
   display: "block",
   fontSize: "0.8rem",
   fontWeight: 700,
-  color: "#1e3c0e",
+  color: "#7a4a1e",
   marginBottom: "0.4rem",
   letterSpacing: "0.04em",
 };
@@ -63,7 +63,7 @@ export function Reservation() {
 
   // Min checkout = checkin + 1 day
   const checkoutMin = (() => {
-    if (!checkin) return "2026-08-02";
+    if (!checkin) return "2026-10-02";
     const [y, m, d] = checkin.split("-").map(Number);
     const minDate = new Date(y, m - 1, d + 1);
     return `${minDate.getFullYear()}-${String(minDate.getMonth() + 1).padStart(2, "0")}-${String(minDate.getDate()).padStart(2, "0")}`;
@@ -71,8 +71,8 @@ export function Reservation() {
 
   const focusedInputStyle = (field: string): React.CSSProperties => ({
     ...inputStyle,
-    borderColor: focusedField === field ? "#1e3c0e" : "rgba(30,60,14,0.2)",
-    boxShadow: focusedField === field ? "0 0 0 3px rgba(30,60,14,0.1)" : "none",
+    borderColor: focusedField === field ? "#7a4a1e" : "rgba(100,55,20,0.2)",
+    boxShadow: focusedField === field ? "0 0 0 3px rgba(100,55,20,0.1)" : "none",
   });
 
   const datesValid = checkin && checkout && checkout > checkin;
@@ -107,7 +107,7 @@ export function Reservation() {
       <div
         style={{
           background:
-            "linear-gradient(135deg, #0e1a08 0%, #1b2f0e 60%, #254510 100%)",
+            "linear-gradient(135deg, #5c3317 0%, #7d4820 100%)",
           padding: "8rem 1.5rem 4rem",
           textAlign: "center",
         }}
@@ -147,7 +147,7 @@ export function Reservation() {
       </div>
 
       {/* Quick info strip */}
-      <div style={{ backgroundColor: "#1b2f0e", padding: "0.875rem 1.5rem" }}>
+      <div style={{ backgroundColor: "#8b5828", padding: "0.875rem 1.5rem" }}>
         <div
           style={{
             maxWidth: "1100px",
@@ -185,11 +185,11 @@ export function Reservation() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                backgroundColor: "#1b2f0e",
-                borderRadius: "4px",
+                backgroundColor: "#1e5c2e",
+                borderRadius: "12px",
                 padding: "1rem 1.5rem",
                 marginBottom: "1.5rem",
-                border: "1px solid rgba(212,176,112,0.18)",
+                border: "1px solid rgba(80,180,100,0.25)",
               }}
             >
               <div
@@ -199,11 +199,11 @@ export function Reservation() {
                   gap: "0.6rem",
                 }}
               >
-                <FaUser size={14} color="#d4b070" />
+                <FaUser size={14} color="rgba(255,255,255,0.7)" />
                 <span
                   style={{
                     fontSize: "0.88rem",
-                    color: "#f0e8d0",
+                    color: "#ffffff",
                     fontWeight: 500,
                   }}
                 >
@@ -214,10 +214,10 @@ export function Reservation() {
                 onClick={logout}
                 style={{
                   background: "none",
-                  border: "1px solid rgba(240,232,208,0.25)",
-                  color: "rgba(240,232,208,0.7)",
+                  border: "1px solid rgba(255,255,255,0.3)",
+                  color: "rgba(255,255,255,0.8)",
                   padding: "0.35rem 0.75rem",
-                  borderRadius: "3px",
+                  borderRadius: "12px",
                   cursor: "pointer",
                   fontSize: "0.75rem",
                   fontFamily: "'Noto Sans JP', sans-serif",
@@ -236,7 +236,7 @@ export function Reservation() {
           <div
             style={{
               backgroundColor: "#faf5e8",
-              borderRadius: "4px",
+              borderRadius: "12px",
               padding: "2.5rem",
               boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
               border: "1px solid rgba(180,140,80,0.15)",
@@ -247,7 +247,7 @@ export function Reservation() {
                 fontFamily: "'Noto Serif JP', serif",
                 fontSize: "1.2rem",
                 fontWeight: 700,
-                color: "#1e3c0e",
+                color: "#7a4a1e",
                 marginBottom: "0.75rem",
                 paddingBottom: "1rem",
                 borderBottom: "2px solid rgba(180,140,80,0.2)",
@@ -256,7 +256,7 @@ export function Reservation() {
                 gap: "0.6rem",
               }}
             >
-              <FaCalendarAlt size={18} color="#7a4020" />
+              <FaCalendarAlt size={18} color="#7a4a1e" />
               宿泊日程の選択
             </h2>
             <p
@@ -292,7 +292,7 @@ export function Reservation() {
                     setCheckout("");
                     setCheckoutError("");
                   }}
-                  min="2026-08-01"
+                  min="2026-10-01"
                   max="2026-12-31"
                   placeholder="年 / 月 / 日"
                   isFocused={focusedField === "checkin"}
@@ -377,10 +377,10 @@ export function Reservation() {
                 disabled={!datesValid}
                 style={{
                   width: "100%",
-                  backgroundColor: datesValid ? "#5c2e12" : "#c8b8a0",
-                  color: datesValid ? "#f0e8d0" : "#a09080",
+                  backgroundColor: datesValid ? "#c8251a" : "#c8b8a0",
+                  color: datesValid ? "#ffffff" : "#a09080",
                   padding: "1.1rem",
-                  borderRadius: "3px",
+                  borderRadius: "12px",
                   border: "none",
                   cursor: datesValid ? "pointer" : "not-allowed",
                   fontSize: "1rem",
@@ -402,10 +402,10 @@ export function Reservation() {
                 disabled={!datesValid}
                 style={{
                   width: "100%",
-                  backgroundColor: datesValid ? "#5c2e12" : "#c8b8a0",
-                  color: datesValid ? "#f0e8d0" : "#a09080",
+                  backgroundColor: datesValid ? "#256840" : "#c8b8a0",
+                  color: datesValid ? "#ffffff" : "#a09080",
                   padding: "1.1rem",
-                  borderRadius: "3px",
+                  borderRadius: "12px",
                   border: "none",
                   cursor: datesValid ? "pointer" : "not-allowed",
                   fontSize: "1rem",
@@ -439,7 +439,7 @@ export function Reservation() {
                 <Link
                   to="/register"
                   style={{
-                    color: "#7a4020",
+                    color: "#7a4a1e",
                     fontWeight: 700,
                     textDecoration: "none",
                   }}
@@ -465,7 +465,7 @@ export function Reservation() {
             <div
               style={{
                 backgroundColor: "#faf5e8",
-                borderRadius: "4px",
+                borderRadius: "12px",
                 padding: "1.5rem",
                 border: "1px solid rgba(180,140,80,0.18)",
                 boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
@@ -476,7 +476,7 @@ export function Reservation() {
                   fontFamily: "'Noto Serif JP', serif",
                   fontSize: "0.95rem",
                   fontWeight: 700,
-                  color: "#1e3c0e",
+                  color: "#7a4a1e",
                   marginBottom: "1rem",
                 }}
               >
@@ -508,7 +508,7 @@ export function Reservation() {
                     }}
                   >
                     <span>{item.label}</span>
-                    <span style={{ fontWeight: 700, color: "#1e3c0e" }}>
+                    <span style={{ fontWeight: 700, color: "#7a4a1e" }}>
                       {item.price}
                     </span>
                   </div>
@@ -530,7 +530,7 @@ export function Reservation() {
                 style={{
                   display: "block",
                   textAlign: "center",
-                  color: "#7a4020",
+                  color: "#7a4a1e",
                   fontSize: "0.8rem",
                   fontWeight: 700,
                   textDecoration: "none",
@@ -545,7 +545,7 @@ export function Reservation() {
             <div
               style={{
                 backgroundColor: "#faf5e8",
-                borderRadius: "4px",
+                borderRadius: "12px",
                 padding: "1.5rem",
                 border: "1px solid rgba(180,140,80,0.18)",
                 boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
@@ -556,7 +556,7 @@ export function Reservation() {
                   fontFamily: "'Noto Serif JP', serif",
                   fontSize: "0.95rem",
                   fontWeight: 700,
-                  color: "#1e3c0e",
+                  color: "#7a4a1e",
                   marginBottom: "1rem",
                 }}
               >
@@ -583,7 +583,7 @@ export function Reservation() {
                     style={{
                       width: "22px",
                       height: "22px",
-                      backgroundColor: "#1e3c0e",
+                      backgroundColor: "#3abcb0",
                       color: "#f0e8d0",
                       borderRadius: "50%",
                       display: "inline-flex",
@@ -608,8 +608,8 @@ export function Reservation() {
           <div
             style={{
               marginTop: "1.5rem",
-              backgroundColor: "#1b2f0e",
-              borderRadius: "4px",
+              backgroundColor: "#8b5828",
+              borderRadius: "12px",
               padding: "1.5rem",
               textAlign: "center",
               border: "1px solid rgba(212,176,112,0.18)",
@@ -634,7 +634,7 @@ export function Reservation() {
                 backgroundColor: "rgba(240,232,208,0.12)",
                 color: "#f0e8d0",
                 padding: "0.65rem 1.25rem",
-                borderRadius: "3px",
+                borderRadius: "12px",
                 textDecoration: "none",
                 fontWeight: 700,
                 fontSize: "0.82rem",
