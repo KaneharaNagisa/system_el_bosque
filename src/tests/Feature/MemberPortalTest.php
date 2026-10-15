@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Billing;
 use App\Models\Availability;
 use App\Models\Experience;
+use App\Models\News;
 use App\Models\PendingRegistration;
 use App\Models\Reservation;
 use App\Models\User;
@@ -308,5 +309,57 @@ class MemberPortalTest extends TestCase
                 ->where('page', 'reservation')
                 ->where('availability.0.date', '2026-10-09')
                 ->where('availability.0.status', 'booked'));
+    }
+
+    public function test_guest_news_list_hides_member_only_announcements(): void
+    {
+        $topNews = News::create([
+            'title' => '公開のお知らせ',
+            'content' => '公開内容',
+            'target' => 'top',
+            'status' => 'published',
+            'publish_date' => today()->subDay(),
+        ]);
+        $bothNews = News::create([
+            'title' => '共通のお知らせ',
+            'content' => '共通内容',
+            'target' => 'both',
+            'status' => 'published',
+            'publish_date' => today(),
+        ]);
+        News::create([
+            'title' => '会員向けのお知らせ',
+            'content' => '会員向け内容',
+            'target' => 'mypage',
+            'status' => 'published',
+            'publish_date' => today(),
+        ]);
+
+        $this->get('/news')
+            ->assertOk()
+            ->assertInertia(fn(Assert $page) => $page
+                ->component('Public/Page')
+                ->has('news', 2)
+                ->where('news.0.id', $bothNews->id)
+                ->where('news.1.id', $topNews->id));
+    }
+
+    public function test_authenticated_news_list_includes_member_only_announcements(): void
+    {
+        $user = User::factory()->create(['status' => 'active']);
+        $memberNews = News::create([
+            'title' => '会員向けのお知らせ',
+            'content' => '会員向け内容',
+            'target' => 'mypage',
+            'status' => 'published',
+            'publish_date' => today(),
+        ]);
+
+        $this->actingAs($user)->get('/news')
+            ->assertOk()
+            ->assertInertia(fn(Assert $page) => $page
+                ->component('Public/Page')
+                ->has('news', 1)
+                ->where('news.0.id', $memberNews->id));
     }
 }

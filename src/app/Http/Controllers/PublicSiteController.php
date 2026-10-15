@@ -14,6 +14,7 @@ use App\Models\Reservation;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -91,6 +92,8 @@ class PublicSiteController extends Controller
         if ($page !== 'news') {
             $target = $page === 'home' ? 'top' : 'mypage';
             $query->whereIn('target', [$target, 'both']);
+        } elseif (!Auth::check()) {
+            $query->whereIn('target', ['top', 'both']);
         }
 
         return $query->latest('publish_date')->get()->toArray();
