@@ -1,8 +1,9 @@
-﻿import bbqPhoto from "../assets/c232c6053b1490db7b5dc90637581a4da86b4682.png";
-import cabinPhoto from "../assets/0b3064ec72e9db4af32817c032fdcc52faa8d748.png";
-import livingPhoto from "../assets/cefee1687153313be4a93e924c2d47762b764e35.png";
-import kitchenPhoto from "../assets/051ba647ed3b30d30bbf8b5eb0e7a7d11aa5aa53.png";
-import loftPhoto from "../assets/4776090ab6a75676e3ccee00c2cda4a78c0952e8.png";
+﻿import bbqPhoto from "../assets/260924-0027.jpg";
+import cabinPhoto from "../assets/260924-0007-3.jpg";
+import livingPhoto from "../assets/260924-0052.jpg";
+import kitchenPhoto from "../assets/260924-0041.jpg";
+import loftPhoto from "../assets/260924-0065.jpg";
+import lakePhoto from "../assets/260924-0109.jpg";
 import { usePage } from "@inertiajs/react";
 import { Link } from "../router";
 import {
@@ -30,16 +31,7 @@ import { defaultPricingSetting, type PricingSetting } from "../pricing";
 import { responsiveImage, type PublicImages } from "../image";
 
 /* ── 画像 ── */
-const IMG_LIVING =
-    "https://images.unsplash.com/photo-1768413309479-2f3416829a19?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080";
-const IMG_KITCHEN =
-    "https://images.unsplash.com/photo-1649446326916-a25f51098f32?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080";
-const IMG_LOFT =
-    "https://images.unsplash.com/photo-1706048111522-e4865f909940?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080";
-const IMG_BBQ =
-    "https://images.unsplash.com/photo-1703782997446-fba282cbfce6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080";
-const IMG_LAKE =
-    "https://images.unsplash.com/photo-1760243875402-57c8dd5a8cf5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080";
+const IMG_LAKE = lakePhoto;
 const IMG_STARS =
     "https://images.unsplash.com/photo-1715535478808-8b01355c7c8b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080";
 
@@ -221,7 +213,7 @@ export function About() {
             <div
                 style={{
                     background:
-                        "linear-gradient(135deg, #0e1a08 0%, #1b2f0e 60%, #254510 100%)",
+                        "linear-gradient(135deg, #5c3317 0%, #7d4820 100%)",
                     padding: "8rem 1.5rem 4rem",
                     textAlign: "center",
                 }}

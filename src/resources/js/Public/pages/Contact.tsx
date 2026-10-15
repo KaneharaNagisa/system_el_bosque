@@ -89,7 +89,7 @@ export function Contact() {
                 <div
                     style={{
                         background:
-                            "linear-gradient(135deg, #0e1a08 0%, #1b2f0e 60%, #254510 100%)",
+                            "linear-gradient(135deg, #5c3317 0%, #7d4820 100%)",
                         padding: "8rem 1.5rem 4rem",
                         textAlign: "center",
                     }}
@@ -201,7 +201,7 @@ export function Contact() {
             <div
                 style={{
                     background:
-                        "linear-gradient(135deg, #0e1a08 0%, #1b2f0e 60%, #254510 100%)",
+                        "linear-gradient(135deg, #5c3317 0%, #7d4820 100%)",
                     padding: "8rem 1.5rem 4rem",
                     textAlign: "center",
                 }}

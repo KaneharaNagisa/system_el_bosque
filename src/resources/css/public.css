@@ -223,7 +223,7 @@ body[data-admin="true"] {
 
 /* ヘッダーナビ: デスクトップは表示、モバイルは非表示 */
 .desktop-nav {
-    display: flex;
+    display: grid;
 }
 .mobile-nav-toggle {
     display: none;
@@ -231,10 +231,35 @@ body[data-admin="true"] {
 .mobile-menu {
     display: none;
 }
+.mobile-bottom-nav {
+    display: none;
+}
+
+.public-layout main h1,
+.public-layout main h2,
+.public-layout main h3 {
+    font-family: "Noto Serif JP", serif !important;
+}
+
+.public-layout main input:not([type="checkbox"]):not([type="radio"]),
+.public-layout main textarea,
+.public-layout main select {
+    border-radius: 10px !important;
+}
+
+.public-layout main input:not([type="checkbox"]):not([type="radio"]):focus,
+.public-layout main textarea:focus,
+.public-layout main select:focus {
+    border-color: #256840 !important;
+    outline-color: #256840;
+}
 
 @media (max-width: 1100px) {
     /* ヘッダーナビ切替 */
     .desktop-nav {
+        display: none !important;
+    }
+    .log-bump {
         display: none !important;
     }
     .mobile-nav-toggle {
@@ -244,6 +269,36 @@ body[data-admin="true"] {
     }
     .mobile-menu {
         display: flex !important;
+    }
+    .mobile-bottom-nav {
+        display: flex !important;
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1050;
+        gap: 0;
+        margin: 0;
+        padding: 0;
+        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.18);
+    }
+    .mobile-bottom-nav a {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        text-decoration: none;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        gap: 0.2rem;
+        line-height: 1;
+        padding: 0.6rem 0;
+    }
+    .public-layout {
+        padding-bottom: 56px;
     }
     /* ドロワーオーバーレイはblockで表示 */
     div.mobile-menu {

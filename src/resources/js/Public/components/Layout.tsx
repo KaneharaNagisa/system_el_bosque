@@ -3,15 +3,20 @@ import { Link, useLocation } from "../router";
 import {
     FaBars,
     FaTimes,
-    FaTree,
     FaMapMarkerAlt,
     FaPhone,
     FaEnvelope,
     FaSignInAlt,
     FaUserCircle,
     FaChevronRight,
+    FaCalendarAlt,
+    FaStar,
 } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+import logo4Src from "../assets/logo4.png";
+import logo1Src from "../assets/logo1.png";
+import logo4_1Src from "../assets/logo4-1.png";
+import logo10Src from "../assets/logo10.png";
 
 const navItems = [
     { path: "/", label: "\u30DB\u30FC\u30E0" },
@@ -60,9 +65,10 @@ export function Layout({ children }: { children: ReactNode }) {
 
     return (
         <div
+            className="public-layout"
             style={{
                 fontFamily: "'Noto Sans JP', sans-serif",
-                color: "#1c1408",
+                color: "#1c2810",
             }}
         >
             {/* Header */}
@@ -74,76 +80,89 @@ export function Layout({ children }: { children: ReactNode }) {
                     right: 0,
                     zIndex: 1000,
                     backgroundColor:
-                        scrolled || !isHome
-                            ? "rgba(14, 26, 8, 0.97)"
-                            : "rgba(0,0,0,0.25)",
-                    backdropFilter: "blur(10px)",
+                        scrolled || !isHome ? "#ffffff" : "transparent",
+                    backdropFilter: scrolled || !isHome ? "none" : "blur(4px)",
                     transition: "background-color 0.35s ease",
-                    boxShadow: scrolled ? "0 2px 24px rgba(0,0,0,0.5)" : "none",
+                    boxShadow: scrolled ? "0 2px 20px rgba(0,0,0,0.1)" : "none",
                     borderBottom: scrolled
-                        ? "1px solid rgba(212,176,112,0.15)"
+                        ? "1px solid rgba(45,112,69,0.12)"
                         : "none",
                 }}
             >
                 <div
+                    className="desktop-nav"
                     style={{
                         maxWidth: "1200px",
                         margin: "0 auto",
-                        padding: "0 1.5rem",
-                        display: "flex",
+                        padding: "0 1rem",
+                        display: "grid",
+                        gridTemplateColumns: "1fr 110px 1fr",
                         alignItems: "center",
-                        justifyContent: "space-between",
                         height: "68px",
+                        position: "relative",
                     }}
                 >
-                    {/* Logo */}
-                    <Link
-                        to="/"
+                    <div
                         style={{
-                            textDecoration: "none",
                             display: "flex",
                             alignItems: "center",
-                            gap: "0.6rem",
+                            justifyContent: "flex-end",
+                            gap: "0.05rem",
+                            paddingRight: "5px",
                         }}
                     >
-                        <FaTree size={22} color="#d4b070" />
-                        <div>
-                            <div
-                                style={{
-                                    fontFamily: "'Noto Serif JP', serif",
-                                    fontSize: "1.1rem",
-                                    fontWeight: 700,
-                                    color: "#ffffff",
-                                    letterSpacing: "0.04em",
-                                    lineHeight: 1.1,
-                                }}
-                            >
-                                {
-                                    "\u8CB8\u5225\u8358\u30A8\u30EB\u30DC\u30B9\u30B1"
-                                }
-                            </div>
-                            <div
-                                style={{
-                                    fontSize: "0.6rem",
-                                    color: "#d4b070",
-                                    letterSpacing: "0.2em",
-                                    fontStyle: "italic",
-                                }}
-                            >
-                                El bosque
-                            </div>
-                        </div>
-                    </Link>
+                        {navItems.slice(1, 5).map((item) => {
+                            const isActive = location.pathname === item.path;
+                            return (
+                                <Link
+                                    key={item.path}
+                                    to={item.path}
+                                    style={{
+                                        padding: "0.45rem 0.6rem",
+                                        borderRadius: "8px",
+                                        textDecoration: "none",
+                                        fontSize: "0.82rem",
+                                        fontWeight: 500,
+                                        transition: "all 0.2s",
+                                        color: isActive ? "#7a4a1e" : "#4a2810",
+                                        backgroundColor: isActive
+                                            ? "rgba(45,112,69,0.12)"
+                                            : "transparent",
+                                        letterSpacing: "0.02em",
+                                        whiteSpace: "nowrap",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        (
+                                            e.currentTarget as HTMLElement
+                                        ).style.backgroundColor =
+                                            "rgba(45,112,69,0.1)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        (
+                                            e.currentTarget as HTMLElement
+                                        ).style.backgroundColor = isActive
+                                            ? "rgba(45,112,69,0.12)"
+                                            : "transparent";
+                                    }}
+                                >
+                                    {item.label}
+                                </Link>
+                            );
+                        })}
+                    </div>
 
-                    {/* Desktop Nav - hidden below md(768px) */}
-                    <nav
-                        className="desktop-nav"
+                    <div />
+
+                    <div
                         style={{
-                            gap: "0.15rem",
+                            display: "flex",
                             alignItems: "center",
+                            justifyContent: "flex-start",
+                            gap: "0.05rem",
+                            paddingLeft: "5px",
                         }}
                     >
-                        {navItems.map((item) => {
+                        {navItems.slice(5).map((item) => {
                             const isActive = location.pathname === item.path;
                             const isReservation = item.path === "/reservation";
                             return (
@@ -151,36 +170,37 @@ export function Layout({ children }: { children: ReactNode }) {
                                     key={item.path}
                                     to={item.path}
                                     style={{
-                                        padding: "0.45rem 0.8rem",
-                                        borderRadius: "0.3rem",
+                                        padding: "0.45rem 0.6rem",
+                                        borderRadius: "8px",
                                         textDecoration: "none",
-                                        fontSize: "0.82rem",
-                                        fontWeight: 500,
-                                        transition: "all 0.2s",
-                                        color: isActive ? "#d4b070" : "#e8dcc0",
-                                        backgroundColor: isReservation
-                                            ? "#5c2e12"
+                                        fontSize: "0.8rem",
+                                        fontWeight: isReservation ? 700 : 500,
+                                        color: isReservation
+                                            ? "#ffffff"
                                             : isActive
-                                              ? "rgba(212,176,112,0.12)"
+                                              ? "#7a4a1e"
+                                              : "#4a2810",
+                                        backgroundColor: isReservation
+                                            ? "#c8251a"
+                                            : isActive
+                                              ? "rgba(45,112,69,0.12)"
                                               : "transparent",
-                                        border: isReservation
-                                            ? "1px solid rgba(212,176,112,0.3)"
-                                            : "none",
                                         letterSpacing: "0.02em",
+                                        whiteSpace: "nowrap",
                                     }}
                                     onMouseEnter={(e) => {
                                         if (!isReservation)
                                             (
                                                 e.currentTarget as HTMLElement
                                             ).style.backgroundColor =
-                                                "rgba(212,176,112,0.1)";
+                                                "rgba(45,112,69,0.1)";
                                     }}
                                     onMouseLeave={(e) => {
                                         if (!isReservation)
                                             (
                                                 e.currentTarget as HTMLElement
                                             ).style.backgroundColor = isActive
-                                                ? "rgba(212,176,112,0.12)"
+                                                ? "rgba(45,112,69,0.12)"
                                                 : "transparent";
                                     }}
                                 >
@@ -188,13 +208,11 @@ export function Layout({ children }: { children: ReactNode }) {
                                 </Link>
                             );
                         })}
-
-                        {/* Login / MyPage Button */}
                         <div
                             style={{
-                                marginLeft: "0.5rem",
-                                borderLeft: "1px solid rgba(212,176,112,0.2)",
-                                paddingLeft: "0.65rem",
+                                marginLeft: "0.4rem",
+                                borderLeft: "1px solid rgba(45,112,69,0.25)",
+                                paddingLeft: "0.5rem",
                             }}
                         >
                             {isLoggedIn ? (
@@ -204,17 +222,14 @@ export function Layout({ children }: { children: ReactNode }) {
                                         display: "inline-flex",
                                         alignItems: "center",
                                         gap: "0.35rem",
-                                        padding: "0.4rem 0.75rem",
-                                        borderRadius: "0.3rem",
+                                        padding: "0.4rem 0.7rem",
+                                        borderRadius: "8px",
                                         textDecoration: "none",
-                                        fontSize: "0.8rem",
+                                        fontSize: "0.78rem",
                                         fontWeight: 700,
-                                        color: "#d4b070",
-                                        backgroundColor:
-                                            location.pathname === "/mypage"
-                                                ? "rgba(212,176,112,0.15)"
-                                                : "rgba(212,176,112,0.08)",
-                                        border: "1px solid rgba(212,176,112,0.25)",
+                                        color: "#7a4a1e",
+                                        backgroundColor: "rgba(45,112,69,0.08)",
+                                        border: "1px solid rgba(45,112,69,0.25)",
                                         transition: "all 0.2s",
                                     }}
                                 >
@@ -228,17 +243,13 @@ export function Layout({ children }: { children: ReactNode }) {
                                         display: "inline-flex",
                                         alignItems: "center",
                                         gap: "0.35rem",
-                                        padding: "0.4rem 0.75rem",
-                                        borderRadius: "0.3rem",
+                                        padding: "0.4rem 0.7rem",
+                                        borderRadius: "8px",
                                         textDecoration: "none",
-                                        fontSize: "0.8rem",
+                                        fontSize: "0.78rem",
                                         fontWeight: 500,
-                                        color: "#e8dcc0",
-                                        backgroundColor:
-                                            location.pathname === "/login"
-                                                ? "rgba(212,176,112,0.12)"
-                                                : "transparent",
-                                        border: "1px solid rgba(240,232,208,0.2)",
+                                        color: "#4a2810",
+                                        border: "1px solid rgba(45,112,69,0.3)",
                                         transition: "all 0.2s",
                                     }}
                                 >
@@ -247,67 +258,124 @@ export function Layout({ children }: { children: ReactNode }) {
                                 </Link>
                             )}
                         </div>
-                    </nav>
+                    </div>
+                </div>
 
-                    {/* Mobile hamburger + auth button - visible below md(768px) */}
-                    <div className="mobile-nav-toggle">
-                        {isLoggedIn ? (
-                            <Link
-                                to="/mypage"
-                                style={{
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    gap: "0.3rem",
-                                    padding: "0.35rem 0.6rem",
-                                    borderRadius: "0.3rem",
-                                    textDecoration: "none",
-                                    fontSize: "0.72rem",
-                                    fontWeight: 700,
-                                    color: "#d4b070",
-                                    backgroundColor: "rgba(212,176,112,0.08)",
-                                    border: "1px solid rgba(212,176,112,0.25)",
-                                }}
-                            >
-                                <FaUserCircle size={13} />
-                                マイページ
-                            </Link>
-                        ) : (
-                            <Link
-                                to="/login"
-                                style={{
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    gap: "0.3rem",
-                                    padding: "0.35rem 0.6rem",
-                                    borderRadius: "0.3rem",
-                                    textDecoration: "none",
-                                    fontSize: "0.72rem",
-                                    fontWeight: 500,
-                                    color: "#e8dcc0",
-                                    border: "1px solid rgba(240,232,208,0.2)",
-                                }}
-                            >
-                                <FaSignInAlt size={12} />
-                                ログイン
-                            </Link>
-                        )}
-                        <button
-                            onClick={() => setMenuOpen(!menuOpen)}
+                <div
+                    className="log-bump"
+                    style={{
+                        position: "absolute",
+                        top: 0,
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        width: "110px",
+                        backgroundColor: scrolled
+                            ? "#ffffff"
+                            : "rgba(255,255,255,0.82)",
+                        backdropFilter: scrolled ? "none" : "blur(6px)",
+                        borderRadius: scrolled ? "0" : "0 0 55px 55px",
+                        paddingTop: scrolled ? "14px" : "9px",
+                        paddingBottom: scrolled ? "14px" : "18px",
+                        zIndex: 2,
+                    }}
+                >
+                    <Link to="/" aria-label="貸別荘エルボスケ ホーム">
+                        <img
+                            src={scrolled ? logo4_1Src : logo1Src}
+                            alt="貸別荘エルボスケ"
                             style={{
-                                background: "none",
-                                border: "none",
-                                color: "#e8dcc0",
-                                cursor: "pointer",
-                                padding: "0.5rem",
-                                display: "flex",
+                                width: scrolled ? "90px" : "70px",
+                                height: scrolled ? "40px" : "70px",
+                                objectFit: "contain",
+                                display: "block",
+                                transition: "all 0.35s ease",
+                            }}
+                        />
+                    </Link>
+                </div>
+
+                <div
+                    className="mobile-nav-toggle"
+                    style={{
+                        maxWidth: "1200px",
+                        margin: "0 auto",
+                        padding: `0 1rem 0 ${scrolled ? "1rem" : "0.25rem"}`,
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        height: "68px",
+                    }}
+                >
+                    <Link
+                        to="/"
+                        style={{
+                            textDecoration: "none",
+                            display: "flex",
+                            alignItems: "center",
+                            position: "relative",
+                        }}
+                    >
+                        <div
+                            style={{
+                                borderRadius: "50%",
+                                backgroundColor: "#ffffff",
+                                display: "inline-flex",
                                 alignItems: "center",
                                 justifyContent: "center",
+                                padding: "15px",
+                                opacity: scrolled ? 0 : 1,
+                                transform: scrolled ? "scale(0.8)" : "scale(1)",
+                                transition:
+                                    "opacity 0.4s ease, transform 0.4s ease",
+                                pointerEvents: scrolled ? "none" : "auto",
                             }}
-                            aria-label="メニューを開く"
                         >
-                            <FaBars size={20} />
-                        </button>
-                    </div>
+                            <img
+                                src={logo1Src}
+                                alt="貸別荘エルボスケ"
+                                style={{
+                                    width: "60px",
+                                    objectFit: "contain",
+                                    display: "block",
+                                }}
+                            />
+                        </div>
+                        <img
+                            src={logo4_1Src}
+                            alt="貸別荘エルボスケ"
+                            style={{
+                                position: "absolute",
+                                left: 0,
+                                height: "36px",
+                                objectFit: "contain",
+                                opacity: scrolled ? 1 : 0,
+                                transform: scrolled
+                                    ? "scale(1)"
+                                    : "scale(0.85)",
+                                transition:
+                                    "opacity 0.4s ease, transform 0.4s ease",
+                                pointerEvents: scrolled ? "auto" : "none",
+                            }}
+                        />
+                    </Link>
+                    <button
+                        onClick={() => setMenuOpen(!menuOpen)}
+                        style={{
+                            background: "none",
+                            border: "none",
+                            color: "#4a2810",
+                            cursor: "pointer",
+                            padding: "0.5rem",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}
+                        aria-label="メニューを開く"
+                    >
+                        <FaBars size={22} />
+                    </button>
                 </div>
             </header>
 
@@ -318,7 +386,7 @@ export function Layout({ children }: { children: ReactNode }) {
                     position: "fixed",
                     inset: 0,
                     zIndex: 1100,
-                    backgroundColor: "rgba(0,0,0,0.55)",
+                    backgroundColor: "rgba(0,0,0,0.4)",
                     backdropFilter: "blur(2px)",
                     opacity: menuOpen ? 1 : 0,
                     pointerEvents: menuOpen ? "auto" : "none",
@@ -338,14 +406,14 @@ export function Layout({ children }: { children: ReactNode }) {
                     zIndex: 1200,
                     width: "100%",
                     maxWidth: "320px",
-                    backgroundColor: "#0e1a08",
+                    backgroundColor: "#ffffff",
                     transform: menuOpen ? "translateX(0)" : "translateX(100%)",
                     transition: "transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
                     display: "flex",
                     flexDirection: "column",
                     overflowY: "auto",
                     boxShadow: menuOpen
-                        ? "-8px 0 30px rgba(0,0,0,0.5)"
+                        ? "-8px 0 32px rgba(0,0,0,0.15)"
                         : "none",
                 }}
             >
@@ -355,56 +423,26 @@ export function Layout({ children }: { children: ReactNode }) {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "space-between",
-                        padding: "1.25rem 1.5rem",
-                        borderBottom: "1px solid rgba(212,176,112,0.15)",
+                        padding: "1.1rem 1.5rem",
+                        borderBottom: "1px solid rgba(45,112,69,0.1)",
                         flexShrink: 0,
+                        backgroundColor: "#f5f0e4",
                     }}
                 >
-                    <Link
-                        to="/"
-                        onClick={() => setMenuOpen(false)}
-                        style={{
-                            textDecoration: "none",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.5rem",
-                        }}
-                    >
-                        <FaTree size={18} color="#d4b070" />
-                        <div>
-                            <div
-                                style={{
-                                    fontFamily: "'Noto Serif JP', serif",
-                                    fontSize: "0.95rem",
-                                    fontWeight: 700,
-                                    color: "#ffffff",
-                                    letterSpacing: "0.04em",
-                                    lineHeight: 1.1,
-                                }}
-                            >
-                                {
-                                    "\u8CB8\u5225\u8358\u30A8\u30EB\u30DC\u30B9\u30B1"
-                                }
-                            </div>
-                            <div
-                                style={{
-                                    fontSize: "0.55rem",
-                                    color: "#d4b070",
-                                    letterSpacing: "0.2em",
-                                    fontStyle: "italic",
-                                }}
-                            >
-                                El bosque
-                            </div>
-                        </div>
+                    <Link to="/" onClick={() => setMenuOpen(false)}>
+                        <img
+                            src={logo4Src}
+                            alt="貸別荘エルボスケ"
+                            style={{ height: "38px", objectFit: "contain" }}
+                        />
                     </Link>
                     <button
                         onClick={() => setMenuOpen(false)}
                         style={{
                             background: "none",
-                            border: "1px solid rgba(212,176,112,0.2)",
+                            border: "1px solid rgba(45,112,69,0.2)",
                             borderRadius: "6px",
-                            color: "#e8dcc0",
+                            color: "#7a4a1e",
                             cursor: "pointer",
                             padding: "0.45rem",
                             display: "flex",
@@ -444,16 +482,16 @@ export function Layout({ children }: { children: ReactNode }) {
                                     textDecoration: "none",
                                     fontSize: "0.95rem",
                                     fontWeight: isActive ? 700 : 500,
-                                    color: isActive ? "#d4b070" : "#e8dcc0",
-                                    borderRadius: "0.4rem",
+                                    color: isActive ? "#256840" : "#2c3820",
+                                    borderRadius: "10px",
                                     backgroundColor: isReservation
-                                        ? "#5c2e12"
+                                        ? "#c8251a"
                                         : isActive
-                                          ? "rgba(212,176,112,0.1)"
+                                          ? "rgba(37,104,64,0.08)"
                                           : "transparent",
                                     borderLeft:
                                         isActive && !isReservation
-                                            ? "3px solid #d4b070"
+                                            ? "3px solid #256840"
                                             : "3px solid transparent",
                                     transition: "all 0.2s",
                                 }}
@@ -463,8 +501,8 @@ export function Layout({ children }: { children: ReactNode }) {
                                     size={10}
                                     color={
                                         isActive
-                                            ? "#d4b070"
-                                            : "rgba(232,220,192,0.3)"
+                                            ? "#256840"
+                                            : "rgba(44,56,32,0.3)"
                                     }
                                 />
                             </Link>
@@ -476,8 +514,9 @@ export function Layout({ children }: { children: ReactNode }) {
                 <div
                     style={{
                         padding: "1.25rem 1.5rem",
-                        borderTop: "1px solid rgba(212,176,112,0.12)",
+                        borderTop: "1px solid rgba(45,112,69,0.1)",
                         flexShrink: 0,
+                        backgroundColor: "#f5f0e4",
                     }}
                 >
                     {isLoggedIn ? (
@@ -490,13 +529,13 @@ export function Layout({ children }: { children: ReactNode }) {
                                 justifyContent: "center",
                                 gap: "0.5rem",
                                 padding: "0.75rem 1rem",
-                                borderRadius: "0.4rem",
+                                borderRadius: "10px",
                                 textDecoration: "none",
                                 fontSize: "0.9rem",
                                 fontWeight: 700,
-                                color: "#d4b070",
-                                backgroundColor: "rgba(212,176,112,0.1)",
-                                border: "1px solid rgba(212,176,112,0.25)",
+                                color: "#7a4a1e",
+                                backgroundColor: "rgba(45,112,69,0.1)",
+                                border: "1px solid rgba(45,112,69,0.2)",
                                 transition: "all 0.2s",
                             }}
                         >
@@ -513,13 +552,12 @@ export function Layout({ children }: { children: ReactNode }) {
                                 justifyContent: "center",
                                 gap: "0.5rem",
                                 padding: "0.75rem 1rem",
-                                borderRadius: "0.4rem",
+                                borderRadius: "10px",
                                 textDecoration: "none",
                                 fontSize: "0.9rem",
                                 fontWeight: 600,
-                                color: "#e8dcc0",
-                                backgroundColor: "rgba(240,232,208,0.06)",
-                                border: "1px solid rgba(240,232,208,0.2)",
+                                color: "#7a4a1e",
+                                border: "1px solid rgba(45,112,69,0.25)",
                                 transition: "all 0.2s",
                             }}
                         >
@@ -532,7 +570,7 @@ export function Layout({ children }: { children: ReactNode }) {
                             marginTop: "1rem",
                             textAlign: "center",
                             fontSize: "0.72rem",
-                            color: "rgba(138,122,104,0.6)",
+                            color: "rgba(60,80,40,0.45)",
                             lineHeight: 1.6,
                         }}
                     >
@@ -544,13 +582,48 @@ export function Layout({ children }: { children: ReactNode }) {
             {/* Page Content */}
             <main>{children}</main>
 
+            <nav
+                className="mobile-bottom-nav"
+                aria-label="クイックナビゲーション"
+            >
+                {[
+                    {
+                        to: "/reservation",
+                        label: "予約",
+                        icon: <FaCalendarAlt size={15} />,
+                        color: "#c8251a",
+                    },
+                    {
+                        to: "/pricing",
+                        label: "料金",
+                        icon: <FaStar size={14} />,
+                        color: "#256840",
+                    },
+                    {
+                        to: "/contact",
+                        label: "お問い合わせ",
+                        icon: <FaEnvelope size={14} />,
+                        color: "#3abcb0",
+                    },
+                ].map((item) => (
+                    <Link
+                        key={item.to}
+                        to={item.to}
+                        style={{ backgroundColor: item.color }}
+                    >
+                        {item.icon}
+                        <span>{item.label}</span>
+                    </Link>
+                ))}
+            </nav>
+
             {/* Footer */}
             <footer
                 style={{
-                    backgroundColor: "#0e1a08",
-                    color: "#a09080",
+                    backgroundColor: "#5c3317",
+                    color: "rgba(255,255,255,0.85)",
                     paddingTop: "3.5rem",
-                    borderTop: "1px solid rgba(212,176,112,0.12)",
+                    borderTop: "3px solid rgba(255,255,255,0.12)",
                 }}
             >
                 <div
@@ -575,42 +648,25 @@ export function Layout({ children }: { children: ReactNode }) {
                                 style={{
                                     display: "flex",
                                     alignItems: "center",
-                                    gap: "0.6rem",
                                     marginBottom: "1.25rem",
                                 }}
                             >
-                                <FaTree size={20} color="#d4b070" />
-                                <div>
-                                    <div
-                                        style={{
-                                            fontFamily:
-                                                "'Noto Serif JP', serif",
-                                            fontSize: "1rem",
-                                            fontWeight: 700,
-                                            color: "#f0e8d0",
-                                        }}
-                                    >
-                                        {
-                                            "\u8CB8\u5225\u8358\u30A8\u30EB\u30DC\u30B9\u30B1"
-                                        }
-                                    </div>
-                                    <div
-                                        style={{
-                                            fontSize: "0.6rem",
-                                            color: "#d4b070",
-                                            letterSpacing: "0.2em",
-                                            fontStyle: "italic",
-                                        }}
-                                    >
-                                        El bosque
-                                    </div>
-                                </div>
+                                <img
+                                    src={logo10Src}
+                                    alt="一棟貸し別荘 El Bosque"
+                                    style={{
+                                        height: "56px",
+                                        objectFit: "contain",
+                                        filter: "invert(1)",
+                                        opacity: 0.9,
+                                    }}
+                                />
                             </div>
                             <p
                                 style={{
                                     fontSize: "0.82rem",
                                     lineHeight: 1.9,
-                                    color: "#8a7a68",
+                                    color: "rgba(255,255,255,0.82)",
                                 }}
                             >
                                 長野県南信州、巣山湖のほとり。
@@ -625,7 +681,7 @@ export function Layout({ children }: { children: ReactNode }) {
                         <div>
                             <h4
                                 style={{
-                                    color: "#d4b070",
+                                    color: "rgba(255,255,255,0.5)",
                                     fontSize: "0.72rem",
                                     fontWeight: 700,
                                     letterSpacing: "0.18em",
@@ -651,19 +707,20 @@ export function Layout({ children }: { children: ReactNode }) {
                                             to={item.path}
                                             style={{
                                                 textDecoration: "none",
-                                                color: "#8a7a68",
+                                                color: "rgba(255,255,255,0.82)",
                                                 fontSize: "0.85rem",
                                                 transition: "color 0.2s",
                                             }}
                                             onMouseEnter={(e) =>
                                                 ((
                                                     e.target as HTMLElement
-                                                ).style.color = "#d4b070")
+                                                ).style.color = "#ffffff")
                                             }
                                             onMouseLeave={(e) =>
                                                 ((
                                                     e.target as HTMLElement
-                                                ).style.color = "#8a7a68")
+                                                ).style.color =
+                                                    "rgba(255,255,255,0.82)")
                                             }
                                         >
                                             {item.label}
@@ -675,17 +732,20 @@ export function Layout({ children }: { children: ReactNode }) {
                                         to="/terms"
                                         style={{
                                             textDecoration: "none",
-                                            color: "#8a7a68",
+                                            color: "rgba(255,255,255,0.82)",
                                             fontSize: "0.85rem",
                                             transition: "color 0.2s",
                                         }}
                                         onMouseEnter={(e) =>
-                                            ((e.target as HTMLElement).style.color =
-                                                "#d4b070")
+                                            ((
+                                                e.target as HTMLElement
+                                            ).style.color = "#ffffff")
                                         }
                                         onMouseLeave={(e) =>
-                                            ((e.target as HTMLElement).style.color =
-                                                "#8a7a68")
+                                            ((
+                                                e.target as HTMLElement
+                                            ).style.color =
+                                                "rgba(255,255,255,0.82)")
                                         }
                                     >
                                         利用規約
@@ -696,17 +756,20 @@ export function Layout({ children }: { children: ReactNode }) {
                                         to="/privacy"
                                         style={{
                                             textDecoration: "none",
-                                            color: "#8a7a68",
+                                            color: "rgba(255,255,255,0.82)",
                                             fontSize: "0.85rem",
                                             transition: "color 0.2s",
                                         }}
                                         onMouseEnter={(e) =>
-                                            ((e.target as HTMLElement).style.color =
-                                                "#d4b070")
+                                            ((
+                                                e.target as HTMLElement
+                                            ).style.color = "#ffffff")
                                         }
                                         onMouseLeave={(e) =>
-                                            ((e.target as HTMLElement).style.color =
-                                                "#8a7a68")
+                                            ((
+                                                e.target as HTMLElement
+                                            ).style.color =
+                                                "rgba(255,255,255,0.82)")
                                         }
                                     >
                                         個人情報取り扱い
@@ -719,7 +782,7 @@ export function Layout({ children }: { children: ReactNode }) {
                         <div>
                             <h4
                                 style={{
-                                    color: "#d4b070",
+                                    color: "rgba(255,255,255,0.5)",
                                     fontSize: "0.72rem",
                                     fontWeight: 700,
                                     letterSpacing: "0.18em",
@@ -745,7 +808,7 @@ export function Layout({ children }: { children: ReactNode }) {
                                 >
                                     <FaMapMarkerAlt
                                         size={13}
-                                        color="#d4b070"
+                                        color="rgba(255,255,255,0.7)"
                                         style={{
                                             flexShrink: 0,
                                             marginTop: "3px",
@@ -754,7 +817,7 @@ export function Layout({ children }: { children: ReactNode }) {
                                     <span
                                         style={{
                                             fontSize: "0.82rem",
-                                            color: "#8a7a68",
+                                            color: "rgba(255,255,255,0.82)",
                                             lineHeight: 1.7,
                                         }}
                                     >
@@ -772,11 +835,14 @@ export function Layout({ children }: { children: ReactNode }) {
                                         alignItems: "center",
                                     }}
                                 >
-                                    <FaEnvelope size={12} color="#d4b070" />
+                                    <FaEnvelope
+                                        size={12}
+                                        color="rgba(255,255,255,0.7)"
+                                    />
                                     <span
                                         style={{
                                             fontSize: "0.82rem",
-                                            color: "#8a7a68",
+                                            color: "rgba(255,255,255,0.82)",
                                         }}
                                     >
                                         info@elbosque.jp
@@ -789,11 +855,14 @@ export function Layout({ children }: { children: ReactNode }) {
                                         alignItems: "center",
                                     }}
                                 >
-                                    <FaPhone size={12} color="#d4b070" />
+                                    <FaPhone
+                                        size={12}
+                                        color="rgba(255,255,255,0.7)"
+                                    />
                                     <span
                                         style={{
                                             fontSize: "0.82rem",
-                                            color: "#8a7a68",
+                                            color: "rgba(255,255,255,0.82)",
                                         }}
                                     >
                                         お問い合わせはメールにて
@@ -806,7 +875,7 @@ export function Layout({ children }: { children: ReactNode }) {
                         <div>
                             <h4
                                 style={{
-                                    color: "#d4b070",
+                                    color: "rgba(255,255,255,0.5)",
                                     fontSize: "0.72rem",
                                     fontWeight: 700,
                                     letterSpacing: "0.18em",
@@ -819,7 +888,7 @@ export function Layout({ children }: { children: ReactNode }) {
                             <div
                                 style={{
                                     fontSize: "0.82rem",
-                                    color: "#8a7a68",
+                                    color: "rgba(255,255,255,0.82)",
                                     lineHeight: 2,
                                 }}
                             >
@@ -837,13 +906,14 @@ export function Layout({ children }: { children: ReactNode }) {
                                     <span
                                         style={{
                                             display: "inline-block",
-                                            backgroundColor: "#1b2f0e",
-                                            color: "#d4b070",
+                                            backgroundColor:
+                                                "rgba(255,255,255,0.15)",
+                                            color: "#ffffff",
                                             padding: "0.2rem 0.65rem",
-                                            borderRadius: "4px",
+                                            borderRadius: "20px",
                                             fontSize: "0.72rem",
                                             fontWeight: 700,
-                                            border: "1px solid rgba(212,176,112,0.25)",
+                                            border: "1px solid rgba(255,255,255,0.3)",
                                         }}
                                     >
                                         ペットOK
@@ -851,13 +921,14 @@ export function Layout({ children }: { children: ReactNode }) {
                                     <span
                                         style={{
                                             display: "inline-block",
-                                            backgroundColor: "#1b2f0e",
-                                            color: "#d4b070",
+                                            backgroundColor:
+                                                "rgba(255,255,255,0.15)",
+                                            color: "#ffffff",
                                             padding: "0.2rem 0.65rem",
-                                            borderRadius: "4px",
+                                            borderRadius: "20px",
                                             fontSize: "0.72rem",
                                             fontWeight: 700,
-                                            border: "1px solid rgba(212,176,112,0.25)",
+                                            border: "1px solid rgba(255,255,255,0.3)",
                                         }}
                                     >
                                         Wi-Fi完備
@@ -869,7 +940,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
                     <div
                         style={{
-                            borderTop: "1px solid rgba(212,176,112,0.12)",
+                            borderTop: "1px solid rgba(255,255,255,0.12)",
                             padding: "1.25rem 0",
                             display: "flex",
                             justifyContent: "space-between",
@@ -881,7 +952,7 @@ export function Layout({ children }: { children: ReactNode }) {
                         <p
                             style={{
                                 fontSize: "0.78rem",
-                                color: "#5a4a38",
+                                color: "rgba(255,255,255,0.5)",
                                 margin: 0,
                             }}
                         >
@@ -892,7 +963,7 @@ export function Layout({ children }: { children: ReactNode }) {
                         <p
                             style={{
                                 fontSize: "0.75rem",
-                                color: "#4a3a2a",
+                                color: "rgba(255,255,255,0.45)",
                                 margin: 0,
                             }}
                         >

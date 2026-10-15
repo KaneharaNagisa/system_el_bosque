@@ -377,7 +377,7 @@ export function AvailabilityCalendar({
         <div
             style={{
                 marginBottom: "1.75rem",
-                borderRadius: "4px",
+                borderRadius: "12px",
                 overflow: "hidden",
                 border: "1px solid rgba(180,140,80,0.18)",
                 backgroundColor: "#faf5e8",
@@ -390,7 +390,7 @@ export function AvailabilityCalendar({
                     alignItems: "center",
                     justifyContent: "space-between",
                     padding: "0.85rem 1.25rem",
-                    backgroundColor: "#1b2f0e",
+                    backgroundColor: "#256840",
                 }}
             >
                 <button
@@ -398,8 +398,8 @@ export function AvailabilityCalendar({
                     disabled={!canGoPrev}
                     style={{
                         background: "none",
-                        border: "1px solid rgba(212,176,112,0.25)",
-                        borderRadius: "3px",
+                        border: "1px solid rgba(255,255,255,0.3)",
+                        borderRadius: "8px",
                         cursor: canGoPrev ? "pointer" : "not-allowed",
                         padding: "0.4rem 0.6rem",
                         display: "flex",
@@ -409,14 +409,14 @@ export function AvailabilityCalendar({
                     }}
                     aria-label="前月"
                 >
-                    <FaChevronLeft size={12} color="#d4b070" />
+                    <FaChevronLeft size={12} color="#ffffff" />
                 </button>
                 <span
                     style={{
                         fontFamily: "'Noto Serif JP', serif",
                         fontSize: "1rem",
                         fontWeight: 700,
-                        color: "#f0e8d0",
+                        color: "#ffffff",
                         letterSpacing: "0.05em",
                     }}
                 >
@@ -427,8 +427,8 @@ export function AvailabilityCalendar({
                     disabled={!canGoNext}
                     style={{
                         background: "none",
-                        border: "1px solid rgba(212,176,112,0.25)",
-                        borderRadius: "3px",
+                        border: "1px solid rgba(255,255,255,0.3)",
+                        borderRadius: "8px",
                         cursor: canGoNext ? "pointer" : "not-allowed",
                         padding: "0.4rem 0.6rem",
                         display: "flex",
@@ -438,7 +438,7 @@ export function AvailabilityCalendar({
                     }}
                     aria-label="翌月"
                 >
-                    <FaChevronRight size={12} color="#d4b070" />
+                    <FaChevronRight size={12} color="#ffffff" />
                 </button>
             </div>
 
@@ -450,7 +450,7 @@ export function AvailabilityCalendar({
                     gap: "1rem",
                     flexWrap: "wrap",
                     padding: "0.6rem 1rem",
-                    backgroundColor: "rgba(27,47,14,0.04)",
+                    backgroundColor: "rgba(37,104,64,0.04)",
                     borderBottom: "1px solid rgba(180,140,80,0.12)",
                 }}
             >
@@ -548,7 +548,7 @@ export function AvailabilityCalendar({
                                     i === 0
                                         ? "#a03020"
                                         : i === 6
-                                          ? "#1e3c0e"
+                                          ? "#256840"
                                           : isClosed
                                             ? "#8a7a6a"
                                             : "#7a4020",
@@ -610,7 +610,7 @@ export function AvailabilityCalendar({
                     else if (status === "closed") dayColor = "#c8b8a0";
                     else if (isCI || isCO) dayColor = "#f0e8d0";
                     else if (dow === 0) dayColor = "#a03020";
-                    else if (dow === 6) dayColor = "#1e3c0e";
+                    else if (dow === 6) dayColor = "#256840";
 
                     // Status symbol
                     let symbol = "";
@@ -659,7 +659,7 @@ export function AvailabilityCalendar({
                     // Border for checkout candidates
                     const borderStyle =
                         isCheckoutCandidate && isBookable
-                            ? "2px solid #2d6a1e"
+                            ? "2px solid #256840"
                             : "2px solid transparent";
 
                     return (
@@ -696,7 +696,7 @@ export function AvailabilityCalendar({
                             onMouseEnter={(e) => {
                                 if (clickable && !isCI && !isCO) {
                                     e.currentTarget.style.background =
-                                        "rgba(30,60,14,0.10)";
+                                        "rgba(37,104,64,0.10)";
                                 }
                             }}
                             onMouseLeave={(e) => {

@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { usePage } from "@inertiajs/react";
 import { Link } from "../router";
 import {
@@ -17,13 +17,15 @@ import {
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { defaultPricingSetting, type PricingSetting } from "../pricing";
 import { responsiveImage, type PublicImages } from "../image";
+import heroLakeSrc from "../assets/260924-0111.jpg";
+import heroCabinSrc from "../assets/260924-0015.jpg";
+import homeInteriorPhoto from "../assets/260924-0074-1.jpg";
+import homeLakePhoto from "../assets/260924-0103.jpg";
 
-const HERO_IMG =
-    "https://images.unsplash.com/photo-1709209509834-d02055e6f9e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1920";
-const LAKE_IMG =
-    "https://images.unsplash.com/photo-1762099375590-c0da4daa3d08?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080";
-const INTERIOR_IMG =
-    "https://images.unsplash.com/photo-1661885546898-11ebd4ce29e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080";
+const HERO_FALLBACKS = [heroLakeSrc, heroCabinSrc] as const;
+const HERO_IMAGE_KEYS = ["home.hero", "home.hero.2", "home.hero.3"];
+const LAKE_IMG = homeLakePhoto;
+const INTERIOR_IMG = homeInteriorPhoto;
 const STARS_IMG =
     "https://images.unsplash.com/photo-1570399747403-6f3af992698f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080";
 const BBQ_IMG =
@@ -129,6 +131,7 @@ const fallbackTopNews: TopNewsItem[] = [
 
 export function Home() {
     const [expandedId, setExpandedId] = useState<string | null>(null);
+    const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
     const {
         news = [],
         pricingSetting,
@@ -143,7 +146,28 @@ export function Home() {
         pricingSetting?: PricingSetting;
         images?: PublicImages;
     };
-    const heroImage = responsiveImage(images, "home.hero", HERO_IMG);
+    const heroSlides = HERO_IMAGE_KEYS.flatMap((key, index) => {
+        const fallback = HERO_FALLBACKS[index];
+        if (images[key]?.url) {
+            return [
+                responsiveImage(images, key, fallback ?? HERO_FALLBACKS[0]),
+            ];
+        }
+
+        return fallback ? [responsiveImage(images, key, fallback)] : [];
+    });
+    useEffect(() => {
+        if (heroSlides.length < 2) {
+            setCurrentHeroSlide(0);
+            return;
+        }
+
+        const interval = window.setInterval(() => {
+            setCurrentHeroSlide((current) => (current + 1) % heroSlides.length);
+        }, 6000);
+
+        return () => window.clearInterval(interval);
+    }, [heroSlides.length]);
     const lakeImage = responsiveImage(images, "home.lake", LAKE_IMG);
     const interiorImage = responsiveImage(
         images,
@@ -170,27 +194,33 @@ export function Home() {
                 style={{
                     position: "relative",
                     height: "100vh",
-                    minHeight: "600px",
+                    minHeight: "640px",
                     overflow: "hidden",
                 }}
             >
-                <ImageWithFallback
-                    {...heroImage}
-                    alt="エルボスケ外観"
-                    style={{
-                        position: "absolute",
-                        inset: 0,
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                    }}
-                />
+                {heroSlides.map((image, index) => (
+                    <ImageWithFallback
+                        key={image.src}
+                        {...image}
+                        alt="エルボスケ外観"
+                        aria-hidden={index !== currentHeroSlide}
+                        style={{
+                            position: "absolute",
+                            inset: 0,
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            opacity: index === currentHeroSlide ? 1 : 0,
+                            transition: "opacity 1s ease-in-out",
+                        }}
+                    />
+                ))}
                 <div
                     style={{
                         position: "absolute",
                         inset: 0,
                         background:
-                            "linear-gradient(to bottom, rgba(5,12,3,0.55) 0%, rgba(5,12,3,0.35) 45%, rgba(10,22,5,0.78) 100%)",
+                            "linear-gradient(to bottom, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.42) 18%, rgba(255,255,255,0.08) 36%, rgba(0,0,0,0) 52%, rgba(0,0,0,0.18) 72%, rgba(0,0,0,0.48) 100%)",
                     }}
                 />
                 <div
@@ -202,7 +232,7 @@ export function Home() {
                         alignItems: "center",
                         justifyContent: "center",
                         textAlign: "center",
-                        padding: "0 1.5rem",
+                        padding: "72px 1.5rem 3rem",
                     }}
                 >
                     {/* Badges */}
@@ -220,11 +250,11 @@ export function Home() {
                             <span
                                 key={badge}
                                 style={{
-                                    backgroundColor: "rgba(212,176,112,0.18)",
-                                    border: "1px solid rgba(212,176,112,0.5)",
-                                    color: "#d4b070",
+                                    backgroundColor: "rgba(80,40,15,0.75)",
+                                    border: "1px solid rgba(255,255,255,0.3)",
+                                    color: "#ffffff",
                                     padding: "0.3rem 1rem",
-                                    borderRadius: "2px",
+                                    borderRadius: "20px",
                                     fontSize: "0.75rem",
                                     letterSpacing: "0.12em",
                                     display: "flex",
@@ -242,7 +272,7 @@ export function Home() {
                     <p
                         style={{
                             fontSize: "clamp(0.85rem, 2vw, 1.1rem)",
-                            color: "#d4b070",
+                            color: "#ffffff",
                             letterSpacing: "0.3em",
                             marginBottom: "0.75rem",
                             fontWeight: 400,
@@ -298,16 +328,19 @@ export function Home() {
                                 display: "inline-flex",
                                 alignItems: "center",
                                 gap: "0.4rem",
-                                backgroundColor: "#5c2e12",
-                                color: "#f5f0e5",
+                                backgroundColor:
+                                    currentHeroSlide === 1
+                                        ? "#256840"
+                                        : "#c8251a",
+                                color: "#ffffff",
                                 padding: "0.9rem 2.2rem",
-                                borderRadius: "3px",
+                                borderRadius: "12px",
                                 textDecoration: "none",
                                 fontWeight: 700,
                                 fontSize: "0.95rem",
                                 letterSpacing: "0.05em",
-                                border: "1px solid rgba(212,176,112,0.3)",
-                                transition: "all 0.2s",
+                                border: "1px solid rgba(255,255,255,0.3)",
+                                transition: "background-color 1.5s ease-in-out",
                             }}
                         >
                             ご予約はこちら <FaChevronRight size={13} />
@@ -321,7 +354,7 @@ export function Home() {
                                 backgroundColor: "rgba(255,255,255,0.1)",
                                 color: "#f5f0e5",
                                 padding: "0.9rem 2rem",
-                                borderRadius: "3px",
+                                borderRadius: "12px",
                                 textDecoration: "none",
                                 fontWeight: 500,
                                 fontSize: "0.95rem",
@@ -1039,7 +1072,7 @@ export function Home() {
             <section
                 style={{
                     background:
-                        "linear-gradient(135deg, #0e1a08 0%, #1b2f0e 60%, #254510 100%)",
+                        "linear-gradient(135deg, #5c3317 0%, #7d4820 100%)",
                     padding: "6rem 1.5rem",
                 }}
             >
