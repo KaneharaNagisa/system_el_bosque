@@ -953,7 +953,6 @@ export function Experiences() {
                             alignItems: "center",
                             backgroundColor: "#f5ede0",
                             color: "#5c3317",
-                            color: "#5c3317",
                             padding: "0.8rem 1.75rem",
                             borderRadius: "12px",
                             textDecoration: "none",

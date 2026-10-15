@@ -911,10 +911,10 @@ export function ReservationDetail() {
                                     style={{
                                         width: "100%",
                                         backgroundColor: form.agreement
-                                            ? "#7a4a1e"
+                                            ? "#c8251a"
                                             : "#c8b8a0",
                                         color: form.agreement
-                                            ? "#f0e8d0"
+                                            ? "#ffffff"
                                             : "#a09080",
                                         padding: "1.1rem",
                                         borderRadius: "12px",

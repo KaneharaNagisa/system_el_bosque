@@ -2,7 +2,6 @@ import { router, usePage } from "@inertiajs/react";
 import { useState } from "react";
 import {
     FaBan,
-    FaCalendarAlt,
     FaChevronRight,
     FaExclamationTriangle,
     FaPaw,
@@ -71,393 +70,448 @@ export function ReservationHistory() {
     const [canceledIds, setCanceledIds] = useState<Set<string>>(new Set());
 
     return (
-        <div
-            style={{
-                backgroundColor: "#f2e8d0",
-                minHeight: "100vh",
-                padding: "5rem 1.5rem",
-            }}
-        >
-            <div style={{ maxWidth: "900px", margin: "0 auto" }}>
-                <div
+        <div style={{ backgroundColor: "#f2e8d0", minHeight: "100vh" }}>
+            <div
+                style={{
+                    background:
+                        "linear-gradient(135deg, #5c3317 0%, #7d4820 100%)",
+                    padding: "8rem 1.5rem 4rem",
+                    textAlign: "center",
+                }}
+            >
+                <p
                     style={{
-                        backgroundColor: "#faf5e8",
-                        borderRadius: "4px",
-                        padding: "2rem",
-                        border: "1px solid rgba(180,140,80,0.15)",
+                        color: "#d4b070",
+                        fontSize: "0.72rem",
+                        letterSpacing: "0.25em",
+                        fontWeight: 700,
+                        textTransform: "uppercase",
+                        marginBottom: "0.75rem",
                     }}
                 >
-                    <h1
+                    Reservation History
+                </p>
+                <h1
+                    style={{
+                        fontFamily: "'Noto Serif JP', serif",
+                        fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
+                        fontWeight: 700,
+                        color: "#f0e8d0",
+                        lineHeight: 1.3,
+                    }}
+                >
+                    予約履歴
+                </h1>
+            </div>
+            <section
+                style={{ backgroundColor: "#f2e8d0", padding: "4rem 1.5rem" }}
+            >
+                <div style={{ maxWidth: "900px", margin: "0 auto" }}>
+                    <div
                         style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.65rem",
-                            fontFamily: "'Noto Serif JP', serif",
-                            fontSize: "1.35rem",
-                            color: "#1e3c0e",
-                            margin: "0 0 1.5rem",
-                            paddingBottom: "1rem",
-                            borderBottom: "1px solid rgba(180,140,80,0.25)",
+                            backgroundColor: "#faf5e8",
+                            borderRadius: "4px",
+                            padding: "2rem",
+                            border: "1px solid rgba(180,140,80,0.15)",
                         }}
                     >
-                        <FaCalendarAlt size={16} /> 予約履歴
-                    </h1>
-                    {reservations.length === 0 ? (
-                        <p
-                            style={{
-                                color: "#8a7868",
-                                textAlign: "center",
-                                padding: "2rem 0",
-                            }}
-                        >
-                            予約履歴はありません。
-                        </p>
-                    ) : (
-                        <div
-                            style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "1rem",
-                            }}
-                        >
-                            {reservations.map((reservation) => {
-                                const canceled = canceledIds.has(
-                                    reservation.id,
-                                );
-                                const style = canceled
-                                    ? {
-                                          bg: "rgba(160,48,32,0.06)",
-                                          color: "#a03020",
-                                          border: "rgba(160,48,32,0.2)",
-                                      }
-                                    : statusStyle(reservation.status);
-                                const cancelable =
-                                    !canceled &&
-                                    canCancel(
-                                        reservation.checkin,
-                                        reservation.status,
+                        {reservations.length === 0 ? (
+                            <p
+                                style={{
+                                    color: "#8a7868",
+                                    textAlign: "center",
+                                    padding: "2rem 0",
+                                }}
+                            >
+                                予約履歴はありません。
+                            </p>
+                        ) : (
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: "1rem",
+                                }}
+                            >
+                                {reservations.map((reservation) => {
+                                    const canceled = canceledIds.has(
+                                        reservation.id,
                                     );
-                                return (
-                                    <div
-                                        key={reservation.id}
-                                        style={{
-                                            backgroundColor: "#f2e8d0",
-                                            border: `1px solid ${canceled ? "rgba(160,48,32,0.18)" : "rgba(180,140,80,0.15)"}`,
-                                            borderRadius: "4px",
-                                            overflow: "hidden",
-                                            opacity: canceled ? 0.75 : 1,
-                                        }}
-                                    >
+                                    const style = canceled
+                                        ? {
+                                              bg: "rgba(160,48,32,0.06)",
+                                              color: "#a03020",
+                                              border: "rgba(160,48,32,0.2)",
+                                          }
+                                        : statusStyle(reservation.status);
+                                    const cancelable =
+                                        !canceled &&
+                                        canCancel(
+                                            reservation.checkin,
+                                            reservation.status,
+                                        );
+                                    return (
                                         <div
+                                            key={reservation.id}
                                             style={{
-                                                display: "flex",
-                                                justifyContent: "space-between",
-                                                alignItems: "center",
-                                                gap: "0.5rem",
-                                                flexWrap: "wrap",
-                                                padding: "0.75rem 1.25rem",
-                                                backgroundColor:
-                                                    "rgba(30,60,14,0.04)",
-                                                borderBottom:
-                                                    "1px solid rgba(180,140,80,0.12)",
+                                                backgroundColor: "#f2e8d0",
+                                                border: `1px solid ${canceled ? "rgba(160,48,32,0.18)" : "rgba(180,140,80,0.15)"}`,
+                                                borderRadius: "4px",
+                                                overflow: "hidden",
+                                                opacity: canceled ? 0.75 : 1,
                                             }}
                                         >
-                                            <span
-                                                style={{
-                                                    fontSize: "0.78rem",
-                                                    fontWeight: 700,
-                                                    color: "#5a4838",
-                                                }}
-                                            >
-                                                {reservation.id}
-                                            </span>
-                                            <span
-                                                style={{
-                                                    backgroundColor: style.bg,
-                                                    color: style.color,
-                                                    border: `1px solid ${style.border}`,
-                                                    padding: "0.2rem 0.6rem",
-                                                    borderRadius: "3px",
-                                                    fontSize: "0.72rem",
-                                                    fontWeight: 700,
-                                                }}
-                                            >
-                                                {canceled
-                                                    ? "キャンセル済"
-                                                    : reservation.statusLabel}
-                                            </span>
-                                        </div>
-                                        <div
-                                            style={{ padding: "1rem 1.25rem" }}
-                                        >
-                                            <div
-                                                className="mypage-res-grid"
-                                                style={{
-                                                    display: "grid",
-                                                    gridTemplateColumns:
-                                                        "1fr 1fr",
-                                                    gap: "0.75rem",
-                                                    fontSize: "0.82rem",
-                                                }}
-                                            >
-                                                <Info
-                                                    label="チェックイン"
-                                                    value={formatDate(
-                                                        reservation.checkin,
-                                                    )}
-                                                />
-                                                <Info
-                                                    label="チェックアウト"
-                                                    value={formatDate(
-                                                        reservation.checkout,
-                                                    )}
-                                                />
-                                                <Info
-                                                    label="人数"
-                                                    value={`${reservation.guests}名`}
-                                                />
-                                                <Info
-                                                    label="ペット"
-                                                    value={
-                                                        <>
-                                                            {reservation.pets !==
-                                                                "なし" && (
-                                                                <FaPaw
-                                                                    size={11}
-                                                                    color="#7a4020"
-                                                                />
-                                                            )}
-                                                            {reservation.pets}
-                                                        </>
-                                                    }
-                                                />
-                                                <Info
-                                                    label="滞在サポート"
-                                                    value={
-                                                        reservation.supportPlan ===
-                                                        "yes"
-                                                            ? "あり"
-                                                            : "なし"
-                                                    }
-                                                />
-                                            </div>
-                                            {reservation.experiences.length >
-                                                0 && (
-                                                <div
-                                                    style={{
-                                                        marginTop: "0.75rem",
-                                                        paddingTop: "0.6rem",
-                                                        borderTop:
-                                                            "1px solid rgba(180,140,80,0.12)",
-                                                    }}
-                                                >
-                                                    <span
-                                                        style={{
-                                                            color: "#8a7868",
-                                                            fontSize: "0.7rem",
-                                                        }}
-                                                    >
-                                                        体験オプション
-                                                    </span>
-                                                    <div
-                                                        style={{
-                                                            display: "flex",
-                                                            gap: "0.35rem",
-                                                            flexWrap: "wrap",
-                                                            marginTop: "0.3rem",
-                                                        }}
-                                                    >
-                                                        {reservation.experiences.map(
-                                                            (experience) => (
-                                                                <span
-                                                                    key={
-                                                                        experience
-                                                                    }
-                                                                    style={{
-                                                                        backgroundColor:
-                                                                            "rgba(30,60,14,0.06)",
-                                                                        color: "#1e3c0e",
-                                                                        border: "1px solid rgba(30,60,14,0.12)",
-                                                                        padding:
-                                                                            "0.15rem 0.5rem",
-                                                                        borderRadius:
-                                                                            "2px",
-                                                                        fontSize:
-                                                                            "0.72rem",
-                                                                    }}
-                                                                >
-                                                                    {experience}
-                                                                </span>
-                                                            ),
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            )}
                                             <div
                                                 style={{
-                                                    marginTop: "0.85rem",
-                                                    padding: "0.65rem 1rem",
-                                                    backgroundColor:
-                                                        "rgba(212,176,112,0.14)",
-                                                    border: "1px solid rgba(212,176,112,0.35)",
-                                                    borderRadius: "3px",
                                                     display: "flex",
                                                     justifyContent:
                                                         "space-between",
                                                     alignItems: "center",
-                                                    gap: "1rem",
+                                                    gap: "0.5rem",
+                                                    flexWrap: "wrap",
+                                                    padding: "0.75rem 1.25rem",
+                                                    backgroundColor:
+                                                        "rgba(30,60,14,0.04)",
+                                                    borderBottom:
+                                                        "1px solid rgba(180,140,80,0.12)",
                                                 }}
                                             >
                                                 <span
                                                     style={{
-                                                        fontSize: "0.72rem",
-                                                        color: "#8a7868",
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        gap: "0.3rem",
+                                                        fontSize: "0.78rem",
+                                                        fontWeight: 700,
+                                                        color: "#5a4838",
                                                     }}
                                                 >
-                                                    <FaYenSign
-                                                        size={10}
-                                                        color="#c47a30"
-                                                    />
-                                                    お支払い合計（税込・保証料含む）
+                                                    {reservation.id}
                                                 </span>
-                                                <strong
+                                                <span
                                                     style={{
-                                                        fontFamily:
-                                                            "'Noto Serif JP', serif",
-                                                        fontSize: "1.1rem",
-                                                        color: "#5c2e12",
+                                                        backgroundColor:
+                                                            style.bg,
+                                                        color: style.color,
+                                                        border: `1px solid ${style.border}`,
+                                                        padding:
+                                                            "0.2rem 0.6rem",
+                                                        borderRadius: "3px",
+                                                        fontSize: "0.72rem",
+                                                        fontWeight: 700,
                                                     }}
                                                 >
-                                                    ¥
-                                                    {reservation.totalAmount.toLocaleString()}
-                                                </strong>
+                                                    {canceled
+                                                        ? "キャンセル済"
+                                                        : reservation.statusLabel}
+                                                </span>
                                             </div>
-                                            {cancelable &&
-                                                (cancelingId ===
-                                                reservation.id ? (
+                                            <div
+                                                style={{
+                                                    padding: "1rem 1.25rem",
+                                                }}
+                                            >
+                                                <div
+                                                    className="mypage-res-grid"
+                                                    style={{
+                                                        display: "grid",
+                                                        gridTemplateColumns:
+                                                            "1fr 1fr",
+                                                        gap: "0.75rem",
+                                                        fontSize: "0.82rem",
+                                                    }}
+                                                >
+                                                    <Info
+                                                        label="チェックイン"
+                                                        value={formatDate(
+                                                            reservation.checkin,
+                                                        )}
+                                                    />
+                                                    <Info
+                                                        label="チェックアウト"
+                                                        value={formatDate(
+                                                            reservation.checkout,
+                                                        )}
+                                                    />
+                                                    <Info
+                                                        label="人数"
+                                                        value={`${reservation.guests}名`}
+                                                    />
+                                                    <Info
+                                                        label="ペット"
+                                                        value={
+                                                            <>
+                                                                {reservation.pets !==
+                                                                    "なし" && (
+                                                                    <FaPaw
+                                                                        size={
+                                                                            11
+                                                                        }
+                                                                        color="#7a4020"
+                                                                    />
+                                                                )}
+                                                                {
+                                                                    reservation.pets
+                                                                }
+                                                            </>
+                                                        }
+                                                    />
+                                                    <Info
+                                                        label="滞在サポート"
+                                                        value={
+                                                            reservation.supportPlan ===
+                                                            "yes"
+                                                                ? "あり"
+                                                                : "なし"
+                                                        }
+                                                    />
+                                                </div>
+                                                {reservation.experiences
+                                                    .length > 0 && (
                                                     <div
                                                         style={{
                                                             marginTop:
                                                                 "0.75rem",
-                                                            padding:
-                                                                "0.85rem 1rem",
-                                                            backgroundColor:
-                                                                "rgba(160,48,32,0.05)",
-                                                            border: "1px solid rgba(160,48,32,0.18)",
-                                                            borderRadius: "3px",
+                                                            paddingTop:
+                                                                "0.6rem",
+                                                            borderTop:
+                                                                "1px solid rgba(180,140,80,0.12)",
                                                         }}
                                                     >
-                                                        <p
+                                                        <span
                                                             style={{
-                                                                fontSize:
-                                                                    "0.78rem",
-                                                                color: "#a03020",
-                                                                fontWeight: 700,
-                                                            }}
-                                                        >
-                                                            この予約をキャンセルしてよろしいですか？
-                                                        </p>
-                                                        <p
-                                                            style={{
-                                                                fontSize:
-                                                                    "0.72rem",
                                                                 color: "#8a7868",
-                                                                lineHeight: 1.6,
+                                                                fontSize:
+                                                                    "0.7rem",
                                                             }}
                                                         >
-                                                            チェックイン7日前以降のキャンセルは料金が発生します。キャンセル後は取り消せません。
-                                                        </p>
+                                                            体験オプション
+                                                        </span>
                                                         <div
                                                             style={{
                                                                 display: "flex",
-                                                                gap: "0.5rem",
-                                                                justifyContent:
-                                                                    "flex-end",
+                                                                gap: "0.35rem",
+                                                                flexWrap:
+                                                                    "wrap",
+                                                                marginTop:
+                                                                    "0.3rem",
                                                             }}
                                                         >
+                                                            {reservation.experiences.map(
+                                                                (
+                                                                    experience,
+                                                                ) => (
+                                                                    <span
+                                                                        key={
+                                                                            experience
+                                                                        }
+                                                                        style={{
+                                                                            backgroundColor:
+                                                                                "rgba(30,60,14,0.06)",
+                                                                            color: "#1e3c0e",
+                                                                            border: "1px solid rgba(30,60,14,0.12)",
+                                                                            padding:
+                                                                                "0.15rem 0.5rem",
+                                                                            borderRadius:
+                                                                                "2px",
+                                                                            fontSize:
+                                                                                "0.72rem",
+                                                                        }}
+                                                                    >
+                                                                        {
+                                                                            experience
+                                                                        }
+                                                                    </span>
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                <div
+                                                    style={{
+                                                        marginTop: "0.85rem",
+                                                        padding: "0.65rem 1rem",
+                                                        backgroundColor:
+                                                            "rgba(212,176,112,0.14)",
+                                                        border: "1px solid rgba(212,176,112,0.35)",
+                                                        borderRadius: "3px",
+                                                        display: "flex",
+                                                        justifyContent:
+                                                            "space-between",
+                                                        alignItems: "center",
+                                                        gap: "1rem",
+                                                    }}
+                                                >
+                                                    <span
+                                                        style={{
+                                                            fontSize: "0.72rem",
+                                                            color: "#8a7868",
+                                                            display: "flex",
+                                                            alignItems:
+                                                                "center",
+                                                            gap: "0.3rem",
+                                                        }}
+                                                    >
+                                                        <FaYenSign
+                                                            size={10}
+                                                            color="#c47a30"
+                                                        />
+                                                        お支払い合計（税込・保証料含む）
+                                                    </span>
+                                                    <strong
+                                                        style={{
+                                                            fontFamily:
+                                                                "'Noto Serif JP', serif",
+                                                            fontSize: "1.1rem",
+                                                            color: "#5c2e12",
+                                                        }}
+                                                    >
+                                                        ¥
+                                                        {reservation.totalAmount.toLocaleString()}
+                                                    </strong>
+                                                </div>
+                                                {cancelable && (
+                                                    <div
+                                                        style={{
+                                                            marginTop: "0.9rem",
+                                                            paddingTop:
+                                                                "0.9rem",
+                                                            borderTop:
+                                                                "1px solid rgba(180,140,80,0.18)",
+                                                        }}
+                                                    >
+                                                        {cancelingId ===
+                                                        reservation.id ? (
+                                                            <div
+                                                                style={{
+                                                                    marginTop:
+                                                                        "0.75rem",
+                                                                    padding:
+                                                                        "0.85rem 1rem",
+                                                                    backgroundColor:
+                                                                        "rgba(160,48,32,0.05)",
+                                                                    border: "1px solid rgba(160,48,32,0.18)",
+                                                                    borderRadius:
+                                                                        "3px",
+                                                                }}
+                                                            >
+                                                                <p
+                                                                    style={{
+                                                                        fontSize:
+                                                                            "0.78rem",
+                                                                        color: "#a03020",
+                                                                        fontWeight: 700,
+                                                                    }}
+                                                                >
+                                                                    この予約をキャンセルしてよろしいですか？
+                                                                </p>
+                                                                <p
+                                                                    style={{
+                                                                        fontSize:
+                                                                            "0.72rem",
+                                                                        color: "#8a7868",
+                                                                        lineHeight: 1.6,
+                                                                    }}
+                                                                >
+                                                                    チェックイン7日前以降のキャンセルは料金が発生します。キャンセル後は取り消せません。
+                                                                </p>
+                                                                <div
+                                                                    style={{
+                                                                        display:
+                                                                            "flex",
+                                                                        gap: "0.5rem",
+                                                                        justifyContent:
+                                                                            "flex-end",
+                                                                    }}
+                                                                >
+                                                                    <button
+                                                                        onClick={() =>
+                                                                            setCancelingId(
+                                                                                null,
+                                                                            )
+                                                                        }
+                                                                        style={
+                                                                            secondaryButton
+                                                                        }
+                                                                    >
+                                                                        戻る
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() =>
+                                                                            router.delete(
+                                                                                `/reservations/${reservation.dbId}/cancel`,
+                                                                                {
+                                                                                    preserveScroll: true,
+                                                                                    onSuccess:
+                                                                                        () => {
+                                                                                            setCanceledIds(
+                                                                                                (
+                                                                                                    current,
+                                                                                                ) =>
+                                                                                                    new Set(
+                                                                                                        [
+                                                                                                            ...current,
+                                                                                                            reservation.id,
+                                                                                                        ],
+                                                                                                    ),
+                                                                                            );
+                                                                                            setCancelingId(
+                                                                                                null,
+                                                                                            );
+                                                                                        },
+                                                                                },
+                                                                            )
+                                                                        }
+                                                                        style={
+                                                                            dangerButton
+                                                                        }
+                                                                    >
+                                                                        <FaExclamationTriangle
+                                                                            size={
+                                                                                11
+                                                                            }
+                                                                        />
+                                                                        キャンセルする
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
                                                             <button
                                                                 onClick={() =>
                                                                     setCancelingId(
-                                                                        null,
+                                                                        reservation.id,
                                                                     )
                                                                 }
                                                                 style={
                                                                     secondaryButton
                                                                 }
                                                             >
-                                                                戻る
-                                                            </button>
-                                                            <button
-                                                                onClick={() =>
-                                                                    router.delete(
-                                                                        `/reservations/${reservation.dbId}/cancel`,
-                                                                        {
-                                                                            preserveScroll: true,
-                                                                            onSuccess:
-                                                                                () => {
-                                                                                    setCanceledIds(
-                                                                                        (
-                                                                                            current,
-                                                                                        ) =>
-                                                                                            new Set(
-                                                                                                [
-                                                                                                    ...current,
-                                                                                                    reservation.id,
-                                                                                                ],
-                                                                                            ),
-                                                                                    );
-                                                                                    setCancelingId(
-                                                                                        null,
-                                                                                    );
-                                                                                },
-                                                                        },
-                                                                    )
-                                                                }
-                                                                style={
-                                                                    dangerButton
-                                                                }
-                                                            >
-                                                                <FaExclamationTriangle
-                                                                    size={11}
+                                                                <FaBan
+                                                                    size={13}
                                                                 />
-                                                                キャンセルする
+                                                                予約をキャンセルする
                                                             </button>
-                                                        </div>
+                                                        )}
                                                     </div>
-                                                ) : (
-                                                    <button
-                                                        onClick={() =>
-                                                            setCancelingId(
-                                                                reservation.id,
-                                                            )
-                                                        }
-                                                        style={secondaryButton}
-                                                    >
-                                                        <FaBan size={11} />
-                                                        予約をキャンセルする
-                                                    </button>
-                                                ))}
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })}
+                            </div>
+                        )}
+                        <div
+                            style={{ marginTop: "1.5rem", textAlign: "center" }}
+                        >
+                            <Link to="/mypage" style={secondaryLink}>
+                                <FaChevronRight size={11} />
+                                マイページへ戻る
+                            </Link>
+                            <Link to="/reservation" style={primaryLink}>
+                                新しい予約をする
+                                <FaChevronRight size={11} />
+                            </Link>
                         </div>
-                    )}
-                    <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
-                        <Link to="/mypage" style={secondaryLink}>
-                            <FaChevronRight size={11} />
-                            マイページへ戻る
-                        </Link>
-                        <Link to="/reservation" style={primaryLink}>
-                            新しい予約をする
-                            <FaChevronRight size={11} />
-                        </Link>
                     </div>
                 </div>
-            </div>
+            </section>
             <style>{`@media (max-width: 640px) { .mypage-res-grid { grid-template-columns: 1fr !important; } }`}</style>
         </div>
     );
@@ -488,14 +542,14 @@ function Info({ label, value }: { label: string; value: React.ReactNode }) {
 const secondaryButton: React.CSSProperties = {
     display: "inline-flex",
     alignItems: "center",
-    gap: "0.35rem",
-    backgroundColor: "transparent",
+    gap: "0.45rem",
+    backgroundColor: "rgba(160,48,32,0.025)",
     color: "#a03020",
-    padding: "0.4rem 0.85rem",
+    padding: "0.65rem 1.1rem",
     borderRadius: "3px",
-    border: "1px solid rgba(160,48,32,0.22)",
+    border: "1px solid rgba(160,48,32,0.25)",
     fontWeight: 700,
-    fontSize: "0.78rem",
+    fontSize: "0.82rem",
     cursor: "pointer",
 };
 const dangerButton: React.CSSProperties = {
