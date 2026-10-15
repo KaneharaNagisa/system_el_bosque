@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { usePage } from "@inertiajs/react";
 import { Link, useNavigate, useSearchParams } from "../router";
 import {
@@ -16,8 +16,8 @@ const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "0.75rem 1rem",
     backgroundColor: "#faf5e8",
-    border: "1px solid rgba(30,60,14,0.2)",
-    borderRadius: "3px",
+    border: "1px solid rgba(37,104,64,0.2)",
+    borderRadius: "12px",
     fontSize: "0.9rem",
     color: "#2c1e10",
     outline: "none",
@@ -30,7 +30,7 @@ const labelStyle: React.CSSProperties = {
     display: "block",
     fontSize: "0.8rem",
     fontWeight: 700,
-    color: "#1e3c0e",
+    color: "#256840",
     marginBottom: "0.4rem",
     letterSpacing: "0.04em",
 };
@@ -85,11 +85,11 @@ function StepIndicator({ current }: { current: number }) {
                                 fontWeight: 700,
                                 backgroundColor:
                                     current > s.num
-                                        ? "#1e3c0e"
+                                        ? "#256840"
                                         : current === s.num
-                                          ? "#5c2e12"
+                                          ? "#256840"
                                           : "#d8cbb8",
-                                color: current >= s.num ? "#f0e8d0" : "#8a7a68",
+                                color: current >= s.num ? "#ffffff" : "#8a7a68",
                                 transition: "all 0.3s",
                             }}
                         >
@@ -99,7 +99,7 @@ function StepIndicator({ current }: { current: number }) {
                             style={{
                                 fontSize: "0.6rem",
                                 color:
-                                    current === s.num ? "#5c2e12" : "#8a7a68",
+                                    current === s.num ? "#256840" : "#8a7a68",
                                 marginTop: "0.25rem",
                                 fontWeight: current === s.num ? 700 : 400,
                                 whiteSpace: "nowrap",
@@ -114,7 +114,7 @@ function StepIndicator({ current }: { current: number }) {
                                 width: "24px",
                                 height: "2px",
                                 backgroundColor:
-                                    current > s.num ? "#1e3c0e" : "#d8cbb8",
+                                    current > s.num ? "#256840" : "#d8cbb8",
                                 marginBottom: "1rem",
                             }}
                         />
@@ -166,9 +166,9 @@ export function Register() {
 
     const focusedInputStyle = (field: string): React.CSSProperties => ({
         ...inputStyle,
-        borderColor: focusedField === field ? "#1e3c0e" : "rgba(30,60,14,0.2)",
+        borderColor: focusedField === field ? "#256840" : "rgba(37,104,64,0.2)",
         boxShadow:
-            focusedField === field ? "0 0 0 3px rgba(30,60,14,0.1)" : "none",
+            focusedField === field ? "0 0 0 3px rgba(37,104,64,0.1)" : "none",
     });
 
     const handleProfileChange = (
@@ -350,7 +350,7 @@ export function Register() {
                             <div
                                 style={{
                                     backgroundColor: "#faf5e8",
-                                    borderRadius: "4px",
+                                    borderRadius: "12px",
                                     padding: "2.5rem",
                                     boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
                                     border: "1px solid rgba(180,140,80,0.15)",
@@ -361,7 +361,7 @@ export function Register() {
                                         fontFamily: "'Noto Serif JP', serif",
                                         fontSize: "1.15rem",
                                         fontWeight: 700,
-                                        color: "#1e3c0e",
+                                        color: "#256840",
                                         marginBottom: "1rem",
                                         textAlign: "center",
                                     }}
@@ -419,10 +419,10 @@ export function Register() {
                                     disabled={isSendingEmail}
                                     style={{
                                         width: "100%",
-                                        backgroundColor: "#5c2e12",
+                                        backgroundColor: "#7a4a1e",
                                         color: "#f0e8d0",
                                         padding: "1rem",
-                                        borderRadius: "3px",
+                                        borderRadius: "12px",
                                         border: "none",
                                         cursor: isSendingEmail
                                             ? "wait"
@@ -482,7 +482,7 @@ export function Register() {
                         <div
                             style={{
                                 backgroundColor: "#faf5e8",
-                                borderRadius: "4px",
+                                borderRadius: "12px",
                                 padding: "2.5rem",
                                 boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
                                 border: "1px solid rgba(180,140,80,0.15)",
@@ -491,7 +491,7 @@ export function Register() {
                         >
                             <FaEnvelopeOpenText
                                 size={48}
-                                color="#1e3c0e"
+                                color="#3abcb0"
                                 style={{ marginBottom: "1.25rem" }}
                             />
                             <h2
@@ -499,7 +499,7 @@ export function Register() {
                                     fontFamily: "'Noto Serif JP', serif",
                                     fontSize: "1.15rem",
                                     fontWeight: 700,
-                                    color: "#1e3c0e",
+                                    color: "#256840",
                                     marginBottom: "1rem",
                                 }}
                             >
@@ -519,11 +519,11 @@ export function Register() {
                                 style={{
                                     fontSize: "0.95rem",
                                     fontWeight: 700,
-                                    color: "#1e3c0e",
+                                    color: "#256840",
                                     marginBottom: "1.25rem",
                                     padding: "0.6rem 1rem",
-                                    backgroundColor: "rgba(30,60,14,0.06)",
-                                    borderRadius: "3px",
+                                    backgroundColor: "rgba(37,104,64,0.06)",
+                                    borderRadius: "12px",
                                     display: "inline-block",
                                 }}
                             >
@@ -550,7 +550,7 @@ export function Register() {
                             <div
                                 style={{
                                     backgroundColor: "#faf5e8",
-                                    borderRadius: "4px",
+                                    borderRadius: "12px",
                                     padding: "2.5rem",
                                     boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
                                     border: "1px solid rgba(180,140,80,0.15)",
@@ -561,7 +561,7 @@ export function Register() {
                                         fontFamily: "'Noto Serif JP', serif",
                                         fontSize: "1.15rem",
                                         fontWeight: 700,
-                                        color: "#1e3c0e",
+                                        color: "#256840",
                                         marginBottom: "0.5rem",
                                         textAlign: "center",
                                     }}
@@ -1023,7 +1023,7 @@ export function Register() {
                                                                 justifyContent:
                                                                     "center",
                                                                 backgroundColor:
-                                                                    "#5c2e12",
+                                                                    "#7a4a1e",
                                                                 color: "#f0e8d0",
                                                                 width: "18px",
                                                                 height: "18px",
@@ -1070,7 +1070,7 @@ export function Register() {
                                                                 justifyContent:
                                                                     "center",
                                                                 backgroundColor:
-                                                                    "#5c2e12",
+                                                                    "#7a4a1e",
                                                                 color: "#f0e8d0",
                                                                 width: "18px",
                                                                 height: "18px",
@@ -1289,7 +1289,7 @@ export function Register() {
                                         backgroundColor:
                                             profile.password ===
                                             profile.passwordConfirm
-                                                ? "#5c2e12"
+                                                ? "#7a4a1e"
                                                 : "#c8b8a0",
                                         color:
                                             profile.password ===
@@ -1297,7 +1297,7 @@ export function Register() {
                                                 ? "#f0e8d0"
                                                 : "#a09080",
                                         padding: "1rem",
-                                        borderRadius: "3px",
+                                        borderRadius: "12px",
                                         border: "none",
                                         cursor:
                                             profile.password ===
@@ -1326,7 +1326,7 @@ export function Register() {
                         <div
                             style={{
                                 backgroundColor: "#faf5e8",
-                                borderRadius: "4px",
+                                borderRadius: "12px",
                                 padding: "2.5rem",
                                 boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
                                 border: "1px solid rgba(180,140,80,0.15)",
@@ -1337,7 +1337,7 @@ export function Register() {
                                     fontFamily: "'Noto Serif JP', serif",
                                     fontSize: "1.15rem",
                                     fontWeight: 700,
-                                    color: "#1e3c0e",
+                                    color: "#256840",
                                     marginBottom: "2rem",
                                     textAlign: "center",
                                 }}
@@ -1508,7 +1508,7 @@ export function Register() {
                                         color: "#a03020",
                                         backgroundColor: "rgba(160,48,32,0.06)",
                                         border: "1px solid rgba(160,48,32,0.15)",
-                                        borderRadius: "3px",
+                                        borderRadius: "12px",
                                         padding: "0.75rem 1rem",
                                         fontSize: "0.82rem",
                                     }}
@@ -1533,10 +1533,10 @@ export function Register() {
                                     style={{
                                         flex: 1,
                                         backgroundColor: "transparent",
-                                        color: "#5c2e12",
+                                        color: "#7a4a1e",
                                         padding: "1rem",
-                                        borderRadius: "3px",
-                                        border: "1px solid #5c2e12",
+                                        borderRadius: "12px",
+                                        border: "1px solid #7a4a1e",
                                         cursor: "pointer",
                                         fontSize: "0.9rem",
                                         fontWeight: 700,
@@ -1556,10 +1556,10 @@ export function Register() {
                                     disabled={isSubmitting}
                                     style={{
                                         flex: 2,
-                                        backgroundColor: "#5c2e12",
+                                        backgroundColor: "#7a4a1e",
                                         color: "#f0e8d0",
                                         padding: "1rem",
-                                        borderRadius: "3px",
+                                        borderRadius: "12px",
                                         border: "none",
                                         cursor: isSubmitting
                                             ? "not-allowed"
@@ -1589,7 +1589,7 @@ export function Register() {
                         <div
                             style={{
                                 backgroundColor: "#faf5e8",
-                                borderRadius: "4px",
+                                borderRadius: "12px",
                                 padding: "3rem 2.5rem",
                                 boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
                                 border: "1px solid rgba(180,140,80,0.15)",
@@ -1598,7 +1598,7 @@ export function Register() {
                         >
                             <FaCheckCircle
                                 size={56}
-                                color="#1e3c0e"
+                                color="#3abcb0"
                                 style={{ marginBottom: "1.5rem" }}
                             />
                             <h2
@@ -1606,7 +1606,7 @@ export function Register() {
                                     fontFamily: "'Noto Serif JP', serif",
                                     fontSize: "1.4rem",
                                     fontWeight: 700,
-                                    color: "#1e3c0e",
+                                    color: "#256840",
                                     marginBottom: "1rem",
                                 }}
                             >
@@ -1641,10 +1641,10 @@ export function Register() {
                                     display: "inline-flex",
                                     alignItems: "center",
                                     gap: "0.5rem",
-                                    backgroundColor: "#5c2e12",
+                                    backgroundColor: "#7a4a1e",
                                     color: "#f0e8d0",
                                     padding: "1rem 2rem",
-                                    borderRadius: "3px",
+                                    borderRadius: "12px",
                                     textDecoration: "none",
                                     fontWeight: 700,
                                     fontSize: "0.95rem",

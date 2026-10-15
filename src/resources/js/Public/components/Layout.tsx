@@ -441,7 +441,7 @@ export function Layout({ children }: { children: ReactNode }) {
                         style={{
                             background: "none",
                             border: "1px solid rgba(45,112,69,0.2)",
-                            borderRadius: "6px",
+                            borderRadius: "8px",
                             color: "#7a4a1e",
                             cursor: "pointer",
                             padding: "0.45rem",

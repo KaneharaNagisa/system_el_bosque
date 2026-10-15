@@ -1,4 +1,4 @@
-﻿import { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { usePage } from "@inertiajs/react";
 import { Link, useSearchParams, useNavigate } from "../router";
 import {
@@ -25,8 +25,8 @@ const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "0.75rem 1rem",
     backgroundColor: "#faf5e8",
-    border: "1px solid rgba(30,60,14,0.2)",
-    borderRadius: "3px",
+    border: "1px solid rgba(37,104,64,0.2)",
+    borderRadius: "12px",
     fontSize: "0.9rem",
     color: "#2c1e10",
     outline: "none",
@@ -39,7 +39,7 @@ const labelStyle: React.CSSProperties = {
     display: "block",
     fontSize: "0.8rem",
     fontWeight: 700,
-    color: "#1e3c0e",
+    color: "#256840",
     marginBottom: "0.4rem",
     letterSpacing: "0.04em",
 };
@@ -172,9 +172,9 @@ export function ReservationDetail() {
 
     const focusedInputStyle = (field: string): React.CSSProperties => ({
         ...inputStyle,
-        borderColor: focusedField === field ? "#1e3c0e" : "rgba(30,60,14,0.2)",
+        borderColor: focusedField === field ? "#256840" : "rgba(37,104,64,0.2)",
         boxShadow:
-            focusedField === field ? "0 0 0 3px rgba(30,60,14,0.1)" : "none",
+            focusedField === field ? "0 0 0 3px rgba(37,104,64,0.1)" : "none",
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -201,7 +201,7 @@ export function ReservationDetail() {
             style={{
                 fontSize: "0.92rem",
                 fontWeight: 700,
-                color: "#1e3c0e",
+                color: "#256840",
                 marginBottom: "1.25rem",
                 display: "flex",
                 alignItems: "center",
@@ -210,7 +210,7 @@ export function ReservationDetail() {
         >
             <span
                 style={{
-                    backgroundColor: "#1e3c0e",
+                    backgroundColor: "#256840",
                     color: "#f0e8d0",
                     width: "24px",
                     height: "24px",
@@ -323,7 +323,7 @@ export function ReservationDetail() {
                             <div
                                 style={{
                                     backgroundColor: "#faf5e8",
-                                    borderRadius: "4px",
+                                    borderRadius: "12px",
                                     padding: "2.5rem",
                                     boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
                                     border: "1px solid rgba(180,140,80,0.15)",
@@ -334,7 +334,7 @@ export function ReservationDetail() {
                                         fontFamily: "'Noto Serif JP', serif",
                                         fontSize: "1.2rem",
                                         fontWeight: 700,
-                                        color: "#1e3c0e",
+                                        color: "#256840",
                                         marginBottom: "2rem",
                                         paddingBottom: "1rem",
                                         borderBottom:
@@ -349,7 +349,7 @@ export function ReservationDetail() {
                                     {stepBadge(
                                         1,
                                         "宿泊人数",
-                                        <FaUsers size={14} color="#5c2e12" />,
+                                        <FaUsers size={14} color="#7a4a1e" />,
                                     )}
                                     <div>
                                         <label style={labelStyle}>
@@ -406,7 +406,7 @@ export function ReservationDetail() {
                                     {stepBadge(
                                         2,
                                         "ペット同伴",
-                                        <FaPaw size={14} color="#5c2e12" />,
+                                        <FaPaw size={14} color="#7a4a1e" />,
                                     )}
                                     <div>
                                         <label style={labelStyle}>ペット</label>
@@ -480,7 +480,7 @@ export function ReservationDetail() {
                                                             justifyContent:
                                                                 "center",
                                                             backgroundColor:
-                                                                "#5c2e12",
+                                                                "#7a4a1e",
                                                             color: "#f0e8d0",
                                                             width: "18px",
                                                             height: "18px",
@@ -526,7 +526,7 @@ export function ReservationDetail() {
                                                             justifyContent:
                                                                 "center",
                                                             backgroundColor:
-                                                                "#5c2e12",
+                                                                "#7a4a1e",
                                                             color: "#f0e8d0",
                                                             width: "18px",
                                                             height: "18px",
@@ -571,7 +571,7 @@ export function ReservationDetail() {
                                                 backgroundColor:
                                                     "rgba(196,122,48,0.06)",
                                                 border: "1px solid rgba(196,122,48,0.15)",
-                                                borderRadius: "3px",
+                                                borderRadius: "12px",
                                                 padding: "0.75rem 1rem",
                                             }}
                                         >
@@ -605,13 +605,13 @@ export function ReservationDetail() {
                                         "滞在サポート（任意）",
                                         <FaConciergeBell
                                             size={14}
-                                            color="#5c2e12"
+                                            color="#7a4a1e"
                                         />,
                                     )}
                                     <div
                                         style={{
                                             backgroundColor: "#f2e8d0",
-                                            borderRadius: "3px",
+                                            borderRadius: "12px",
                                             padding: "1rem 1.25rem",
                                             border: "1px solid rgba(180,140,80,0.15)",
                                             marginBottom: "1rem",
@@ -632,7 +632,7 @@ export function ReservationDetail() {
                                                     <span
                                                         style={{
                                                             fontWeight: 700,
-                                                            color: "#5c2e12",
+                                                            color: "#7a4a1e",
                                                         }}
                                                     >
                                                         料金：¥13,000（¥8,000 +
@@ -652,7 +652,7 @@ export function ReservationDetail() {
                                                 <span
                                                     style={{
                                                         fontWeight: 700,
-                                                        color: "#5c2e12",
+                                                        color: "#7a4a1e",
                                                     }}
                                                 >
                                                     料金：¥8,000（1滞在あたり・任意）
@@ -691,7 +691,7 @@ export function ReservationDetail() {
                                         "体験オプション（任意・複数選択可）",
                                         <FaMountain
                                             size={14}
-                                            color="#5c2e12"
+                                            color="#7a4a1e"
                                         />,
                                     )}
                                     <div
@@ -716,12 +716,12 @@ export function ReservationDetail() {
                                                         padding: "0.85rem 1rem",
                                                         backgroundColor:
                                                             isSelected
-                                                                ? "rgba(30,60,14,0.07)"
+                                                                ? "rgba(37,104,64,0.07)"
                                                                 : "#f2e8d0",
-                                                        borderRadius: "3px",
+                                                        borderRadius: "12px",
                                                         border: `1px solid ${
                                                             isSelected
-                                                                ? "rgba(30,60,14,0.25)"
+                                                                ? "rgba(37,104,64,0.25)"
                                                                 : "rgba(180,140,80,0.15)"
                                                         }`,
                                                         cursor: "pointer",
@@ -738,7 +738,7 @@ export function ReservationDetail() {
                                                             width: "16px",
                                                             height: "16px",
                                                             accentColor:
-                                                                "#1e3c0e",
+                                                                "#256840",
                                                             flexShrink: 0,
                                                         }}
                                                     />
@@ -797,7 +797,7 @@ export function ReservationDetail() {
                                                         style={{
                                                             fontSize: "0.78rem",
                                                             fontWeight: 700,
-                                                            color: "#5c2e12",
+                                                            color: "#7a4a1e",
                                                             whiteSpace:
                                                                 "nowrap",
                                                         }}
@@ -834,7 +834,7 @@ export function ReservationDetail() {
                                         "ご要望",
                                         <FaCommentDots
                                             size={14}
-                                            color="#5c2e12"
+                                            color="#7a4a1e"
                                         />,
                                     )}
                                     <textarea
@@ -885,7 +885,7 @@ export function ReservationDetail() {
                                             style={{
                                                 width: "16px",
                                                 height: "16px",
-                                                accentColor: "#1e3c0e",
+                                                accentColor: "#256840",
                                                 flexShrink: 0,
                                                 marginTop: "2px",
                                             }}
@@ -894,7 +894,7 @@ export function ReservationDetail() {
                                             <Link
                                                 to="/terms"
                                                 style={{
-                                                    color: "#1e3c0e",
+                                                    color: "#256840",
                                                     fontWeight: 700,
                                                 }}
                                             >
@@ -911,13 +911,13 @@ export function ReservationDetail() {
                                     style={{
                                         width: "100%",
                                         backgroundColor: form.agreement
-                                            ? "#5c2e12"
+                                            ? "#7a4a1e"
                                             : "#c8b8a0",
                                         color: form.agreement
                                             ? "#f0e8d0"
                                             : "#a09080",
                                         padding: "1.1rem",
-                                        borderRadius: "3px",
+                                        borderRadius: "12px",
                                         border: "none",
                                         cursor: form.agreement
                                             ? "pointer"
@@ -950,8 +950,8 @@ export function ReservationDetail() {
                             {/* Stay Dates Card */}
                             <div
                                 style={{
-                                    backgroundColor: "#1b2f0e",
-                                    borderRadius: "4px",
+                                    backgroundColor: "#256840",
+                                    borderRadius: "12px",
                                     padding: "1.5rem",
                                     color: "#f0e8d0",
                                     border: "1px solid rgba(212,176,112,0.18)",
@@ -1052,7 +1052,7 @@ export function ReservationDetail() {
                                                         "rgba(212,176,112,0.2)",
                                                     color: "#d4b070",
                                                     padding: "0.25rem 0.65rem",
-                                                    borderRadius: "3px",
+                                                    borderRadius: "12px",
                                                     fontSize: "0.78rem",
                                                     fontWeight: 700,
                                                 }}
@@ -1084,7 +1084,7 @@ export function ReservationDetail() {
                                         fontFamily:
                                             "'Noto Sans JP', sans-serif",
                                         padding: "0.55rem",
-                                        borderRadius: "3px",
+                                        borderRadius: "12px",
                                         marginTop: "1rem",
                                         cursor: "pointer",
                                     }}
@@ -1097,7 +1097,7 @@ export function ReservationDetail() {
                             <div
                                 style={{
                                     backgroundColor: "#faf5e8",
-                                    borderRadius: "4px",
+                                    borderRadius: "12px",
                                     padding: "1.5rem",
                                     border: "1px solid rgba(180,140,80,0.18)",
                                     boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
@@ -1111,14 +1111,14 @@ export function ReservationDetail() {
                                         marginBottom: "1rem",
                                     }}
                                 >
-                                    <FaUser size={14} color="#1e3c0e" />
+                                    <FaUser size={14} color="#256840" />
                                     <h3
                                         style={{
                                             fontFamily:
                                                 "'Noto Serif JP', serif",
                                             fontSize: "0.95rem",
                                             fontWeight: 700,
-                                            color: "#1e3c0e",
+                                            color: "#256840",
                                             margin: 0,
                                         }}
                                     >
@@ -1190,7 +1190,7 @@ export function ReservationDetail() {
                             <div
                                 style={{
                                     backgroundColor: "#faf5e8",
-                                    borderRadius: "4px",
+                                    borderRadius: "12px",
                                     padding: "1.5rem",
                                     border: "1px solid rgba(180,140,80,0.18)",
                                     boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
@@ -1201,7 +1201,7 @@ export function ReservationDetail() {
                                         fontFamily: "'Noto Serif JP', serif",
                                         fontSize: "0.95rem",
                                         fontWeight: 700,
-                                        color: "#1e3c0e",
+                                        color: "#256840",
                                         marginBottom: "1rem",
                                     }}
                                 >
@@ -1248,7 +1248,7 @@ export function ReservationDetail() {
                                             <span
                                                 style={{
                                                     fontWeight: 700,
-                                                    color: "#1e3c0e",
+                                                    color: "#256840",
                                                 }}
                                             >
                                                 {item.price}

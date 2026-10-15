@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { usePage } from "@inertiajs/react";
 import { Link } from "../router";
 import {
@@ -45,7 +45,7 @@ const SectionHeading = ({
                 fontFamily: "'Noto Serif JP', serif",
                 fontSize: "clamp(1.4rem, 3vw, 1.9rem)",
                 fontWeight: 700,
-                color: dark ? "#f0e8d0" : "#1e3c0e",
+                color: dark ? "#f0e8d0" : "#256840",
             }}
         >
             {ja}
@@ -166,7 +166,7 @@ export function Pricing() {
         padding: "0.75rem 1rem",
         backgroundColor: "rgba(242,232,208,0.08)",
         border: "1px solid rgba(212,176,112,0.3)",
-        borderRadius: "3px",
+        borderRadius: "12px",
         color: "#f0e8d0",
         fontSize: "0.9rem",
         appearance: "none",
@@ -228,6 +228,30 @@ export function Pricing() {
         },
     ];
 
+    const cardThemes = [
+        {
+            bg: "#f5ebe8",
+            border: "rgba(180,100,80,0.18)",
+            topBorder: "#b87070",
+            iconBg: "#fdf5f3",
+            innerBg: "#fdf5f2",
+        },
+        {
+            bg: "#e8f0eb",
+            border: "rgba(70,140,90,0.18)",
+            topBorder: "#5a8a6a",
+            iconBg: "#f0f7f2",
+            innerBg: "#f0f7f2",
+        },
+        {
+            bg: "#e5f0f2",
+            border: "rgba(50,150,150,0.18)",
+            topBorder: "#3a9a90",
+            iconBg: "#eef8f7",
+            innerBg: "#eef8f7",
+        },
+    ];
+
     /* ── キャンセルポリシーデータ ── */
     const cancelPolicies = [
         { timing: "8日前以前", rate: "無料", rateNum: 0, free: true },
@@ -264,7 +288,7 @@ export function Pricing() {
             >
                 <p
                     style={{
-                        color: "#d4b070",
+                        color: "#7a4e00",
                         fontSize: "0.72rem",
                         letterSpacing: "0.25em",
                         fontWeight: 700,
@@ -408,7 +432,7 @@ export function Pricing() {
                         }}
                     >
                         <div>
-                            <strong style={{ color: "#1e3c0e" }}>
+                            <strong style={{ color: "#256840" }}>
                                 保証料（返金制）
                             </strong>
                             <p
@@ -422,7 +446,7 @@ export function Pricing() {
                             </p>
                         </div>
                         <strong
-                            style={{ color: "#1e3c0e", fontSize: "1.1rem" }}
+                            style={{ color: "#256840", fontSize: "1.1rem" }}
                         >
                             ¥10,000 / 1滞在
                         </strong>
@@ -433,7 +457,7 @@ export function Pricing() {
                         style={{
                             marginTop: "2rem",
                             backgroundColor: "#faf5e8",
-                            borderRadius: "4px",
+                            borderRadius: "12px",
                             padding: "2rem",
                             border: "1px solid rgba(180,140,80,0.3)",
                         }}
@@ -448,9 +472,9 @@ export function Pricing() {
                             <div
                                 style={{
                                     backgroundColor: "#e8dfc0",
-                                    color: "#5c2e12",
+                                    color: "#7a4a1e",
                                     padding: "0.25rem 0.75rem",
-                                    borderRadius: "2px",
+                                    borderRadius: "8px",
                                     fontSize: "0.72rem",
                                     fontWeight: 700,
                                     whiteSpace: "nowrap",
@@ -467,7 +491,7 @@ export function Pricing() {
                                         fontFamily: "'Noto Serif JP', serif",
                                         fontSize: "1.1rem",
                                         fontWeight: 700,
-                                        color: "#1e3c0e",
+                                        color: "#256840",
                                         marginBottom: "0.5rem",
                                     }}
                                 >
@@ -510,7 +534,7 @@ export function Pricing() {
                             style={{
                                 width: "32px",
                                 height: "32px",
-                                backgroundColor: "#1e3c0e",
+                                backgroundColor: "#3abcb0",
                                 borderRadius: "50%",
                                 display: "flex",
                                 alignItems: "center",
@@ -518,14 +542,14 @@ export function Pricing() {
                                 flexShrink: 0,
                             }}
                         >
-                            <FaDog size={15} color="#d4b070" />
+                            <FaDog size={15} color="#ffffff" />
                         </div>
                         <h2
                             style={{
                                 fontFamily: "'Noto Serif JP', serif",
                                 fontSize: "clamp(1.2rem, 2.5vw, 1.5rem)",
                                 fontWeight: 700,
-                                color: "#1e3c0e",
+                                color: "#256840",
                             }}
                         >
                             ペット料金
@@ -538,14 +562,14 @@ export function Pricing() {
                                 width: "100%",
                                 borderCollapse: "collapse",
                                 backgroundColor: "#f2e8d0",
-                                borderRadius: "4px",
+                                borderRadius: "12px",
                                 overflow: "hidden",
                                 boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
                                 maxWidth: "560px",
                             }}
                         >
                             <thead>
-                                <tr style={{ backgroundColor: "#1b2f0e" }}>
+                                <tr style={{ backgroundColor: "#256840" }}>
                                     <th
                                         style={{
                                             padding: "1rem 1.5rem",
@@ -600,7 +624,7 @@ export function Pricing() {
                                                 padding: "1rem 1.5rem",
                                                 textAlign: "center",
                                                 fontSize: "1rem",
-                                                color: "#1e3c0e",
+                                                color: "#256840",
                                                 fontWeight: 700,
                                             }}
                                         >
@@ -642,7 +666,7 @@ export function Pricing() {
                             style={{
                                 width: "32px",
                                 height: "32px",
-                                backgroundColor: "#1e3c0e",
+                                backgroundColor: "#3abcb0",
                                 borderRadius: "50%",
                                 display: "flex",
                                 alignItems: "center",
@@ -650,14 +674,14 @@ export function Pricing() {
                                 flexShrink: 0,
                             }}
                         >
-                            <FaLeaf size={14} color="#d4b070" />
+                            <FaLeaf size={14} color="#ffffff" />
                         </div>
                         <h2
                             style={{
                                 fontFamily: "'Noto Serif JP', serif",
                                 fontSize: "clamp(1.2rem, 2.5vw, 1.5rem)",
                                 fontWeight: 700,
-                                color: "#1e3c0e",
+                                color: "#256840",
                             }}
                         >
                             体験オプション料金
@@ -676,13 +700,13 @@ export function Pricing() {
                                 minWidth: "560px",
                                 borderCollapse: "collapse",
                                 backgroundColor: "#faf5e8",
-                                borderRadius: "4px",
+                                borderRadius: "12px",
                                 overflow: "hidden",
                                 boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
                             }}
                         >
                             <thead>
-                                <tr style={{ backgroundColor: "#1b2f0e" }}>
+                                <tr style={{ backgroundColor: "#256840" }}>
                                     {["体験名", "料金", "時期", "備考"].map(
                                         (h, i) => (
                                             <th
@@ -747,7 +771,7 @@ export function Pricing() {
                                                 padding: "1.1rem 1.5rem",
                                                 textAlign: "center",
                                                 fontSize: "0.95rem",
-                                                color: "#1e3c0e",
+                                                color: "#256840",
                                                 fontWeight: 700,
                                                 whiteSpace: "nowrap",
                                             }}
@@ -797,7 +821,7 @@ export function Pricing() {
 
             {/* ── 料金かんたん計算機 ── */}
             <section
-                style={{ backgroundColor: "#1b2f0e", padding: "5rem 1.5rem" }}
+                style={{ backgroundColor: "#256840", padding: "5rem 1.5rem" }}
             >
                 <div style={{ maxWidth: "820px", margin: "0 auto" }}>
                     <SectionHeading
@@ -809,7 +833,7 @@ export function Pricing() {
                     <div
                         style={{
                             backgroundColor: "rgba(242,232,208,0.06)",
-                            borderRadius: "4px",
+                            borderRadius: "12px",
                             padding: "2.5rem",
                             border: "1px solid rgba(212,176,112,0.18)",
                         }}
@@ -845,21 +869,21 @@ export function Pricing() {
                                 >
                                     <option
                                         value="weekday"
-                                        style={{ backgroundColor: "#1b2f0e" }}
+                                        style={{ backgroundColor: "#256840" }}
                                     >
                                         平日（月〜木・祝日を除く）¥
                                         {rates.weekdayRate.toLocaleString()}
                                     </option>
                                     <option
                                         value="weekend"
-                                        style={{ backgroundColor: "#1b2f0e" }}
+                                        style={{ backgroundColor: "#256840" }}
                                     >
                                         休日（金〜日・祝日）¥
                                         {rates.holidayRate.toLocaleString()}
                                     </option>
                                     <option
                                         value="period-0"
-                                        style={{ backgroundColor: "#1b2f0e" }}
+                                        style={{ backgroundColor: "#256840" }}
                                     >
                                         特別日（GW・お盆・年末年始等）¥
                                         {(
@@ -896,7 +920,7 @@ export function Pricing() {
                                                 key={n}
                                                 value={n}
                                                 style={{
-                                                    backgroundColor: "#1b2f0e",
+                                                    backgroundColor: "#256840",
                                                 }}
                                             >
                                                 {n}名
@@ -934,7 +958,7 @@ export function Pricing() {
                                             key={night}
                                             value={night}
                                             style={{
-                                                backgroundColor: "#1b2f0e",
+                                                backgroundColor: "#256840",
                                             }}
                                         >
                                             {night}泊{night + 1}日
@@ -969,7 +993,7 @@ export function Pricing() {
                                     <option
                                         key={opt.label}
                                         value={opt.value}
-                                        style={{ backgroundColor: "#1b2f0e" }}
+                                        style={{ backgroundColor: "#256840" }}
                                     >
                                         {opt.label}
                                     </option>
@@ -1000,7 +1024,7 @@ export function Pricing() {
                                     alignItems: "center",
                                     gap: "0.6rem",
                                     padding: "0.75rem 1.25rem",
-                                    borderRadius: "3px",
+                                    borderRadius: "12px",
                                     border: supportEnabled
                                         ? "1px solid rgba(212,176,112,0.6)"
                                         : "1px solid rgba(212,176,112,0.2)",
@@ -1020,7 +1044,7 @@ export function Pricing() {
                                     style={{
                                         width: "18px",
                                         height: "18px",
-                                        borderRadius: "3px",
+                                        borderRadius: "12px",
                                         border: supportEnabled
                                             ? "none"
                                             : "1.5px solid rgba(212,176,112,0.5)",
@@ -1042,7 +1066,7 @@ export function Pricing() {
                                         >
                                             <path
                                                 d="M2 6l3 3 5-5"
-                                                stroke="#1b2f0e"
+                                                stroke="#256840"
                                                 strokeWidth="2"
                                                 fill="none"
                                                 strokeLinecap="round"
@@ -1097,7 +1121,7 @@ export function Pricing() {
                                         onClick={() => toggleExperience(idx)}
                                         style={{
                                             padding: "0.7rem 1rem",
-                                            borderRadius: "3px",
+                                            borderRadius: "12px",
                                             border: selectedExperiences.includes(
                                                 idx,
                                             )
@@ -1154,7 +1178,7 @@ export function Pricing() {
                             style={{
                                 backgroundColor: "rgba(212,176,112,0.08)",
                                 border: "1px solid rgba(212,176,112,0.3)",
-                                borderRadius: "4px",
+                                borderRadius: "12px",
                                 padding: "1.5rem",
                             }}
                         >
@@ -1263,15 +1287,15 @@ export function Pricing() {
                                 to="/reservation"
                                 style={{
                                     display: "block",
-                                    backgroundColor: "#5c2e12",
-                                    color: "#f0e8d0",
+                                    backgroundColor: "#f5ede0",
+                                    color: "#256840",
                                     padding: "0.875rem",
-                                    borderRadius: "3px",
+                                    borderRadius: "12px",
                                     textDecoration: "none",
                                     fontWeight: 700,
                                     textAlign: "center",
                                     fontSize: "0.95rem",
-                                    border: "1px solid rgba(212,176,112,0.2)",
+                                    border: "none",
                                 }}
                             >
                                 この内容で予約する
@@ -1309,131 +1333,136 @@ export function Pricing() {
                             gap: "1.5rem",
                         }}
                     >
-                        {priceExamples.map((ex, i) => (
-                            <div
-                                key={i}
-                                style={{
-                                    backgroundColor: "#f2e8d0",
-                                    border: "1px solid rgba(180,140,80,0.2)",
-                                    borderTop: "3px solid #1e3c0e",
-                                    borderRadius: "6px",
-                                    padding: "1.75rem",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                }}
-                            >
-                                <div style={{ marginBottom: "1rem" }}>
-                                    <div
-                                        style={{
-                                            width: "36px",
-                                            height: "36px",
-                                            backgroundColor: "#faf5e8",
-                                            border: "1px solid rgba(180,140,80,0.25)",
-                                            borderRadius: "50%",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            marginBottom: "0.75rem",
-                                        }}
-                                    >
-                                        {ex.icon}
-                                    </div>
-                                    <h3
-                                        style={{
-                                            fontFamily:
-                                                "'Noto Serif JP', serif",
-                                            fontSize: "0.97rem",
-                                            fontWeight: 700,
-                                            color: "#1e3c0e",
-                                            marginBottom: "0.35rem",
-                                            lineHeight: 1.5,
-                                        }}
-                                    >
-                                        {ex.title}
-                                    </h3>
-                                    <p
-                                        style={{
-                                            fontSize: "0.78rem",
-                                            color: "#7a6858",
-                                            lineHeight: 1.6,
-                                        }}
-                                    >
-                                        {ex.desc}
-                                    </p>
-                                </div>
-
+                        {priceExamples.map((ex, i) => {
+                            const theme = cardThemes[i];
+                            return (
                                 <div
+                                    key={i}
                                     style={{
-                                        backgroundColor: "#faf5e8",
-                                        borderRadius: "4px",
-                                        padding: "1rem",
-                                        border: "1px solid rgba(180,140,80,0.15)",
-                                        flexGrow: 1,
-                                        marginBottom: "1rem",
+                                        backgroundColor: theme.bg,
+                                        border: `1px solid ${theme.border}`,
+                                        borderTop: `3px solid ${theme.topBorder}`,
+                                        borderRadius: "10px",
+                                        padding: "1.75rem",
+                                        display: "flex",
+                                        flexDirection: "column",
                                     }}
                                 >
-                                    {ex.rows.map((row, j) => (
+                                    <div style={{ marginBottom: "1rem" }}>
                                         <div
-                                            key={j}
                                             style={{
+                                                width: "36px",
+                                                height: "36px",
+                                                backgroundColor: theme.iconBg,
+                                                border: `1px solid ${theme.border}`,
+                                                borderRadius: "50%",
                                                 display: "flex",
-                                                justifyContent: "space-between",
                                                 alignItems: "center",
-                                                padding: "0.4rem 0",
-                                                borderBottom:
-                                                    j < ex.rows.length - 1
-                                                        ? "1px solid rgba(180,140,80,0.1)"
-                                                        : "none",
-                                                fontSize: "0.82rem",
-                                                color: "#5a4838",
+                                                justifyContent: "center",
+                                                marginBottom: "0.75rem",
                                             }}
                                         >
-                                            <span>{row.label}</span>
-                                            <span
+                                            {ex.icon}
+                                        </div>
+                                        <h3
+                                            style={{
+                                                fontFamily:
+                                                    "'Noto Serif JP', serif",
+                                                fontSize: "0.97rem",
+                                                fontWeight: 700,
+                                                color: "#7a4a1e",
+                                                marginBottom: "0.35rem",
+                                                lineHeight: 1.5,
+                                            }}
+                                        >
+                                            {ex.title}
+                                        </h3>
+                                        <p
+                                            style={{
+                                                fontSize: "0.78rem",
+                                                color: "#7a6858",
+                                                lineHeight: 1.6,
+                                            }}
+                                        >
+                                            {ex.desc}
+                                        </p>
+                                    </div>
+
+                                    <div
+                                        style={{
+                                            backgroundColor: theme.innerBg,
+                                            borderRadius: "12px",
+                                            padding: "1rem",
+                                            border: `1px solid ${theme.border}`,
+                                            flexGrow: 1,
+                                            marginBottom: "1rem",
+                                        }}
+                                    >
+                                        {ex.rows.map((row, j) => (
+                                            <div
+                                                key={j}
                                                 style={{
-                                                    fontWeight: 600,
-                                                    color: "#2c1e10",
+                                                    display: "flex",
+                                                    justifyContent:
+                                                        "space-between",
+                                                    alignItems: "center",
+                                                    padding: "0.4rem 0",
+                                                    borderBottom:
+                                                        j < ex.rows.length - 1
+                                                            ? "1px solid rgba(180,140,80,0.1)"
+                                                            : "none",
+                                                    fontSize: "0.82rem",
+                                                    color: "#5a4838",
                                                 }}
                                             >
-                                                ¥{row.value.toLocaleString()}
-                                            </span>
-                                        </div>
-                                    ))}
-                                </div>
+                                                <span>{row.label}</span>
+                                                <span
+                                                    style={{
+                                                        fontWeight: 600,
+                                                        color: "#2c1e10",
+                                                    }}
+                                                >
+                                                    ¥
+                                                    {row.value.toLocaleString()}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
 
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        borderTop:
-                                            "2px solid rgba(196,122,48,0.35)",
-                                        paddingTop: "0.85rem",
-                                    }}
-                                >
-                                    <span
+                                    <div
                                         style={{
-                                            fontSize: "0.82rem",
-                                            color: "#5a4838",
-                                            fontWeight: 600,
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            alignItems: "center",
+                                            borderTop:
+                                                "2px solid rgba(196,122,48,0.35)",
+                                            paddingTop: "0.85rem",
                                         }}
                                     >
-                                        合計（税込）
-                                    </span>
-                                    <span
-                                        style={{
-                                            fontFamily:
-                                                "'Noto Serif JP', serif",
-                                            fontSize: "1.35rem",
-                                            fontWeight: 700,
-                                            color: "#c47a30",
-                                        }}
-                                    >
-                                        ¥{ex.total.toLocaleString()}
-                                    </span>
+                                        <span
+                                            style={{
+                                                fontSize: "0.82rem",
+                                                color: "#5a4838",
+                                                fontWeight: 600,
+                                            }}
+                                        >
+                                            合計（税込）
+                                        </span>
+                                        <span
+                                            style={{
+                                                fontFamily:
+                                                    "'Noto Serif JP', serif",
+                                                fontSize: "1.35rem",
+                                                fontWeight: 700,
+                                                color: "#c47a30",
+                                            }}
+                                        >
+                                            ¥{ex.total.toLocaleString()}
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                     <p
                         style={{
@@ -1459,7 +1488,7 @@ export function Pricing() {
                             fontFamily: "'Noto Serif JP', serif",
                             fontSize: "1.1rem",
                             fontWeight: 700,
-                            color: "#1e3c0e",
+                            color: "#256840",
                             marginBottom: "1.25rem",
                         }}
                     >
@@ -1509,14 +1538,14 @@ export function Pricing() {
             <section
                 style={{
                     background:
-                        "linear-gradient(135deg, #1b2f0e 0%, #0e1a08 100%)",
+                        "linear-gradient(135deg, #55cce8 0%, #3abcb0 100%)",
                     padding: "4.5rem 1.5rem",
                     textAlign: "center",
                 }}
             >
                 <p
                     style={{
-                        color: "#d4b070",
+                        color: "#7a4e00",
                         fontSize: "0.72rem",
                         letterSpacing: "0.25em",
                         fontWeight: 700,
@@ -1531,7 +1560,7 @@ export function Pricing() {
                         fontFamily: "'Noto Serif JP', serif",
                         fontSize: "clamp(1.5rem, 3vw, 2rem)",
                         fontWeight: 700,
-                        color: "#f0e8d0",
+                        color: "#ffffff",
                         marginBottom: "0.75rem",
                     }}
                 >
@@ -1539,7 +1568,7 @@ export function Pricing() {
                 </h2>
                 <p
                     style={{
-                        color: "rgba(240,232,208,0.7)",
+                        color: "rgba(255,255,255,0.85)",
                         marginBottom: "2rem",
                         fontSize: "0.88rem",
                         lineHeight: 1.9,
@@ -1561,11 +1590,11 @@ export function Pricing() {
                             display: "inline-flex",
                             alignItems: "center",
                             gap: "0.4rem",
-                            backgroundColor: "transparent",
-                            color: "#f0e8d0",
+                            backgroundColor: "rgba(255,255,255,0.18)",
+                            color: "#ffffff",
                             padding: "0.8rem 1.75rem",
-                            borderRadius: "4px",
-                            border: "1px solid rgba(240,232,208,0.4)",
+                            borderRadius: "12px",
+                            border: "1px solid rgba(255,255,255,0.6)",
                             textDecoration: "none",
                             fontWeight: 700,
                             fontSize: "0.9rem",
@@ -1579,10 +1608,10 @@ export function Pricing() {
                             display: "inline-flex",
                             alignItems: "center",
                             gap: "0.4rem",
-                            backgroundColor: "#c47a30",
-                            color: "#fff",
+                            backgroundColor: "#f5ede0",
+                            color: "#5c3317",
                             padding: "0.8rem 1.75rem",
-                            borderRadius: "4px",
+                            borderRadius: "12px",
                             textDecoration: "none",
                             fontWeight: 700,
                             fontSize: "0.9rem",
@@ -1604,7 +1633,7 @@ export function Pricing() {
         .rate-header-row {
           display: flex;
           align-items: center;
-          background: #1b2f0e;
+          background: #256840;
           padding: 1rem 1.5rem;
           gap: 1rem;
           color: #d4b070;
@@ -1653,7 +1682,7 @@ export function Pricing() {
         .rate-base-value {
           font-size: 1.05rem;
           font-weight: 700;
-          color: #1e3c0e;
+          color: #256840;
         }
         .rate-extra-value {
           font-size: 0.9rem;

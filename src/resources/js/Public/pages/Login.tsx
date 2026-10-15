@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "../router";
 import { FaSignInAlt, FaExclamationCircle } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
@@ -7,8 +7,8 @@ const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "0.75rem 1rem",
     backgroundColor: "#faf5e8",
-    border: "1px solid rgba(30,60,14,0.2)",
-    borderRadius: "3px",
+    border: "1px solid rgba(37,104,64,0.2)",
+    borderRadius: "12px",
     fontSize: "0.9rem",
     color: "#2c1e10",
     outline: "none",
@@ -21,7 +21,7 @@ const labelStyle: React.CSSProperties = {
     display: "block",
     fontSize: "0.8rem",
     fontWeight: 700,
-    color: "#1e3c0e",
+    color: "#256840",
     marginBottom: "0.4rem",
     letterSpacing: "0.04em",
 };
@@ -37,9 +37,9 @@ export function Login() {
 
     const focusedInputStyle = (field: string): React.CSSProperties => ({
         ...inputStyle,
-        borderColor: focusedField === field ? "#1e3c0e" : "rgba(30,60,14,0.2)",
+        borderColor: focusedField === field ? "#256840" : "rgba(37,104,64,0.2)",
         boxShadow:
-            focusedField === field ? "0 0 0 3px rgba(30,60,14,0.1)" : "none",
+            focusedField === field ? "0 0 0 3px rgba(37,104,64,0.1)" : "none",
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -104,7 +104,7 @@ export function Login() {
                         <div
                             style={{
                                 backgroundColor: "#faf5e8",
-                                borderRadius: "4px",
+                                borderRadius: "12px",
                                 padding: "2.5rem",
                                 boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
                                 border: "1px solid rgba(180,140,80,0.15)",
@@ -115,7 +115,7 @@ export function Login() {
                                     fontFamily: "'Noto Serif JP', serif",
                                     fontSize: "1.2rem",
                                     fontWeight: 700,
-                                    color: "#1e3c0e",
+                                    color: "#256840",
                                     marginBottom: "2rem",
                                     paddingBottom: "1rem",
                                     borderBottom:
@@ -134,7 +134,7 @@ export function Login() {
                                         gap: "0.6rem",
                                         backgroundColor: "rgba(160,48,32,0.08)",
                                         border: "1px solid rgba(160,48,32,0.2)",
-                                        borderRadius: "3px",
+                                        borderRadius: "12px",
                                         padding: "1rem",
                                         marginBottom: "1.5rem",
                                     }}
@@ -216,10 +216,10 @@ export function Login() {
                                 style={{
                                     width: "100%",
                                     marginTop: "2rem",
-                                    backgroundColor: "#5c2e12",
+                                    backgroundColor: "#256840",
                                     color: "#f0e8d0",
                                     padding: "1rem",
-                                    borderRadius: "3px",
+                                    borderRadius: "12px",
                                     border: "none",
                                     cursor: "pointer",
                                     fontSize: "1rem",
@@ -241,11 +241,11 @@ export function Login() {
                     <div
                         style={{
                             marginTop: "1.5rem",
-                            backgroundColor: "#1b2f0e",
-                            borderRadius: "4px",
+                            background:
+                                "linear-gradient(135deg, #55cce8 0%, #3abcb0 100%)",
+                            borderRadius: "12px",
                             padding: "2rem",
                             textAlign: "center",
-                            border: "1px solid rgba(212,176,112,0.18)",
                         }}
                     >
                         <h3
@@ -253,7 +253,7 @@ export function Login() {
                                 fontFamily: "'Noto Serif JP', serif",
                                 fontSize: "1rem",
                                 fontWeight: 700,
-                                color: "#f0e8d0",
+                                color: "#ffffff",
                                 marginBottom: "0.75rem",
                             }}
                         >
@@ -262,7 +262,7 @@ export function Login() {
                         <p
                             style={{
                                 fontSize: "0.82rem",
-                                color: "rgba(240,232,208,0.7)",
+                                color: "rgba(255,255,255,0.85)",
                                 lineHeight: 1.85,
                                 marginBottom: "1.25rem",
                             }}
@@ -275,14 +275,13 @@ export function Login() {
                             to={`/register?redirect=${encodeURIComponent(redirect)}`}
                             style={{
                                 display: "inline-block",
-                                backgroundColor: "rgba(240,232,208,0.12)",
-                                color: "#f0e8d0",
+                                backgroundColor: "#f5ede0",
+                                color: "#5a3e28",
                                 padding: "0.875rem 2rem",
-                                borderRadius: "3px",
+                                borderRadius: "12px",
                                 textDecoration: "none",
                                 fontWeight: 700,
                                 fontSize: "0.92rem",
-                                border: "1px solid rgba(240,232,208,0.25)",
                             }}
                         >
                             会員登録はこちら

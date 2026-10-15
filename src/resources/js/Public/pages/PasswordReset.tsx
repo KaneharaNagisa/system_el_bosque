@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "../router";
 import {
     FaKey,
@@ -13,8 +13,8 @@ const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "0.75rem 1rem",
     backgroundColor: "#faf5e8",
-    border: "1px solid rgba(30,60,14,0.2)",
-    borderRadius: "3px",
+    border: "1px solid rgba(37,104,64,0.2)",
+    borderRadius: "12px",
     fontSize: "0.9rem",
     color: "#2c1e10",
     outline: "none",
@@ -27,7 +27,7 @@ const labelStyle: React.CSSProperties = {
     display: "block",
     fontSize: "0.8rem",
     fontWeight: 700,
-    color: "#1e3c0e",
+    color: "#256840",
     marginBottom: "0.4rem",
     letterSpacing: "0.04em",
 };
@@ -47,9 +47,9 @@ export function PasswordReset() {
 
     const focusedInputStyle = (field: string): React.CSSProperties => ({
         ...inputStyle,
-        borderColor: focusedField === field ? "#1e3c0e" : "rgba(30,60,14,0.2)",
+        borderColor: focusedField === field ? "#256840" : "rgba(37,104,64,0.2)",
         boxShadow:
-            focusedField === field ? "0 0 0 3px rgba(30,60,14,0.1)" : "none",
+            focusedField === field ? "0 0 0 3px rgba(37,104,64,0.1)" : "none",
         paddingRight: "2.75rem",
     });
 
@@ -89,10 +89,10 @@ export function PasswordReset() {
                         to="/login"
                         style={{
                             display: "inline-block",
-                            backgroundColor: "#5c2e12",
+                            backgroundColor: "#7a4a1e",
                             color: "#f0e8d0",
                             padding: "0.8rem 1.75rem",
-                            borderRadius: "3px",
+                            borderRadius: "12px",
                             textDecoration: "none",
                             fontWeight: 700,
                             fontSize: "0.9rem",
@@ -182,7 +182,7 @@ export function PasswordReset() {
                             margin: "0 auto",
                             textAlign: "center",
                             backgroundColor: "#faf5e8",
-                            borderRadius: "4px",
+                            borderRadius: "12px",
                             padding: "3rem 2rem",
                             boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
                             border: "1px solid rgba(180,140,80,0.15)",
@@ -190,7 +190,7 @@ export function PasswordReset() {
                     >
                         <FaCheckCircle
                             size={48}
-                            color="#1e3c0e"
+                            color="#256840"
                             style={{ marginBottom: "1.25rem" }}
                         />
                         <h2
@@ -198,7 +198,7 @@ export function PasswordReset() {
                                 fontFamily: "'Noto Serif JP', serif",
                                 fontSize: "1.3rem",
                                 fontWeight: 700,
-                                color: "#1e3c0e",
+                                color: "#256840",
                                 marginBottom: "0.75rem",
                             }}
                         >
@@ -220,10 +220,10 @@ export function PasswordReset() {
                                 display: "inline-flex",
                                 alignItems: "center",
                                 gap: "0.4rem",
-                                backgroundColor: "#1e3c0e",
+                                backgroundColor: "#256840",
                                 color: "#f0e8d0",
                                 padding: "0.8rem 1.75rem",
-                                borderRadius: "3px",
+                                borderRadius: "12px",
                                 textDecoration: "none",
                                 fontWeight: 700,
                                 fontSize: "0.9rem",
@@ -309,7 +309,7 @@ export function PasswordReset() {
                         onSubmit={handleSubmit}
                         style={{
                             backgroundColor: "#faf5e8",
-                            borderRadius: "4px",
+                            borderRadius: "12px",
                             padding: "2.5rem",
                             boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
                             border: "1px solid rgba(180,140,80,0.15)",
@@ -320,7 +320,7 @@ export function PasswordReset() {
                                 fontFamily: "'Noto Serif JP', serif",
                                 fontSize: "1.15rem",
                                 fontWeight: 700,
-                                color: "#1e3c0e",
+                                color: "#256840",
                                 marginBottom: "2rem",
                                 paddingBottom: "0.75rem",
                                 borderBottom: "2px solid rgba(180,140,80,0.2)",
@@ -338,7 +338,7 @@ export function PasswordReset() {
                                 style={{
                                     backgroundColor: "rgba(160,48,32,0.06)",
                                     border: "1px solid rgba(160,48,32,0.15)",
-                                    borderRadius: "3px",
+                                    borderRadius: "12px",
                                     padding: "0.75rem 1rem",
                                     marginBottom: "1.5rem",
                                     fontSize: "0.82rem",
@@ -517,7 +517,7 @@ export function PasswordReset() {
                                     currentPassword &&
                                     newPassword &&
                                     confirmPassword
-                                        ? "#5c2e12"
+                                        ? "#7a4a1e"
                                         : "#c8b8a0",
                                 color:
                                     currentPassword &&
@@ -526,7 +526,7 @@ export function PasswordReset() {
                                         ? "#f0e8d0"
                                         : "#a09080",
                                 padding: "1rem",
-                                borderRadius: "3px",
+                                borderRadius: "12px",
                                 border: "none",
                                 cursor:
                                     currentPassword &&

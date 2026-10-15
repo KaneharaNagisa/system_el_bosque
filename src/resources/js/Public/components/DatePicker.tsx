@@ -77,7 +77,7 @@ export function DatePicker({
     const minDate = parseDate(min || "");
     const maxDate = parseDate(max || "");
 
-    const initialMonth = selectedDate || minDate || today;
+    const initialMonth = selectedDate || today;
     const [viewYear, setViewYear] = useState(initialMonth.getFullYear());
     const [viewMonth, setViewMonth] = useState(initialMonth.getMonth());
 
@@ -242,15 +242,15 @@ export function DatePicker({
         width: "100%",
         padding: "0.75rem 2.5rem 0.75rem 1rem",
         backgroundColor: disabled ? "#f0e8d8" : "#faf5e8",
-        border: `1px solid ${isFocused ? "#256840" : "rgba(37,104,64,0.2)"}`,
-        borderRadius: "12px",
+        border: `1px solid ${isFocused ? "#1e3c0e" : "rgba(30,60,14,0.2)"}`,
+        borderRadius: "3px",
         fontSize: "0.9rem",
         color: disabled ? "#b8a898" : value ? "#2c1e10" : "#a09888",
         outline: "none",
         boxSizing: "border-box",
         cursor: disabled ? "not-allowed" : "pointer",
         fontFamily: "'Noto Sans JP', sans-serif",
-        boxShadow: isFocused ? "0 0 0 3px rgba(37,104,64,0.1)" : "none",
+        boxShadow: isFocused ? "0 0 0 3px rgba(30,60,14,0.1)" : "none",
         transition: "border-color 0.2s, box-shadow 0.2s",
         opacity: disabled ? 0.7 : 1,
     };
@@ -293,7 +293,7 @@ export function DatePicker({
                         zIndex: 1000,
                         width: "320px",
                         backgroundColor: "#faf5e8",
-                        borderRadius: "12px",
+                        borderRadius: "6px",
                         boxShadow:
                             "0 8px 32px rgba(14,26,8,0.22), 0 2px 8px rgba(0,0,0,0.1)",
                         border: "1px solid rgba(180,140,80,0.25)",
@@ -308,8 +308,8 @@ export function DatePicker({
                             alignItems: "center",
                             justifyContent: "space-between",
                             padding: "0.875rem 1rem",
-                            backgroundColor: "#256840",
-                            color: "#ffffff",
+                            backgroundColor: "#1b2f0e",
+                            color: "#f0e8d0",
                         }}
                     >
                         <button
@@ -325,14 +325,14 @@ export function DatePicker({
                                 opacity: canGoPrev() ? 1 : 0.3,
                             }}
                         >
-                            <FaChevronLeft size={13} color="#ffffff" />
+                            <FaChevronLeft size={13} color="#d4b070" />
                         </button>
                         <span
                             style={{
                                 fontFamily: "'Noto Serif JP', serif",
                                 fontSize: "0.95rem",
                                 fontWeight: 700,
-                                color: "#ffffff",
+                                color: "#f0e8d0",
                                 letterSpacing: "0.04em",
                             }}
                         >
@@ -351,7 +351,7 @@ export function DatePicker({
                                 opacity: canGoNext() ? 1 : 0.3,
                             }}
                         >
-                            <FaChevronRight size={13} color="#ffffff" />
+                            <FaChevronRight size={13} color="#d4b070" />
                         </button>
                     </div>
 
@@ -375,7 +375,7 @@ export function DatePicker({
                                         i === 0
                                             ? "#a03020"
                                             : i === 6
-                                              ? "#256840"
+                                              ? "#1e3c0e"
                                               : "#7a4020",
                                     padding: "0.2rem 0",
                                     letterSpacing: "0.05em",
@@ -406,7 +406,7 @@ export function DatePicker({
                             else if (disabled) textColor = "#c8b8a0";
                             else if (selected) textColor = "#f0e8d0";
                             else if (dayOfWeek === 0) textColor = "#a03020";
-                            else if (dayOfWeek === 6) textColor = "#256840";
+                            else if (dayOfWeek === 6) textColor = "#1e3c0e";
 
                             return (
                                 <button
@@ -427,11 +427,11 @@ export function DatePicker({
                                             "'Noto Sans JP', sans-serif",
                                         color: textColor,
                                         backgroundColor: selected
-                                            ? "#256840"
+                                            ? "#5c2e12"
                                             : "transparent",
                                         border:
                                             todayMark && !selected
-                                                ? "2px solid #7d4820"
+                                                ? "2px solid #d4b070"
                                                 : "2px solid transparent",
                                         borderRadius: "50%",
                                         cursor:
@@ -449,7 +449,7 @@ export function DatePicker({
                                             !selected
                                         ) {
                                             e.currentTarget.style.backgroundColor =
-                                                "rgba(37,104,64,0.08)";
+                                                "rgba(30,60,14,0.08)";
                                         }
                                     }}
                                     onMouseLeave={(e) => {
@@ -485,7 +485,7 @@ export function DatePicker({
                                 cursor: "pointer",
                                 padding: "0.25rem 0.5rem",
                                 fontFamily: "'Noto Sans JP', sans-serif",
-                                borderRadius: "12px",
+                                borderRadius: "3px",
                                 transition: "color 0.15s",
                             }}
                             onMouseEnter={(e) => {
@@ -508,7 +508,7 @@ export function DatePicker({
                                 cursor: "pointer",
                                 padding: "0.3rem 0.75rem",
                                 fontFamily: "'Noto Sans JP', sans-serif",
-                                borderRadius: "12px",
+                                borderRadius: "3px",
                                 transition: "all 0.15s",
                             }}
                             onMouseEnter={(e) => {

@@ -1,4 +1,4 @@
-﻿import { usePage } from "@inertiajs/react";
+import { usePage } from "@inertiajs/react";
 import { useLocation, Link } from "../router";
 import {
     FaCheckCircle,
@@ -74,10 +74,10 @@ export function ReservationComplete() {
                     to="/"
                     style={{
                         display: "inline-block",
-                        backgroundColor: "#1e3c0e",
+                        backgroundColor: "#256840",
                         color: "#f0e8d0",
                         padding: "0.875rem 2rem",
-                        borderRadius: "3px",
+                        borderRadius: "12px",
                         textDecoration: "none",
                         fontWeight: 700,
                     }}
@@ -105,43 +105,43 @@ export function ReservationComplete() {
 
     const summaryItems = [
         {
-            icon: <FaCalendarAlt size={13} color="#1e3c0e" />,
+            icon: <FaCalendarAlt size={13} color="#256840" />,
             label: "チェックイン",
             value: formatDateJP(checkin),
         },
         {
-            icon: <FaCalendarAlt size={13} color="#1e3c0e" />,
+            icon: <FaCalendarAlt size={13} color="#256840" />,
             label: "チェックアウト",
             value: formatDateJP(checkout),
         },
         {
-            icon: <FaCalendarAlt size={13} color="#1e3c0e" />,
+            icon: <FaCalendarAlt size={13} color="#256840" />,
             label: "泊数・曜日区分",
             value: `${nights}泊 ／ ${dayType}`,
         },
         {
-            icon: <FaUsers size={13} color="#1e3c0e" />,
+            icon: <FaUsers size={13} color="#256840" />,
             label: "宿泊人数",
             value: `${guestsNum}名`,
         },
         ...(form.pets !== "none"
             ? [
                   {
-                      icon: <FaPaw size={13} color="#1e3c0e" />,
+                      icon: <FaPaw size={13} color="#256840" />,
                       label: "ペット",
                       value: petLabel,
                   },
               ]
             : []),
         {
-            icon: <FaConciergeBell size={13} color="#1e3c0e" />,
+            icon: <FaConciergeBell size={13} color="#256840" />,
             label: "滞在サポート",
             value: form.supportPlan === "yes" ? "あり（¥8,000）" : "なし",
         },
         ...(form.experiences.length > 0
             ? [
                   {
-                      icon: <FaMountain size={13} color="#1e3c0e" />,
+                      icon: <FaMountain size={13} color="#256840" />,
                       label: "体験オプション",
                       value: form.experiences.join("、"),
                   },
@@ -186,7 +186,7 @@ export function ReservationComplete() {
             </div>
 
             {/* Progress */}
-            <div style={{ backgroundColor: "#1b2f0e", padding: "1rem 1.5rem" }}>
+            <div style={{ backgroundColor: "#256840", padding: "1rem 1.5rem" }}>
                 <div
                     style={{
                         maxWidth: "920px",
@@ -231,7 +231,7 @@ export function ReservationComplete() {
                                     {step.done ? (
                                         <FaCheckCircle
                                             size={14}
-                                            color="#1b2f0e"
+                                            color="#256840"
                                         />
                                     ) : (
                                         <span
@@ -239,7 +239,7 @@ export function ReservationComplete() {
                                                 fontSize: "0.65rem",
                                                 fontWeight: 700,
                                                 color: step.active
-                                                    ? "#1b2f0e"
+                                                    ? "#256840"
                                                     : "rgba(240,232,208,0.4)",
                                             }}
                                         >
@@ -302,7 +302,7 @@ export function ReservationComplete() {
                         className="complete-card"
                         style={{
                             backgroundColor: "#faf5e8",
-                            borderRadius: "4px",
+                            borderRadius: "12px",
                             padding: "3rem 2.5rem",
                             boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
                             border: "1px solid rgba(180,140,80,0.15)",
@@ -314,14 +314,14 @@ export function ReservationComplete() {
                                 width: "72px",
                                 height: "72px",
                                 borderRadius: "50%",
-                                backgroundColor: "rgba(30,60,14,0.08)",
+                                backgroundColor: "rgba(58,188,176,0.12)",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
                                 margin: "0 auto 1.5rem",
                             }}
                         >
-                            <FaCheckCircle size={40} color="#1e3c0e" />
+                            <FaCheckCircle size={40} color="#3abcb0" />
                         </div>
 
                         <h2
@@ -329,7 +329,7 @@ export function ReservationComplete() {
                                 fontFamily: "'Noto Serif JP', serif",
                                 fontSize: "1.5rem",
                                 fontWeight: 700,
-                                color: "#1e3c0e",
+                                color: "#256840",
                                 marginBottom: "0.75rem",
                             }}
                         >
@@ -343,7 +343,7 @@ export function ReservationComplete() {
                                 marginBottom: "0.5rem",
                             }}
                         >
-                            <strong style={{ color: "#1e3c0e" }}>
+                            <strong style={{ color: "#256840" }}>
                                 {user?.name}
                             </strong>{" "}
                             様のご予約を承りました。
@@ -366,10 +366,10 @@ export function ReservationComplete() {
                                 display: "inline-flex",
                                 alignItems: "center",
                                 gap: "0.6rem",
-                                backgroundColor: "#1b2f0e",
-                                color: "#d4b070",
+                                backgroundColor: "#3abcb0",
+                                color: "#ffffff",
                                 padding: "0.5rem 1.25rem",
-                                borderRadius: "3px",
+                                borderRadius: "12px",
                                 fontSize: "0.85rem",
                                 fontWeight: 700,
                                 letterSpacing: "0.08em",
@@ -383,7 +383,7 @@ export function ReservationComplete() {
                         <div
                             style={{
                                 backgroundColor: "#f2e8d0",
-                                borderRadius: "3px",
+                                borderRadius: "12px",
                                 padding: "1.5rem 1.75rem",
                                 marginBottom: "2rem",
                                 textAlign: "left",
@@ -394,14 +394,14 @@ export function ReservationComplete() {
                                 style={{
                                     fontSize: "0.85rem",
                                     fontWeight: 700,
-                                    color: "#1e3c0e",
+                                    color: "#256840",
                                     marginBottom: "1rem",
                                     display: "flex",
                                     alignItems: "center",
                                     gap: "0.4rem",
                                 }}
                             >
-                                <FaCalendarAlt size={13} color="#1e3c0e" />
+                                <FaCalendarAlt size={13} color="#256840" />
                                 ご予約内容
                             </h4>
                             <div
@@ -471,7 +471,7 @@ export function ReservationComplete() {
                                         style={{
                                             fontSize: "0.85rem",
                                             fontWeight: 700,
-                                            color: "#1e3c0e",
+                                            color: "#256840",
                                             whiteSpace: "nowrap",
                                         }}
                                     >
@@ -483,7 +483,7 @@ export function ReservationComplete() {
                                                 "'Noto Serif JP', serif",
                                             fontSize: "1.4rem",
                                             fontWeight: 700,
-                                            color: "#5c2e12",
+                                            color: "#7a4a1e",
                                             whiteSpace: "nowrap",
                                         }}
                                     >
@@ -498,7 +498,7 @@ export function ReservationComplete() {
                             style={{
                                 backgroundColor: "rgba(196,122,48,0.07)",
                                 border: "1px solid rgba(196,122,48,0.18)",
-                                borderRadius: "3px",
+                                borderRadius: "12px",
                                 padding: "1rem 1.25rem",
                                 marginBottom: "2rem",
                                 textAlign: "left",
@@ -535,10 +535,10 @@ export function ReservationComplete() {
                                     display: "inline-flex",
                                     alignItems: "center",
                                     gap: "0.4rem",
-                                    backgroundColor: "#1e3c0e",
+                                    backgroundColor: "#256840",
                                     color: "#f0e8d0",
                                     padding: "0.875rem 1.75rem",
-                                    borderRadius: "3px",
+                                    borderRadius: "12px",
                                     textDecoration: "none",
                                     fontWeight: 700,
                                     fontSize: "0.9rem",
@@ -554,9 +554,9 @@ export function ReservationComplete() {
                                     alignItems: "center",
                                     gap: "0.4rem",
                                     backgroundColor: "transparent",
-                                    color: "#5c2e12",
+                                    color: "#7a4a1e",
                                     padding: "0.875rem 1.75rem",
-                                    borderRadius: "3px",
+                                    borderRadius: "12px",
                                     textDecoration: "none",
                                     fontWeight: 700,
                                     fontSize: "0.9rem",

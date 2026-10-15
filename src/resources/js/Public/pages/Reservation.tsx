@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { usePage } from "@inertiajs/react";
 import { Link, useNavigate } from "../router";
 import {
@@ -20,8 +20,8 @@ const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "0.75rem 1rem",
     backgroundColor: "#faf5e8",
-    border: "1px solid rgba(30,60,14,0.2)",
-    borderRadius: "3px",
+    border: "1px solid rgba(37,104,64,0.2)",
+    borderRadius: "12px",
     fontSize: "0.9rem",
     color: "#2c1e10",
     outline: "none",
@@ -34,7 +34,7 @@ const labelStyle: React.CSSProperties = {
     display: "block",
     fontSize: "0.8rem",
     fontWeight: 700,
-    color: "#1e3c0e",
+    color: "#256840",
     marginBottom: "0.4rem",
     letterSpacing: "0.04em",
 };
@@ -52,6 +52,9 @@ export function Reservation() {
     const [checkout, setCheckout] = useState("");
     const [focusedField, setFocusedField] = useState("");
     const [checkoutError, setCheckoutError] = useState("");
+    const minCheckinDate = new Date();
+    minCheckinDate.setDate(minCheckinDate.getDate() + 1);
+    const minCheckin = `${minCheckinDate.getFullYear()}-${String(minCheckinDate.getMonth() + 1).padStart(2, "0")}-${String(minCheckinDate.getDate()).padStart(2, "0")}`;
 
     // 管理画面＞予約枠管理で「空きあり」以外に設定された日付は選択不可
     const unavailableDates = new Set(
@@ -86,9 +89,9 @@ export function Reservation() {
 
     const focusedInputStyle = (field: string): React.CSSProperties => ({
         ...inputStyle,
-        borderColor: focusedField === field ? "#1e3c0e" : "rgba(30,60,14,0.2)",
+        borderColor: focusedField === field ? "#256840" : "rgba(37,104,64,0.2)",
         boxShadow:
-            focusedField === field ? "0 0 0 3px rgba(30,60,14,0.1)" : "none",
+            focusedField === field ? "0 0 0 3px rgba(37,104,64,0.1)" : "none",
     });
 
     const datesValid = checkin && checkout && checkout > checkin;
@@ -168,7 +171,7 @@ export function Reservation() {
             {/* Quick info strip */}
             <div
                 style={{
-                    backgroundColor: "#1b2f0e",
+                    backgroundColor: "#8b5828",
                     padding: "0.875rem 1.5rem",
                 }}
             >
@@ -211,8 +214,8 @@ export function Reservation() {
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "space-between",
-                                backgroundColor: "#1b2f0e",
-                                borderRadius: "4px",
+                                backgroundColor: "#256840",
+                                borderRadius: "12px",
                                 padding: "1rem 1.5rem",
                                 marginBottom: "1.5rem",
                                 border: "1px solid rgba(212,176,112,0.18)",
@@ -244,7 +247,7 @@ export function Reservation() {
                                     border: "1px solid rgba(240,232,208,0.25)",
                                     color: "rgba(240,232,208,0.7)",
                                     padding: "0.35rem 0.75rem",
-                                    borderRadius: "3px",
+                                    borderRadius: "12px",
                                     cursor: "pointer",
                                     fontSize: "0.75rem",
                                     fontFamily: "'Noto Sans JP', sans-serif",
@@ -263,7 +266,7 @@ export function Reservation() {
                     <div
                         style={{
                             backgroundColor: "#faf5e8",
-                            borderRadius: "4px",
+                            borderRadius: "12px",
                             padding: "2.5rem",
                             boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
                             border: "1px solid rgba(180,140,80,0.15)",
@@ -274,7 +277,7 @@ export function Reservation() {
                                 fontFamily: "'Noto Serif JP', serif",
                                 fontSize: "1.2rem",
                                 fontWeight: 700,
-                                color: "#1e3c0e",
+                                color: "#256840",
                                 marginBottom: "0.75rem",
                                 paddingBottom: "1rem",
                                 borderBottom: "2px solid rgba(180,140,80,0.2)",
@@ -320,7 +323,7 @@ export function Reservation() {
                                         setCheckout("");
                                         setCheckoutError("");
                                     }}
-                                    min="2026-08-01"
+                                    min={minCheckin}
                                     max="2026-12-31"
                                     placeholder="年 / 月 / 日"
                                     isFocused={focusedField === "checkin"}
@@ -414,11 +417,11 @@ export function Reservation() {
                                 style={{
                                     width: "100%",
                                     backgroundColor: datesValid
-                                        ? "#5c2e12"
+                                        ? "#c8251a"
                                         : "#c8b8a0",
-                                    color: datesValid ? "#f0e8d0" : "#a09080",
+                                    color: datesValid ? "#ffffff" : "#a09080",
                                     padding: "1.1rem",
-                                    borderRadius: "3px",
+                                    borderRadius: "12px",
                                     border: "none",
                                     cursor: datesValid
                                         ? "pointer"
@@ -443,11 +446,11 @@ export function Reservation() {
                                 style={{
                                     width: "100%",
                                     backgroundColor: datesValid
-                                        ? "#5c2e12"
+                                        ? "#256840"
                                         : "#c8b8a0",
-                                    color: datesValid ? "#f0e8d0" : "#a09080",
+                                    color: datesValid ? "#ffffff" : "#a09080",
                                     padding: "1.1rem",
-                                    borderRadius: "3px",
+                                    borderRadius: "12px",
                                     border: "none",
                                     cursor: datesValid
                                         ? "pointer"
@@ -509,7 +512,7 @@ export function Reservation() {
                         <div
                             style={{
                                 backgroundColor: "#faf5e8",
-                                borderRadius: "4px",
+                                borderRadius: "12px",
                                 padding: "1.5rem",
                                 border: "1px solid rgba(180,140,80,0.18)",
                                 boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
@@ -520,7 +523,7 @@ export function Reservation() {
                                     fontFamily: "'Noto Serif JP', serif",
                                     fontSize: "0.95rem",
                                     fontWeight: 700,
-                                    color: "#1e3c0e",
+                                    color: "#256840",
                                     marginBottom: "1rem",
                                 }}
                             >
@@ -571,7 +574,7 @@ export function Reservation() {
                                         <span
                                             style={{
                                                 fontWeight: 700,
-                                                color: "#1e3c0e",
+                                                color: "#256840",
                                             }}
                                         >
                                             {item.price}
@@ -614,7 +617,7 @@ export function Reservation() {
                         <div
                             style={{
                                 backgroundColor: "#faf5e8",
-                                borderRadius: "4px",
+                                borderRadius: "12px",
                                 padding: "1.5rem",
                                 border: "1px solid rgba(180,140,80,0.18)",
                                 boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
@@ -625,7 +628,7 @@ export function Reservation() {
                                     fontFamily: "'Noto Serif JP', serif",
                                     fontSize: "0.95rem",
                                     fontWeight: 700,
-                                    color: "#1e3c0e",
+                                    color: "#256840",
                                     marginBottom: "1rem",
                                 }}
                             >
@@ -652,8 +655,8 @@ export function Reservation() {
                                         style={{
                                             width: "22px",
                                             height: "22px",
-                                            backgroundColor: "#1e3c0e",
-                                            color: "#f0e8d0",
+                                            backgroundColor: "#3abcb0",
+                                            color: "#ffffff",
                                             borderRadius: "50%",
                                             display: "inline-flex",
                                             alignItems: "center",
@@ -682,8 +685,8 @@ export function Reservation() {
                     <div
                         style={{
                             marginTop: "1.5rem",
-                            backgroundColor: "#1b2f0e",
-                            borderRadius: "4px",
+                            backgroundColor: "#256840",
+                            borderRadius: "12px",
                             padding: "1.5rem",
                             textAlign: "center",
                             border: "1px solid rgba(212,176,112,0.18)",
@@ -708,7 +711,7 @@ export function Reservation() {
                                 backgroundColor: "rgba(240,232,208,0.12)",
                                 color: "#f0e8d0",
                                 padding: "0.65rem 1.25rem",
-                                borderRadius: "3px",
+                                borderRadius: "12px",
                                 textDecoration: "none",
                                 fontWeight: 700,
                                 fontSize: "0.82rem",

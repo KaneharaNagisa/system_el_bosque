@@ -1,4 +1,4 @@
-﻿import { router, usePage } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import { useState } from "react";
 import { Link, useNavigate } from "../router";
 import {
@@ -27,8 +27,8 @@ const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "0.7rem 1rem",
     backgroundColor: "#faf5e8",
-    border: "1px solid rgba(30,60,14,0.2)",
-    borderRadius: "3px",
+    border: "1px solid rgba(37,104,64,0.2)",
+    borderRadius: "12px",
     fontSize: "0.88rem",
     color: "#2c1e10",
     outline: "none",
@@ -41,7 +41,7 @@ const labelStyle: React.CSSProperties = {
     display: "block",
     fontSize: "0.78rem",
     fontWeight: 700,
-    color: "#1e3c0e",
+    color: "#256840",
     marginBottom: "0.35rem",
     letterSpacing: "0.04em",
 };
@@ -214,9 +214,9 @@ function statusColor(status: string) {
     switch (status) {
         case "confirmed":
             return {
-                bg: "rgba(30,60,14,0.08)",
-                color: "#1e3c0e",
-                border: "rgba(30,60,14,0.2)",
+                bg: "rgba(37,104,64,0.08)",
+                color: "#256840",
+                border: "rgba(37,104,64,0.2)",
             };
         case "pending":
             return {
@@ -327,10 +327,10 @@ export function MyPage() {
                             display: "inline-flex",
                             alignItems: "center",
                             gap: "0.4rem",
-                            backgroundColor: "#5c2e12",
+                            backgroundColor: "#7a4a1e",
                             color: "#f0e8d0",
                             padding: "0.8rem 1.75rem",
-                            borderRadius: "3px",
+                            borderRadius: "12px",
                             textDecoration: "none",
                             fontWeight: 700,
                             fontSize: "0.9rem",
@@ -418,7 +418,7 @@ export function MyPage() {
         <div
             style={{
                 backgroundColor: "#faf5e8",
-                borderRadius: "4px",
+                borderRadius: "12px",
                 padding: "2rem",
                 boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
                 border: "1px solid rgba(180,140,80,0.15)",
@@ -435,7 +435,7 @@ export function MyPage() {
                 fontFamily: "'Noto Serif JP', serif",
                 fontSize: "1.1rem",
                 fontWeight: 700,
-                color: "#1e3c0e",
+                color: "#256840",
                 marginBottom: "1.5rem",
                 paddingBottom: "0.75rem",
                 borderBottom: "2px solid rgba(180,140,80,0.2)",
@@ -502,9 +502,9 @@ export function MyPage() {
                     {editSaved && (
                         <div
                             style={{
-                                backgroundColor: "rgba(30,60,14,0.08)",
-                                border: "1px solid rgba(30,60,14,0.2)",
-                                borderRadius: "4px",
+                                backgroundColor: "rgba(37,104,64,0.08)",
+                                border: "1px solid rgba(37,104,64,0.2)",
+                                borderRadius: "12px",
                                 padding: "1rem 1.25rem",
                                 marginBottom: "1.5rem",
                                 display: "flex",
@@ -512,11 +512,11 @@ export function MyPage() {
                                 gap: "0.6rem",
                             }}
                         >
-                            <FaCheckCircle size={16} color="#1e3c0e" />
+                            <FaCheckCircle size={16} color="#256840" />
                             <span
                                 style={{
                                     fontSize: "0.88rem",
-                                    color: "#1e3c0e",
+                                    color: "#256840",
                                     fontWeight: 500,
                                 }}
                             >
@@ -530,7 +530,7 @@ export function MyPage() {
                         sectionCard(
                             <>
                                 {sectionTitle(
-                                    <FaBell size={16} color="#1e3c0e" />,
+                                    <FaBell size={16} color="#256840" />,
                                     "お知らせ",
                                 )}
                                 <div
@@ -663,7 +663,7 @@ export function MyPage() {
                                                                             ? 700
                                                                             : 500,
                                                                     color: isExpanded
-                                                                        ? "#1e3c0e"
+                                                                        ? "#256840"
                                                                         : "#2c1e10",
                                                                     lineHeight: 1.5,
                                                                     transition:
@@ -704,8 +704,8 @@ export function MyPage() {
                                                         <div
                                                             style={{
                                                                 backgroundColor:
-                                                                    "rgba(30,60,14,0.04)",
-                                                                border: "1px solid rgba(30,60,14,0.1)",
+                                                                    "rgba(37,104,64,0.04)",
+                                                                border: "1px solid rgba(37,104,64,0.1)",
                                                                 borderRadius:
                                                                     "3px",
                                                                 padding:
@@ -746,7 +746,7 @@ export function MyPage() {
                                                 display: "inline-flex",
                                                 alignItems: "center",
                                                 gap: "0.4rem",
-                                                color: "#1e3c0e",
+                                                color: "#256840",
                                                 fontSize: "0.83rem",
                                                 fontWeight: 700,
                                                 textDecoration: "none",
@@ -773,7 +773,7 @@ export function MyPage() {
                                 }}
                             >
                                 {sectionTitle(
-                                    <FaUser size={16} color="#1e3c0e" />,
+                                    <FaUser size={16} color="#256840" />,
                                     "会員情報",
                                 )}
                                 {!editing && (
@@ -806,10 +806,10 @@ export function MyPage() {
                                             alignItems: "center",
                                             gap: "0.35rem",
                                             backgroundColor:
-                                                "rgba(30,60,14,0.06)",
-                                            color: "#1e3c0e",
-                                            border: "1px solid rgba(30,60,14,0.15)",
-                                            borderRadius: "3px",
+                                                "rgba(37,104,64,0.06)",
+                                            color: "#256840",
+                                            border: "1px solid rgba(37,104,64,0.15)",
+                                            borderRadius: "12px",
                                             padding: "0.5rem 1rem",
                                             fontSize: "0.82rem",
                                             fontWeight: 700,
@@ -838,7 +838,7 @@ export function MyPage() {
                                     <div
                                         style={{
                                             backgroundColor: "#f2e8d0",
-                                            borderRadius: "3px",
+                                            borderRadius: "12px",
                                             padding: "1rem 1.25rem",
                                             border: "1px solid rgba(180,140,80,0.12)",
                                         }}
@@ -1050,7 +1050,7 @@ export function MyPage() {
                                                                 justifyContent:
                                                                     "center",
                                                                 backgroundColor:
-                                                                    "#5c2e12",
+                                                                    "#7a4a1e",
                                                                 color: "#f0e8d0",
                                                                 width: "18px",
                                                                 height: "18px",
@@ -1098,7 +1098,7 @@ export function MyPage() {
                                                                 justifyContent:
                                                                     "center",
                                                                 backgroundColor:
-                                                                    "#5c2e12",
+                                                                    "#7a4a1e",
                                                                 color: "#f0e8d0",
                                                                 width: "18px",
                                                                 height: "18px",
@@ -1237,7 +1237,7 @@ export function MyPage() {
                                                 backgroundColor: "transparent",
                                                 color: "#8a7868",
                                                 border: "1px solid rgba(180,140,80,0.2)",
-                                                borderRadius: "3px",
+                                                borderRadius: "12px",
                                                 padding: "0.6rem 1.25rem",
                                                 fontSize: "0.85rem",
                                                 fontFamily:
@@ -1254,10 +1254,10 @@ export function MyPage() {
                                                 display: "inline-flex",
                                                 alignItems: "center",
                                                 gap: "0.3rem",
-                                                backgroundColor: "#1e3c0e",
+                                                backgroundColor: "#256840",
                                                 color: "#f0e8d0",
                                                 border: "none",
-                                                borderRadius: "3px",
+                                                borderRadius: "12px",
                                                 padding: "0.6rem 1.25rem",
                                                 fontSize: "0.85rem",
                                                 fontWeight: 700,
@@ -1380,7 +1380,7 @@ export function MyPage() {
                     {sectionCard(
                         <>
                             {sectionTitle(
-                                <FaKey size={16} color="#1e3c0e" />,
+                                <FaKey size={16} color="#256840" />,
                                 "アカウント管理",
                             )}
                             <div
@@ -1398,7 +1398,7 @@ export function MyPage() {
                                         justifyContent: "space-between",
                                         padding: "1rem 1.25rem",
                                         backgroundColor: "#f2e8d0",
-                                        borderRadius: "3px",
+                                        borderRadius: "12px",
                                         border: "1px solid rgba(180,140,80,0.15)",
                                         flexWrap: "wrap",
                                         gap: "0.75rem",
@@ -1431,10 +1431,10 @@ export function MyPage() {
                                             display: "inline-flex",
                                             alignItems: "center",
                                             gap: "0.35rem",
-                                            backgroundColor: "#5c2e12",
+                                            backgroundColor: "#7a4a1e",
                                             color: "#f0e8d0",
                                             padding: "0.55rem 1.1rem",
-                                            borderRadius: "3px",
+                                            borderRadius: "12px",
                                             textDecoration: "none",
                                             fontWeight: 700,
                                             fontSize: "0.82rem",
@@ -1454,7 +1454,7 @@ export function MyPage() {
                                         justifyContent: "space-between",
                                         padding: "1rem 1.25rem",
                                         backgroundColor: "#f2e8d0",
-                                        borderRadius: "3px",
+                                        borderRadius: "12px",
                                         border: "1px solid rgba(180,140,80,0.15)",
                                         flexWrap: "wrap",
                                         gap: "0.75rem",
@@ -1490,7 +1490,7 @@ export function MyPage() {
                                             backgroundColor: "transparent",
                                             color: "#5a4838",
                                             padding: "0.55rem 1.1rem",
-                                            borderRadius: "3px",
+                                            borderRadius: "12px",
                                             border: "1px solid rgba(180,140,80,0.25)",
                                             fontWeight: 700,
                                             fontSize: "0.82rem",
@@ -1514,7 +1514,7 @@ export function MyPage() {
                                         backgroundColor: showDeleteConfirm
                                             ? "rgba(160,48,32,0.04)"
                                             : "#f2e8d0",
-                                        borderRadius: "3px",
+                                        borderRadius: "12px",
                                         border: showDeleteConfirm
                                             ? "1px solid rgba(160,48,32,0.15)"
                                             : "1px solid rgba(180,140,80,0.15)",
@@ -1564,7 +1564,7 @@ export function MyPage() {
                                                         "transparent",
                                                     color: "#5a4838",
                                                     padding: "0.5rem 0.85rem",
-                                                    borderRadius: "3px",
+                                                    borderRadius: "12px",
                                                     border: "1px solid rgba(180,140,80,0.25)",
                                                     fontSize: "0.78rem",
                                                     fontFamily:
@@ -1583,7 +1583,7 @@ export function MyPage() {
                                                     backgroundColor: "#a03020",
                                                     color: "#fff",
                                                     padding: "0.5rem 0.85rem",
-                                                    borderRadius: "3px",
+                                                    borderRadius: "12px",
                                                     border: "none",
                                                     fontWeight: 700,
                                                     fontSize: "0.78rem",
@@ -1610,7 +1610,7 @@ export function MyPage() {
                                                 backgroundColor: "transparent",
                                                 color: "#a03020",
                                                 padding: "0.55rem 1.1rem",
-                                                borderRadius: "3px",
+                                                borderRadius: "12px",
                                                 border: "1px solid rgba(160,48,32,0.2)",
                                                 fontWeight: 700,
                                                 fontSize: "0.82rem",
@@ -1632,7 +1632,7 @@ export function MyPage() {
                     {sectionCard(
                         <>
                             {sectionTitle(
-                                <FaCalendarAlt size={16} color="#1e3c0e" />,
+                                <FaCalendarAlt size={16} color="#256840" />,
                                 "予約履歴",
                             )}
                             {reservations.length === 0 ? (
@@ -1682,7 +1682,7 @@ export function MyPage() {
                                                 key={r.id}
                                                 style={{
                                                     backgroundColor: "#f2e8d0",
-                                                    borderRadius: "4px",
+                                                    borderRadius: "12px",
                                                     border: isCanceled
                                                         ? "1px solid rgba(160,48,32,0.18)"
                                                         : "1px solid rgba(180,140,80,0.15)",
@@ -1703,7 +1703,7 @@ export function MyPage() {
                                                         padding:
                                                             "0.75rem 1.25rem",
                                                         backgroundColor:
-                                                            "rgba(30,60,14,0.04)",
+                                                            "rgba(37,104,64,0.04)",
                                                         borderBottom:
                                                             "1px solid rgba(180,140,80,0.12)",
                                                         flexWrap: "wrap",
@@ -1729,7 +1729,7 @@ export function MyPage() {
                                                             border: `1px solid ${sc.border}`,
                                                             padding:
                                                                 "0.2rem 0.6rem",
-                                                            borderRadius: "3px",
+                                                            borderRadius: "12px",
                                                             fontSize: "0.72rem",
                                                             fontWeight: 700,
                                                         }}
@@ -1880,7 +1880,7 @@ export function MyPage() {
                                                                     color:
                                                                         r.supportPlan ===
                                                                         "yes"
-                                                                            ? "#1e3c0e"
+                                                                            ? "#256840"
                                                                             : "#8a7868",
                                                                     marginTop:
                                                                         "0.15rem",
@@ -1934,9 +1934,9 @@ export function MyPage() {
                                                                             }
                                                                             style={{
                                                                                 backgroundColor:
-                                                                                    "rgba(30,60,14,0.06)",
-                                                                                color: "#1e3c0e",
-                                                                                border: "1px solid rgba(30,60,14,0.12)",
+                                                                                    "rgba(37,104,64,0.06)",
+                                                                                color: "#256840",
+                                                                                border: "1px solid rgba(37,104,64,0.12)",
                                                                                 padding:
                                                                                     "0.15rem 0.5rem",
                                                                                 borderRadius:
@@ -1966,7 +1966,7 @@ export function MyPage() {
                                                             backgroundColor:
                                                                 "rgba(212,176,112,0.14)",
                                                             border: "1px solid rgba(212,176,112,0.35)",
-                                                            borderRadius: "3px",
+                                                            borderRadius: "12px",
                                                             display: "flex",
                                                             alignItems:
                                                                 "center",
@@ -1999,7 +1999,7 @@ export function MyPage() {
                                                                 fontSize:
                                                                     "1.1rem",
                                                                 fontWeight: 700,
-                                                                color: "#5c2e12",
+                                                                color: "#7a4a1e",
                                                             }}
                                                         >
                                                             ¥
@@ -2229,11 +2229,11 @@ export function MyPage() {
                                             display: "inline-flex",
                                             alignItems: "center",
                                             gap: "0.4rem",
-                                            color: "#1e3c0e",
+                                            color: "#256840",
                                             padding: "0.65rem 1.25rem",
                                             marginRight: "0.5rem",
-                                            border: "1px solid rgba(30,60,14,0.25)",
-                                            borderRadius: "3px",
+                                            border: "1px solid rgba(37,104,64,0.25)",
+                                            borderRadius: "12px",
                                             textDecoration: "none",
                                             fontWeight: 700,
                                             fontSize: "0.82rem",
@@ -2249,10 +2249,10 @@ export function MyPage() {
                                         display: "inline-flex",
                                         alignItems: "center",
                                         gap: "0.4rem",
-                                        backgroundColor: "#5c2e12",
+                                        backgroundColor: "#7a4a1e",
                                         color: "#f0e8d0",
                                         padding: "0.75rem 1.5rem",
-                                        borderRadius: "3px",
+                                        borderRadius: "12px",
                                         textDecoration: "none",
                                         fontWeight: 700,
                                         fontSize: "0.88rem",

@@ -148,10 +148,10 @@ export function Area() {
                                 fontFamily: "'Noto Serif JP', serif",
                                 fontSize: "clamp(1.5rem, 3vw, 2rem)",
                                 fontWeight: 700,
-                                color: "#1e3c0e",
+                                color: "#256840",
                                 marginBottom: "0.5rem",
                                 paddingBottom: "0.75rem",
-                                borderBottom: "2px solid #5c2e12",
+                                borderBottom: "2px solid #7a4a1e",
                                 display: "inline-block",
                             }}
                         >
@@ -187,7 +187,7 @@ export function Area() {
                                 key={onsen.name}
                                 style={{
                                     backgroundColor: "#fff",
-                                    borderRadius: "6px",
+                                    borderRadius: "10px",
                                     padding: "2rem 1.75rem",
                                     border: "1px solid rgba(180,140,80,0.2)",
                                     display: "flex",
@@ -199,7 +199,7 @@ export function Area() {
                                         fontFamily: "'Noto Serif JP', serif",
                                         fontSize: "1.05rem",
                                         fontWeight: 700,
-                                        color: "#1e3c0e",
+                                        color: "#256840",
                                         marginBottom: "0.35rem",
                                     }}
                                 >
@@ -342,7 +342,7 @@ export function Area() {
                                 fontFamily: "'Noto Serif JP', serif",
                                 fontSize: "clamp(1.5rem, 3vw, 2rem)",
                                 fontWeight: 700,
-                                color: "#1e3c0e",
+                                color: "#256840",
                             }}
                         >
                             新野の気候・環境
@@ -367,13 +367,13 @@ export function Area() {
                                     marginBottom: "1.5rem",
                                 }}
                             >
-                                <FaThermometerHalf size={22} color="#1e3c0e" />
+                                <FaThermometerHalf size={22} color="#7a4a1e" />
                                 <h3
                                     style={{
                                         fontFamily: "'Noto Serif JP', serif",
                                         fontSize: "1.1rem",
                                         fontWeight: 700,
-                                        color: "#1e3c0e",
+                                        color: "#256840",
                                     }}
                                 >
                                     標高800m超の高原気候
@@ -402,7 +402,7 @@ export function Area() {
                             <div
                                 style={{
                                     backgroundColor: "#faf5e8",
-                                    borderRadius: "4px",
+                                    borderRadius: "12px",
                                     padding: "1.25rem",
                                     border: "1px solid rgba(180,140,80,0.18)",
                                 }}
@@ -466,7 +466,7 @@ export function Area() {
                                             <span
                                                 style={{
                                                     fontSize: "0.9rem",
-                                                    color: "#1e3c0e",
+                                                    color: "#256840",
                                                     fontWeight: 700,
                                                 }}
                                             >
@@ -491,7 +491,7 @@ export function Area() {
                                     width: "100%",
                                     height: "220px",
                                     objectFit: "cover",
-                                    borderRadius: "4px",
+                                    borderRadius: "12px",
                                 }}
                             />
                             <ImageWithFallback
@@ -501,7 +501,7 @@ export function Area() {
                                     width: "100%",
                                     height: "180px",
                                     objectFit: "cover",
-                                    borderRadius: "4px",
+                                    borderRadius: "12px",
                                 }}
                             />
                         </div>
@@ -511,7 +511,7 @@ export function Area() {
 
             {/* Nearby Spots */}
             <section
-                style={{ backgroundColor: "#1b2f0e", padding: "5rem 1.5rem" }}
+                style={{ backgroundColor: "#256840", padding: "5rem 1.5rem" }}
             >
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                     <div style={{ textAlign: "center", marginBottom: "3rem" }}>
@@ -553,7 +553,7 @@ export function Area() {
                                 style={{
                                     backgroundColor: "rgba(242,232,208,0.05)",
                                     border: "1px solid rgba(212,176,112,0.15)",
-                                    borderRadius: "4px",
+                                    borderRadius: "12px",
                                     padding: "1.5rem",
                                 }}
                             >
@@ -652,7 +652,7 @@ export function Area() {
                                 fontFamily: "'Noto Serif JP', serif",
                                 fontSize: "clamp(1.5rem, 3vw, 2rem)",
                                 fontWeight: 700,
-                                color: "#1e3c0e",
+                                color: "#256840",
                             }}
                         >
                             アクセス
@@ -672,7 +672,7 @@ export function Area() {
                         <div
                             style={{
                                 backgroundColor: "#faf5e8",
-                                borderRadius: "4px",
+                                borderRadius: "12px",
                                 padding: "2rem",
                                 border: "1px solid rgba(180,140,80,0.18)",
                             }}
@@ -689,21 +689,21 @@ export function Area() {
                                     style={{
                                         width: "38px",
                                         height: "38px",
-                                        backgroundColor: "#1e3c0e",
-                                        borderRadius: "3px",
+                                        backgroundColor: "#3abcb0",
+                                        borderRadius: "12px",
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
                                     }}
                                 >
-                                    <FaMapMarkerAlt size={17} color="#d4b070" />
+                                    <FaMapMarkerAlt size={17} color="#ffffff" />
                                 </div>
                                 <h3
                                     style={{
                                         fontFamily: "'Noto Serif JP', serif",
                                         fontSize: "1rem",
                                         fontWeight: 700,
-                                        color: "#1e3c0e",
+                                        color: "#256840",
                                     }}
                                 >
                                     所在地
@@ -736,7 +736,7 @@ export function Area() {
                                 style={{
                                     display: "inline-block",
                                     marginTop: "1rem",
-                                    color: "#7a4020",
+                                    color: "#3abcb0",
                                     fontSize: "0.85rem",
                                     fontWeight: 700,
                                     textDecoration: "none",
@@ -751,7 +751,7 @@ export function Area() {
                         <div
                             style={{
                                 backgroundColor: "#faf5e8",
-                                borderRadius: "4px",
+                                borderRadius: "12px",
                                 padding: "2rem",
                                 border: "1px solid rgba(180,140,80,0.18)",
                             }}
@@ -768,21 +768,21 @@ export function Area() {
                                     style={{
                                         width: "38px",
                                         height: "38px",
-                                        backgroundColor: "#1e3c0e",
-                                        borderRadius: "3px",
+                                        backgroundColor: "#3abcb0",
+                                        borderRadius: "12px",
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
                                     }}
                                 >
-                                    <FaCar size={17} color="#d4b070" />
+                                    <FaCar size={17} color="#ffffff" />
                                 </div>
                                 <h3
                                     style={{
                                         fontFamily: "'Noto Serif JP', serif",
                                         fontSize: "1rem",
                                         fontWeight: 700,
-                                        color: "#1e3c0e",
+                                        color: "#256840",
                                     }}
                                 >
                                     お車でのアクセス
@@ -827,7 +827,7 @@ export function Area() {
                                             style={{
                                                 fontSize: "0.85rem",
                                                 fontWeight: 700,
-                                                color: "#1e3c0e",
+                                                color: "#256840",
                                             }}
                                         >
                                             {route.time}
@@ -850,7 +850,7 @@ export function Area() {
                         <div
                             style={{
                                 backgroundColor: "#faf5e8",
-                                borderRadius: "4px",
+                                borderRadius: "12px",
                                 padding: "2rem",
                                 border: "1px solid rgba(180,140,80,0.18)",
                             }}
@@ -867,21 +867,21 @@ export function Area() {
                                     style={{
                                         width: "38px",
                                         height: "38px",
-                                        backgroundColor: "#1e3c0e",
-                                        borderRadius: "3px",
+                                        backgroundColor: "#3abcb0",
+                                        borderRadius: "12px",
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
                                     }}
                                 >
-                                    <FaTrain size={17} color="#d4b070" />
+                                    <FaTrain size={17} color="#ffffff" />
                                 </div>
                                 <h3
                                     style={{
                                         fontFamily: "'Noto Serif JP', serif",
                                         fontSize: "1rem",
                                         fontWeight: 700,
-                                        color: "#1e3c0e",
+                                        color: "#256840",
                                     }}
                                 >
                                     電車でのアクセス
@@ -931,7 +931,7 @@ export function Area() {
                                             style={{
                                                 fontSize: "0.85rem",
                                                 fontWeight: 700,
-                                                color: "#1e3c0e",
+                                                color: "#256840",
                                             }}
                                         >
                                             {route.time}
@@ -942,15 +942,15 @@ export function Area() {
                             <div
                                 style={{
                                     marginTop: "1rem",
-                                    backgroundColor: "rgba(30,60,14,0.07)",
-                                    borderRadius: "3px",
+                                    backgroundColor: "rgba(37,104,64,0.07)",
+                                    borderRadius: "12px",
                                     padding: "0.75rem",
                                 }}
                             >
                                 <p
                                     style={{
                                         fontSize: "0.8rem",
-                                        color: "#1e3c0e",
+                                        color: "#256840",
                                         fontWeight: 600,
                                         margin: 0,
                                     }}
@@ -974,7 +974,7 @@ export function Area() {
                     <div
                         style={{
                             backgroundColor: "#e8ddc8",
-                            borderRadius: "4px",
+                            borderRadius: "12px",
                             overflow: "hidden",
                         }}
                     >
@@ -995,7 +995,8 @@ export function Area() {
             {/* CTA */}
             <section
                 style={{
-                    backgroundColor: "#5c2e12",
+                    background:
+                        "linear-gradient(135deg, #55cce8 0%, #3abcb0 100%)",
                     padding: "3.5rem 1.5rem",
                     textAlign: "center",
                 }}
@@ -1005,7 +1006,7 @@ export function Area() {
                         fontFamily: "'Noto Serif JP', serif",
                         fontSize: "1.6rem",
                         fontWeight: 700,
-                        color: "#f0e8d0",
+                        color: "#ffffff",
                         marginBottom: "0.75rem",
                     }}
                 >
@@ -1013,7 +1014,7 @@ export function Area() {
                 </h2>
                 <p
                     style={{
-                        color: "rgba(240,232,208,0.8)",
+                        color: "rgba(255,255,255,0.85)",
                         marginBottom: "1.75rem",
                         fontSize: "0.9rem",
                     }}
@@ -1024,10 +1025,10 @@ export function Area() {
                     to="/reservation"
                     style={{
                         display: "inline-block",
-                        backgroundColor: "#f0e8d0",
-                        color: "#5c2e12",
+                        backgroundColor: "#f5ede0",
+                        color: "#5c3317",
                         padding: "0.875rem 2.5rem",
-                        borderRadius: "3px",
+                        borderRadius: "12px",
                         textDecoration: "none",
                         fontWeight: 700,
                         fontSize: "1rem",

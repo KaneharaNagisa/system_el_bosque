@@ -244,14 +244,7 @@ body[data-admin="true"] {
 .public-layout main input:not([type="checkbox"]):not([type="radio"]),
 .public-layout main textarea,
 .public-layout main select {
-    border-radius: 10px !important;
-}
-
-.public-layout main input:not([type="checkbox"]):not([type="radio"]):focus,
-.public-layout main textarea:focus,
-.public-layout main select:focus {
-    border-color: #256840 !important;
-    outline-color: #256840;
+    border-radius: 12px !important;
 }
 
 @media (max-width: 1100px) {

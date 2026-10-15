@@ -1,4 +1,4 @@
-﻿import { router, usePage } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import { useState } from "react";
 import { useLocation, useNavigate, Link } from "../router";
 import {
@@ -117,10 +117,10 @@ export function ReservationConfirm() {
                     to="/reservation"
                     style={{
                         display: "inline-block",
-                        backgroundColor: "#1e3c0e",
+                        backgroundColor: "#256840",
                         color: "#f0e8d0",
                         padding: "0.875rem 2rem",
-                        borderRadius: "3px",
+                        borderRadius: "12px",
                         textDecoration: "none",
                         fontWeight: 700,
                     }}
@@ -298,7 +298,7 @@ export function ReservationConfirm() {
             </div>
 
             {/* Progress */}
-            <div style={{ backgroundColor: "#1b2f0e", padding: "1rem 1.5rem" }}>
+            <div style={{ backgroundColor: "#256840", padding: "1rem 1.5rem" }}>
                 <div
                     style={{
                         maxWidth: "920px",
@@ -344,7 +344,7 @@ export function ReservationConfirm() {
                                     {step.done ? (
                                         <FaCheckCircle
                                             size={14}
-                                            color="#1b2f0e"
+                                            color="#256840"
                                         />
                                     ) : (
                                         <span
@@ -352,7 +352,7 @@ export function ReservationConfirm() {
                                                 fontSize: "0.65rem",
                                                 fontWeight: 700,
                                                 color: step.active
-                                                    ? "#1b2f0e"
+                                                    ? "#256840"
                                                     : "rgba(240,232,208,0.4)",
                                             }}
                                         >
@@ -432,7 +432,7 @@ export function ReservationConfirm() {
                         <div
                             style={{
                                 backgroundColor: "#faf5e8",
-                                borderRadius: "4px",
+                                borderRadius: "12px",
                                 padding: "2.5rem",
                                 boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
                                 border: "1px solid rgba(180,140,80,0.15)",
@@ -443,7 +443,7 @@ export function ReservationConfirm() {
                                     fontFamily: "'Noto Serif JP', serif",
                                     fontSize: "1.2rem",
                                     fontWeight: 700,
-                                    color: "#1e3c0e",
+                                    color: "#256840",
                                     marginBottom: "2rem",
                                     paddingBottom: "1rem",
                                     borderBottom:
@@ -456,7 +456,7 @@ export function ReservationConfirm() {
                             {/* 宿泊日程 */}
                             <Section
                                 icon={
-                                    <FaCalendarAlt size={14} color="#5c2e12" />
+                                    <FaCalendarAlt size={14} color="#7a4a1e" />
                                 }
                                 title="宿泊日程"
                             >
@@ -478,7 +478,7 @@ export function ReservationConfirm() {
 
                             {/* 会員情報 */}
                             <Section
-                                icon={<FaUser size={14} color="#5c2e12" />}
+                                icon={<FaUser size={14} color="#7a4a1e" />}
                                 title="お客様情報"
                             >
                                 <Row label="お名前" value={user?.name || ""} />
@@ -496,7 +496,7 @@ export function ReservationConfirm() {
 
                             {/* 宿泊人数 */}
                             <Section
-                                icon={<FaUsers size={14} color="#5c2e12" />}
+                                icon={<FaUsers size={14} color="#7a4a1e" />}
                                 title="宿泊人数"
                             >
                                 <Row label="人数" value={`${guestsNum}名`} />
@@ -506,7 +506,7 @@ export function ReservationConfirm() {
 
                             {/* ペット */}
                             <Section
-                                icon={<FaPaw size={14} color="#5c2e12" />}
+                                icon={<FaPaw size={14} color="#7a4a1e" />}
                                 title="ペット同伴"
                             >
                                 <Row label="ペット" value={petLabel} />
@@ -519,7 +519,7 @@ export function ReservationConfirm() {
                                 icon={
                                     <FaConciergeBell
                                         size={14}
-                                        color="#5c2e12"
+                                        color="#7a4a1e"
                                     />
                                 }
                                 title="滞在サポート"
@@ -544,7 +544,7 @@ export function ReservationConfirm() {
                                         icon={
                                             <FaMountain
                                                 size={14}
-                                                color="#5c2e12"
+                                                color="#7a4a1e"
                                             />
                                         }
                                         title="体験オプション"
@@ -575,7 +575,7 @@ export function ReservationConfirm() {
                                         icon={
                                             <FaCommentDots
                                                 size={14}
-                                                color="#5c2e12"
+                                                color="#7a4a1e"
                                             />
                                         }
                                         title="ご要望"
@@ -586,7 +586,7 @@ export function ReservationConfirm() {
                                                 color: "#2c1e10",
                                                 lineHeight: 1.8,
                                                 backgroundColor: "#f2e8d0",
-                                                borderRadius: "3px",
+                                                borderRadius: "12px",
                                                 padding: "0.75rem 1rem",
                                                 border: "1px solid rgba(180,140,80,0.15)",
                                             }}
@@ -609,8 +609,8 @@ export function ReservationConfirm() {
                             {/* Payment card */}
                             <div
                                 style={{
-                                    backgroundColor: "#1b2f0e",
-                                    borderRadius: "4px",
+                                    backgroundColor: "#256840",
+                                    borderRadius: "12px",
                                     padding: "1.75rem",
                                     border: "1px solid rgba(212,176,112,0.18)",
                                     color: "#f0e8d0",
@@ -721,7 +721,7 @@ export function ReservationConfirm() {
                                         marginTop: "0.75rem",
                                         backgroundColor:
                                             "rgba(212,176,112,0.08)",
-                                        borderRadius: "3px",
+                                        borderRadius: "12px",
                                         padding: "0.6rem 0.75rem",
                                         display: "flex",
                                         alignItems: "flex-start",
@@ -755,7 +755,7 @@ export function ReservationConfirm() {
                                     style={{
                                         margin: "0 0 0.75rem",
                                         padding: "0.85rem 1rem",
-                                        borderRadius: "4px",
+                                        borderRadius: "12px",
                                         backgroundColor: "#fff4ec",
                                         border: "1px solid rgba(160,48,32,0.25)",
                                         color: "#a03020",
@@ -772,10 +772,10 @@ export function ReservationConfirm() {
                                 disabled={processing}
                                 style={{
                                     width: "100%",
-                                    backgroundColor: "#5c2e12",
-                                    color: "#f0e8d0",
+                                    backgroundColor: "#c8251a",
+                                    color: "#ffffff",
                                     padding: "1.1rem",
-                                    borderRadius: "3px",
+                                    borderRadius: "12px",
                                     border: "none",
                                     cursor: processing ? "wait" : "pointer",
                                     opacity: processing ? 0.65 : 1,
@@ -786,17 +786,17 @@ export function ReservationConfirm() {
                                     alignItems: "center",
                                     justifyContent: "center",
                                     gap: "0.5rem",
-                                    boxShadow: "0 4px 16px rgba(92,46,18,0.3)",
+                                    boxShadow: "0 4px 16px rgba(200,37,26,0.3)",
                                     transition: "background-color 0.2s",
                                 }}
                                 onMouseEnter={(e) =>
                                     !processing &&
                                     (e.currentTarget.style.backgroundColor =
-                                        "#7a3c18")
+                                        "#a81e15")
                                 }
                                 onMouseLeave={(e) =>
                                     (e.currentTarget.style.backgroundColor =
-                                        "#5c2e12")
+                                        "#c8251a")
                                 }
                             >
                                 {processing
@@ -819,7 +819,7 @@ export function ReservationConfirm() {
                             <div
                                 style={{
                                     backgroundColor: "#faf5e8",
-                                    borderRadius: "4px",
+                                    borderRadius: "12px",
                                     padding: "1.25rem",
                                     border: "1px solid rgba(180,140,80,0.18)",
                                     fontSize: "0.75rem",
@@ -832,7 +832,7 @@ export function ReservationConfirm() {
                                     <Link
                                         to="/terms"
                                         style={{
-                                            color: "#5c2e12",
+                                            color: "#7a4a1e",
                                             fontWeight: 700,
                                         }}
                                     >
@@ -872,7 +872,7 @@ function Section({
                 style={{
                     fontSize: "0.82rem",
                     fontWeight: 700,
-                    color: "#1e3c0e",
+                    color: "#256840",
                     display: "flex",
                     alignItems: "center",
                     gap: "0.4rem",

@@ -1,4 +1,4 @@
-﻿import sanpoImage from "../assets/a97e6b5c6631c69bf0463a67f2994722a9b13300.png";
+import sanpoImage from "../assets/a97e6b5c6631c69bf0463a67f2994722a9b13300.png";
 import kusakariImage from "../assets/c75a506f2b58dcf5f4dc61afeebdbc400b0a6f8a.png";
 import taueImage from "../assets/23a4bdf51706e94b2cd247e5ad989d6411c83608.png";
 import inekariImage from "../assets/207a8fdb0ecb3d43739e4e63547e88bed1d255aa.png";
@@ -20,7 +20,6 @@ import {
     FaPhoneAlt,
     FaStar,
 } from "react-icons/fa";
-
 /* ── 画像 URL ── */
 const TAUE_IMG = taueImage;
 const INEKARI_IMG = inekariImage;
@@ -32,7 +31,6 @@ const SANPO_IMG = sanpoImage;
 const KUSAKARI_IMG = kusakariImage;
 const STARS_IMG = starsImage;
 
-/* ── 体験データ ── */
 interface Experience {
     img: string;
     headerColor: string;
@@ -313,19 +311,19 @@ const allExperiences = [...experiences, starExp];
 /* ── 予約ステップ ── */
 const bookingSteps = [
     {
-        icon: <FaClipboardList size={22} color="#d4b070" />,
+        icon: <FaClipboardList size={22} color="#ffffff" />,
         step: "STEP 1",
         title: "宿泊予約時にお申込み",
         desc: "ご予約フォームまたはメールにて、体験プログラムの種類と人数をお知らせください。",
     },
     {
-        icon: <FaPhoneAlt size={22} color="#d4b070" />,
+        icon: <FaPhoneAlt size={22} color="#ffffff" />,
         step: "STEP 2",
         title: "前日に詳細を確認",
         desc: "天候・準備状況を踏まえ、前日に詳細な集合時間・場所をご案内いたします。",
     },
     {
-        icon: <FaStar size={22} color="#d4b070" />,
+        icon: <FaStar size={22} color="#ffffff" />,
         step: "STEP 3",
         title: "当日、体験スタート",
         desc: "スタッフが丁寧にサポートします。お気軽にお楽しみください。",
@@ -378,7 +376,7 @@ function ExperienceCard({ exp }: { exp: Experience }) {
         <div
             style={{
                 backgroundColor: "#faf5e8",
-                borderRadius: "6px",
+                borderRadius: "10px",
                 overflow: "hidden",
                 boxShadow: "0 4px 24px rgba(0,0,0,0.09)",
             }}
@@ -420,7 +418,7 @@ function ExperienceCard({ exp }: { exp: Experience }) {
                                 color: "#f0e8d0",
                                 border: "1px solid rgba(242,232,208,0.35)",
                                 padding: "0.2rem 0.6rem",
-                                borderRadius: "2px",
+                                borderRadius: "8px",
                                 fontSize: "0.68rem",
                                 fontWeight: 700,
                                 letterSpacing: "0.06em",
@@ -432,9 +430,9 @@ function ExperienceCard({ exp }: { exp: Experience }) {
                     <span
                         style={{
                             backgroundColor: "#d4b070",
-                            color: "#1e3c0e",
+                            color: "#7a4a1e",
                             padding: "0.2rem 0.65rem",
-                            borderRadius: "2px",
+                            borderRadius: "8px",
                             fontSize: "0.68rem",
                             fontWeight: 700,
                             letterSpacing: "0.06em",
@@ -496,7 +494,7 @@ function ExperienceCard({ exp }: { exp: Experience }) {
                                 style={{
                                     backgroundColor: "#f2e8d0",
                                     border: "1px solid rgba(180,140,80,0.18)",
-                                    borderRadius: "4px",
+                                    borderRadius: "12px",
                                     padding: "0.6rem 0.85rem",
                                     display: "flex",
                                     flexDirection: "column",
@@ -521,7 +519,7 @@ function ExperienceCard({ exp }: { exp: Experience }) {
                                     style={{
                                         fontSize: "0.88rem",
                                         fontWeight: 700,
-                                        color: "#1e3c0e",
+                                        color: "#256840",
                                     }}
                                 >
                                     {spec.value}
@@ -567,7 +565,7 @@ function ExperienceCard({ exp }: { exp: Experience }) {
                             >
                                 <FaCheckCircle
                                     size={13}
-                                    color="#1e3c0e"
+                                    color="#256840"
                                     style={{ flexShrink: 0, marginTop: "2px" }}
                                 />
                                 {b}
@@ -681,7 +679,7 @@ export function Experiences() {
             >
                 <p
                     style={{
-                        color: "#d4b070",
+                        color: "#7a4e00",
                         fontSize: "0.72rem",
                         letterSpacing: "0.25em",
                         fontWeight: 700,
@@ -760,7 +758,7 @@ export function Experiences() {
                                 fontFamily: "'Noto Serif JP', serif",
                                 fontSize: "clamp(1.4rem, 3vw, 1.9rem)",
                                 fontWeight: 700,
-                                color: "#1e3c0e",
+                                color: "#256840",
                             }}
                         >
                             体験の予約方法
@@ -805,7 +803,7 @@ export function Experiences() {
                                     style={{
                                         width: "56px",
                                         height: "56px",
-                                        backgroundColor: "#1b2f0e",
+                                        backgroundColor: "#3abcb0",
                                         borderRadius: "50%",
                                         display: "flex",
                                         alignItems: "center",
@@ -832,7 +830,7 @@ export function Experiences() {
                                         fontFamily: "'Noto Serif JP', serif",
                                         fontSize: "0.95rem",
                                         fontWeight: 700,
-                                        color: "#1e3c0e",
+                                        color: "#256840",
                                         marginBottom: "0.5rem",
                                         lineHeight: 1.4,
                                     }}
@@ -854,10 +852,10 @@ export function Experiences() {
 
                     <div
                         style={{
-                            backgroundColor: "rgba(30,60,14,0.06)",
-                            border: "1px solid rgba(30,60,14,0.15)",
-                            borderLeft: "4px solid #1e3c0e",
-                            borderRadius: "4px",
+                            backgroundColor: "rgba(37,104,64,0.06)",
+                            border: "1px solid rgba(37,104,64,0.15)",
+                            borderLeft: "4px solid #256840",
+                            borderRadius: "12px",
                             padding: "1rem 1.35rem",
                         }}
                     >
@@ -880,14 +878,14 @@ export function Experiences() {
             <section
                 style={{
                     background:
-                        "linear-gradient(135deg, #1b2f0e 0%, #0e1a08 100%)",
+                        "linear-gradient(135deg, #55cce8 0%, #3abcb0 100%)",
                     padding: "4.5rem 1.5rem",
                     textAlign: "center",
                 }}
             >
                 <p
                     style={{
-                        color: "#d4b070",
+                        color: "#7a4e00",
                         fontSize: "0.72rem",
                         letterSpacing: "0.25em",
                         fontWeight: 700,
@@ -902,7 +900,7 @@ export function Experiences() {
                         fontFamily: "'Noto Serif JP', serif",
                         fontSize: "clamp(1.4rem, 3vw, 1.9rem)",
                         fontWeight: 700,
-                        color: "#f0e8d0",
+                        color: "#ffffff",
                         marginBottom: "0.75rem",
                     }}
                 >
@@ -910,7 +908,7 @@ export function Experiences() {
                 </h2>
                 <p
                     style={{
-                        color: "rgba(240,232,208,0.7)",
+                        color: "rgba(255,255,255,0.85)",
                         fontSize: "0.88rem",
                         lineHeight: 1.9,
                         marginBottom: "2rem",
@@ -936,11 +934,11 @@ export function Experiences() {
                             display: "inline-flex",
                             alignItems: "center",
                             gap: "0.4rem",
-                            backgroundColor: "transparent",
-                            color: "#f0e8d0",
+                            backgroundColor: "rgba(255,255,255,0.18)",
+                            color: "#ffffff",
                             padding: "0.8rem 1.75rem",
-                            borderRadius: "4px",
-                            border: "1px solid rgba(240,232,208,0.4)",
+                            borderRadius: "12px",
+                            border: "1px solid rgba(255,255,255,0.6)",
                             textDecoration: "none",
                             fontWeight: 700,
                             fontSize: "0.9rem",
@@ -953,11 +951,11 @@ export function Experiences() {
                         style={{
                             display: "inline-flex",
                             alignItems: "center",
-                            gap: "0.4rem",
-                            backgroundColor: "#c47a30",
-                            color: "#fff",
+                            backgroundColor: "#f5ede0",
+                            color: "#5c3317",
+                            color: "#5c3317",
                             padding: "0.8rem 1.75rem",
-                            borderRadius: "4px",
+                            borderRadius: "12px",
                             textDecoration: "none",
                             fontWeight: 700,
                             fontSize: "0.9rem",

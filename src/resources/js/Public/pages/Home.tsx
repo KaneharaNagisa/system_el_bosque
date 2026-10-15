@@ -441,7 +441,7 @@ export function Home() {
                                     fontFamily: "'Noto Serif JP', serif",
                                     fontSize: "clamp(1.35rem, 3vw, 1.75rem)",
                                     fontWeight: 700,
-                                    color: "#1e3c0e",
+                                    color: "#256840",
                                     lineHeight: 1.4,
                                     margin: 0,
                                 }}
@@ -455,7 +455,7 @@ export function Home() {
                     <div
                         style={{
                             backgroundColor: "#faf5e8",
-                            borderRadius: "4px",
+                            borderRadius: "12px",
                             border: "1px solid rgba(180,140,80,0.18)",
                             overflow: "hidden",
                         }}
@@ -520,7 +520,7 @@ export function Home() {
                                                 alignSelf: "stretch",
                                                 borderRadius: "2px",
                                                 backgroundColor: isExpanded
-                                                    ? "#5c2e12"
+                                                    ? "#7a4a1e"
                                                     : "rgba(180,140,80,0.3)",
                                                 flexShrink: 0,
                                                 transition:
@@ -577,7 +577,7 @@ export function Home() {
                                                         ? 700
                                                         : 500,
                                                     color: isExpanded
-                                                        ? "#5c2e12"
+                                                        ? "#7a4a1e"
                                                         : "#2c1e10",
                                                     lineHeight: 1.55,
                                                     display: "block",
@@ -614,11 +614,11 @@ export function Home() {
                                             <div
                                                 style={{
                                                     backgroundColor:
-                                                        "rgba(92,46,18,0.04)",
-                                                    border: "1px solid rgba(92,46,18,0.1)",
+                                                        "rgba(100,55,20,0.04)",
+                                                    border: "1px solid rgba(100,55,20,0.1)",
                                                     borderLeft:
                                                         "3px solid #d4b070",
-                                                    borderRadius: "2px",
+                                                    borderRadius: "8px",
                                                     padding: "1rem 1.25rem",
                                                 }}
                                             >
@@ -655,7 +655,7 @@ export function Home() {
                                     display: "inline-flex",
                                     alignItems: "center",
                                     gap: "0.4rem",
-                                    color: "#5c2e12",
+                                    color: "#7a4a1e",
                                     fontSize: "0.85rem",
                                     fontWeight: 700,
                                     textDecoration: "none",
@@ -694,7 +694,7 @@ export function Home() {
                                 fontFamily: "'Noto Serif JP', serif",
                                 fontSize: "clamp(1.6rem, 3.5vw, 2.2rem)",
                                 fontWeight: 700,
-                                color: "#1e3c0e",
+                                color: "#256840",
                                 lineHeight: 1.4,
                             }}
                         >
@@ -716,7 +716,7 @@ export function Home() {
                                 key={f.title}
                                 style={{
                                     backgroundColor: "#faf5e8",
-                                    borderRadius: "4px",
+                                    borderRadius: "12px",
                                     padding: "2rem 1.75rem",
                                     border: "1px solid rgba(180,140,80,0.18)",
                                     borderLeft: "3px solid #d4b070",
@@ -749,7 +749,7 @@ export function Home() {
                                         fontFamily: "'Noto Serif JP', serif",
                                         fontSize: "1.05rem",
                                         fontWeight: 700,
-                                        color: "#1e3c0e",
+                                        color: "#256840",
                                         marginBottom: "0.6rem",
                                     }}
                                 >
@@ -772,10 +772,10 @@ export function Home() {
                             style={{
                                 marginTop: "1.5rem",
                                 gridColumn: "1 / -1",
-                                backgroundColor: "rgba(30,60,14,0.07)",
-                                border: "1px solid rgba(30,60,14,0.18)",
-                                borderLeft: "4px solid #1e3c0e",
-                                borderRadius: "4px",
+                                backgroundColor: "rgba(37,104,64,0.07)",
+                                border: "1px solid rgba(37,104,64,0.18)",
+                                borderLeft: "4px solid #256840",
+                                borderRadius: "12px",
                                 padding: "1.1rem 1.4rem",
                                 display: "flex",
                                 alignItems: "flex-start",
@@ -786,7 +786,7 @@ export function Home() {
                                 style={{
                                     width: "34px",
                                     height: "34px",
-                                    backgroundColor: "#1e3c0e",
+                                    backgroundColor: "#3abcb0",
                                     borderRadius: "50%",
                                     display: "flex",
                                     alignItems: "center",
@@ -799,12 +799,12 @@ export function Home() {
                                     viewBox="0 0 20 20"
                                     width="15"
                                     height="15"
-                                    fill="#d4b070"
+                                    fill="#ffffff"
                                 >
                                     <path d="M10 3L5 7H2a1 1 0 00-1 1v4a1 1 0 001 1h3l5 4V3z" />
                                     <path
                                         d="M14.07 5.93a7 7 0 010 8.14M16.95 3.05a11 11 0 010 13.9"
-                                        stroke="#d4b070"
+                                        stroke="#ffffff"
                                         strokeWidth="1.3"
                                         fill="none"
                                         strokeLinecap="round"
@@ -816,7 +816,7 @@ export function Home() {
                                     style={{
                                         fontSize: "0.82rem",
                                         fontWeight: 700,
-                                        color: "#1e3c0e",
+                                        color: "#256840",
                                         marginBottom: "0.35rem",
                                         letterSpacing: "0.02em",
                                     }}
@@ -842,7 +842,7 @@ export function Home() {
 
             {/* ── Seasons ── */}
             <section
-                style={{ backgroundColor: "#1b2f0e", padding: "6rem 1.5rem" }}
+                style={{ backgroundColor: "#256840", padding: "6rem 1.5rem" }}
             >
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                     <div
@@ -885,7 +885,7 @@ export function Home() {
                             <div
                                 key={season.label}
                                 style={{
-                                    backgroundColor: "#1b2f0e",
+                                    backgroundColor: "#256840",
                                     padding: "2.5rem 1.75rem",
                                     textAlign: "center",
                                 }}
@@ -960,7 +960,7 @@ export function Home() {
                                     fontFamily: "'Noto Serif JP', serif",
                                     fontSize: "clamp(1.5rem, 3vw, 2rem)",
                                     fontWeight: 700,
-                                    color: "#1e3c0e",
+                                    color: "#256840",
                                     lineHeight: 1.45,
                                     marginBottom: "1.5rem",
                                 }}
@@ -1002,7 +1002,7 @@ export function Home() {
                                 <Link
                                     to="/about"
                                     style={{
-                                        color: "#1e3c0e",
+                                        color: "#256840",
                                         textDecoration: "none",
                                         fontSize: "0.88rem",
                                         fontWeight: 700,
@@ -1031,7 +1031,7 @@ export function Home() {
                                     width: "100%",
                                     height: "260px",
                                     objectFit: "cover",
-                                    borderRadius: "4px",
+                                    borderRadius: "12px",
                                 }}
                             />
                             <div
@@ -1049,7 +1049,7 @@ export function Home() {
                                         width: "100%",
                                         height: "150px",
                                         objectFit: "cover",
-                                        borderRadius: "4px",
+                                        borderRadius: "12px",
                                     }}
                                 />
                                 <ImageWithFallback
@@ -1059,7 +1059,7 @@ export function Home() {
                                         width: "100%",
                                         height: "150px",
                                         objectFit: "cover",
-                                        borderRadius: "4px",
+                                        borderRadius: "12px",
                                     }}
                                 />
                             </div>
@@ -1072,7 +1072,7 @@ export function Home() {
             <section
                 style={{
                     background:
-                        "linear-gradient(135deg, #5c3317 0%, #7d4820 100%)",
+                        "linear-gradient(135deg, #55cce8 0%, #3abcb0 100%)",
                     padding: "6rem 1.5rem",
                 }}
             >
@@ -1085,7 +1085,7 @@ export function Home() {
                 >
                     <p
                         style={{
-                            color: "#d4b070",
+                            color: "rgba(255,255,255,0.7)",
                             fontSize: "0.72rem",
                             fontWeight: 700,
                             letterSpacing: "0.25em",
@@ -1100,7 +1100,7 @@ export function Home() {
                             fontFamily: "'Noto Serif JP', serif",
                             fontSize: "clamp(1.6rem, 3.5vw, 2.2rem)",
                             fontWeight: 700,
-                            color: "#f0e8d0",
+                            color: "#ffffff",
                             marginBottom: "0.75rem",
                         }}
                     >
@@ -1108,7 +1108,7 @@ export function Home() {
                     </h2>
                     <p
                         style={{
-                            color: "rgba(240,232,208,0.65)",
+                            color: "rgba(255,255,255,0.75)",
                             fontSize: "0.88rem",
                             marginBottom: "2.5rem",
                         }}
@@ -1122,7 +1122,7 @@ export function Home() {
                             gridTemplateColumns:
                                 "repeat(auto-fit, minmax(200px, 1fr))",
                             gap: "1px",
-                            backgroundColor: "rgba(212,176,112,0.15)",
+                            backgroundColor: "rgba(255,255,255,0.2)",
                             marginBottom: "2.5rem",
                         }}
                         className="price-grid"
@@ -1152,14 +1152,14 @@ export function Home() {
                             <div
                                 key={item.label}
                                 style={{
-                                    backgroundColor: "rgba(255,255,255,0.04)",
+                                    backgroundColor: "rgba(255,255,255,0.1)",
                                     padding: "2rem 1.5rem",
                                     textAlign: "center",
                                 }}
                             >
                                 <div
                                     style={{
-                                        color: "#d4b070",
+                                        color: "rgba(255,255,255,0.8)",
                                         fontSize: "0.72rem",
                                         letterSpacing: "0.12em",
                                         marginBottom: "0.25rem",
@@ -1170,7 +1170,7 @@ export function Home() {
                                 </div>
                                 <div
                                     style={{
-                                        color: "rgba(240,232,208,0.55)",
+                                        color: "rgba(255,255,255,0.6)",
                                         fontSize: "0.75rem",
                                         marginBottom: "0.75rem",
                                     }}
@@ -1181,7 +1181,7 @@ export function Home() {
                                     style={{
                                         fontSize: "2rem",
                                         fontWeight: 700,
-                                        color: "#f0e8d0",
+                                        color: "#ffffff",
                                         fontFamily: "'Noto Serif JP', serif",
                                     }}
                                 >
@@ -1205,10 +1205,10 @@ export function Home() {
                                 display: "inline-flex",
                                 alignItems: "center",
                                 gap: "0.4rem",
-                                backgroundColor: "#d4b070",
-                                color: "#1b2f0e",
+                                backgroundColor: "#f5ede0",
+                                color: "#5c3317",
                                 padding: "0.85rem 2rem",
-                                borderRadius: "3px",
+                                borderRadius: "12px",
                                 textDecoration: "none",
                                 fontWeight: 700,
                                 fontSize: "0.9rem",
@@ -1222,14 +1222,14 @@ export function Home() {
                                 display: "inline-flex",
                                 alignItems: "center",
                                 gap: "0.4rem",
-                                backgroundColor: "transparent",
-                                color: "#f0e8d0",
+                                backgroundColor: "rgba(255,255,255,0.18)",
+                                color: "#ffffff",
                                 padding: "0.85rem 2rem",
-                                borderRadius: "3px",
+                                borderRadius: "12px",
                                 textDecoration: "none",
                                 fontWeight: 700,
                                 fontSize: "0.9rem",
-                                border: "1px solid rgba(240,232,208,0.35)",
+                                border: "1px solid rgba(255,255,255,0.5)",
                             }}
                         >
                             ご予約 <FaChevronRight size={12} />
@@ -1302,7 +1302,7 @@ export function Home() {
                             fontWeight: 700,
                             border: "1px solid rgba(212,176,112,0.5)",
                             padding: "0.6rem 1.5rem",
-                            borderRadius: "3px",
+                            borderRadius: "12px",
                         }}
                     >
                         体験を見る <FaChevronRight size={11} />
