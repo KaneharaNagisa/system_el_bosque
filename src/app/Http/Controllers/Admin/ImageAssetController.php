@@ -16,6 +16,8 @@ class ImageAssetController extends Controller
 {
     private const ASSETS = [
         ['key' => 'home.hero', 'label' => 'トップ：ヒーロー背景'],
+        ['key' => 'home.hero.2', 'label' => 'トップ：ヒーロー背景 2枚目'],
+        ['key' => 'home.hero.3', 'label' => 'トップ：ヒーロー背景 3枚目'],
         ['key' => 'home.lake', 'label' => 'トップ：湖の写真'],
         ['key' => 'home.interior', 'label' => 'トップ：室内写真'],
         ['key' => 'home.stars', 'label' => 'トップ：星空写真'],
