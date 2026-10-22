@@ -13,12 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->trustProxies(at: '*');
 
-        $appEnv = env('APP_ENV', 'production');
-        if ($appEnv === 'staging') {
-            $middleware->prepend([
-                \App\Http\Middleware\StagingBasicAuth::class,
-            ]);
-        }
+        $middleware->prepend([
+            \App\Http\Middleware\StagingBasicAuth::class,
+        ]);
 
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
