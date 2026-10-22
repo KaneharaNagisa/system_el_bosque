@@ -44,4 +44,23 @@ class ExampleTest extends TestCase
             ->assertHeaderMissing('X-Robots-Tag')
             ->assertSeeText("User-agent: *\nDisallow:\n");
     }
+
+    public function test_staging_environment_requires_http_basic_auth(): void
+    {
+        config([
+            'app.env' => 'staging',
+            'staging_basic_auth.username' => 'staging-admin',
+            'staging_basic_auth.password' => 'staging-pass',
+        ]);
+
+        $this->get('/')
+            ->assertStatus(401)
+            ->assertHeader('WWW-Authenticate', 'Basic realm="Staging"');
+
+        $this->withServerVariables([
+            'PHP_AUTH_USER' => 'staging-admin',
+            'PHP_AUTH_PW' => 'staging-pass',
+        ])->get('/')
+            ->assertStatus(200);
+    }
 }
