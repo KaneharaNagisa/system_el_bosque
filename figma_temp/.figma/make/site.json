@@ -1,0 +1,10 @@
+{
+  "description": "Discover a serene log house retreat in Nagano, offering pet-friendly accommodations, local experiences, and convenient support for a memorable stay.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

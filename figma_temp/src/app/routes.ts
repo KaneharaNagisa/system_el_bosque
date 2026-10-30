@@ -22,7 +22,6 @@ import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { AdminMembers } from "./pages/admin/AdminMembers";
 import { AdminReservations } from "./pages/admin/AdminReservations";
 import { AdminBilling } from "./pages/admin/AdminBilling";
-import { AdminContacts } from "./pages/admin/AdminContacts";
 import { AdminNews } from "./pages/admin/AdminNews";
 import { AdminPages } from "./pages/admin/AdminPages";
 import { AdminAvailability } from "./pages/admin/AdminAvailability";
@@ -72,7 +71,6 @@ export const router = createBrowserRouter([
       { path: "members", Component: AdminMembers },
       { path: "reservations", Component: AdminReservations },
       { path: "billing", Component: AdminBilling },
-      { path: "contacts", Component: AdminContacts },
       { path: "news", Component: AdminNews },
       { path: "pages", Component: AdminPages },
       { path: "master/availability", Component: AdminAvailability },

@@ -7,9 +7,13 @@ import {
   FaEnvelopeOpenText,
   FaCheckCircle,
   FaUserPlus,
+  FaPlus,
+  FaTrashAlt,
 } from "react-icons/fa";
 import { useAuth, type UserProfile } from "../context/AuthContext";
 import { BirthDatePicker } from "../components/BirthDatePicker";
+import { PREFECTURES, getCities, formatArea } from "../data/japanLocations";
+import { FAMILY_BIRTH_YEAR_OPTIONS, getApproximateAge, formatFamilyBirthYears } from "../data/familyBirthYears";
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
@@ -121,13 +125,10 @@ export function Register() {
   const redirect = searchParams.get("redirect") || "/reservation";
 
   const [profile, setProfile] = useState({
-    lastName: "",
-    firstName: "",
-    lastNameKana: "",
-    firstNameKana: "",
+    nickname: "",
     phone: "",
-    postalCode: "",
-    address: "",
+    prefecture: "",
+    city: "",
     password: "",
     passwordConfirm: "",
     birthDate: "",
@@ -135,7 +136,7 @@ export function Register() {
     petBreed: "",
     petBreed2: "",
     hasFamily: "individual",
-    familyDetail: "",
+    familyBirthYears: [] as string[],
     concerns: "",
     howFound: "",
     expectations: "",
@@ -192,19 +193,18 @@ export function Register() {
   // Step 4: Confirm → Complete
   const handleConfirm = () => {
     const userData: UserProfile = {
-      lastName: profile.lastName,
-      firstName: profile.firstName,
-      lastNameKana: profile.lastNameKana,
-      firstNameKana: profile.firstNameKana,
+      nickname: profile.nickname,
       email,
       phone: profile.phone,
-      address: profile.address,
+      prefecture: profile.prefecture,
+      city: profile.city,
       password: profile.password,
       birthDate: profile.birthDate,
       hasPet: profile.hasPet,
       petBreed: profile.petBreed,
       petBreed2: profile.hasPet === "small2" ? profile.petBreed2 : undefined,
       hasFamily: profile.hasFamily,
+      familyBirthYears: profile.familyBirthYears,
       concerns: profile.concerns,
       howFound: profile.howFound,
       expectations: profile.expectations,
@@ -489,65 +489,19 @@ export function Register() {
                 <div style={{ marginBottom: "1.75rem" }}>
                   <h3 style={sectionTitleStyle}>基本情報</h3>
                   <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
-                      <div>
-                        <label style={labelStyle}>姓 <span style={{ color: "#a03020" }}>*</span></label>
-                        <input
-                          type="text"
-                          name="lastName"
-                          value={profile.lastName}
-                          onChange={handleProfileChange}
-                          onFocus={() => setFocusedField("lastName")}
-                          onBlur={() => setFocusedField("")}
-                          placeholder="山田"
-                          required
-                          style={focusedInputStyle("lastName")}
-                        />
-                      </div>
-                      <div>
-                        <label style={labelStyle}>名 <span style={{ color: "#a03020" }}>*</span></label>
-                        <input
-                          type="text"
-                          name="firstName"
-                          value={profile.firstName}
-                          onChange={handleProfileChange}
-                          onFocus={() => setFocusedField("firstName")}
-                          onBlur={() => setFocusedField("")}
-                          placeholder="太郎"
-                          required
-                          style={focusedInputStyle("firstName")}
-                        />
-                      </div>
-                    </div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
-                      <div>
-                        <label style={labelStyle}>姓（ふりがな） <span style={{ color: "#a03020" }}>*</span></label>
-                        <input
-                          type="text"
-                          name="lastNameKana"
-                          value={profile.lastNameKana}
-                          onChange={handleProfileChange}
-                          onFocus={() => setFocusedField("lastNameKana")}
-                          onBlur={() => setFocusedField("")}
-                          placeholder="やまだ"
-                          required
-                          style={focusedInputStyle("lastNameKana")}
-                        />
-                      </div>
-                      <div>
-                        <label style={labelStyle}>名（ふりがな） <span style={{ color: "#a03020" }}>*</span></label>
-                        <input
-                          type="text"
-                          name="firstNameKana"
-                          value={profile.firstNameKana}
-                          onChange={handleProfileChange}
-                          onFocus={() => setFocusedField("firstNameKana")}
-                          onBlur={() => setFocusedField("")}
-                          placeholder="たろう"
-                          required
-                          style={focusedInputStyle("firstNameKana")}
-                        />
-                      </div>
+                    <div>
+                      <label style={labelStyle}>ニックネーム <span style={{ color: "#a03020" }}>*</span></label>
+                      <input
+                        type="text"
+                        name="nickname"
+                        value={profile.nickname}
+                        onChange={handleProfileChange}
+                        onFocus={() => setFocusedField("nickname")}
+                        onBlur={() => setFocusedField("")}
+                        placeholder="例：たろう"
+                        required
+                        style={focusedInputStyle("nickname")}
+                      />
                     </div>
                     <div>
                       <label style={labelStyle}>
@@ -565,35 +519,40 @@ export function Register() {
                         style={focusedInputStyle("phone")}
                       />
                     </div>
-                    <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", gap: "0.75rem" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }} className="form-2col">
                       <div>
-                        <label style={labelStyle}>郵便番号</label>
-                        <input
-                          type="text"
-                          name="postalCode"
-                          value={profile.postalCode}
-                          onChange={handleProfileChange}
-                          placeholder="000-0000"
+                        <label style={labelStyle}>都道府県 <span style={{ color: "#a03020" }}>*</span></label>
+                        <select
+                          name="prefecture"
+                          value={profile.prefecture}
+                          onChange={(e) => setProfile((prev) => ({ ...prev, prefecture: e.target.value, city: "" }))}
+                          required
                           style={inputStyle}
-                        />
+                        >
+                          <option value="">選択してください</option>
+                          {PREFECTURES.map((prefecture) => <option key={prefecture} value={prefecture}>{prefecture}</option>)}
+                        </select>
                       </div>
                       <div>
                         <label style={labelStyle}>
-                          住所 <span style={{ color: "#a03020" }}>*</span>
+                          市区町村 <span style={{ color: "#a03020" }}>*</span>
                         </label>
-                        <input
-                          type="text"
-                          name="address"
-                          value={profile.address}
+                        <select
+                          name="city"
+                          value={profile.city}
                           onChange={handleProfileChange}
-                          onFocus={() => setFocusedField("address")}
-                          onBlur={() => setFocusedField("")}
-                          placeholder="東京都渋谷区..."
                           required
-                          style={focusedInputStyle("address")}
-                        />
+                          disabled={!profile.prefecture}
+                          style={inputStyle}
+                        >
+                          <option value="">選択してください</option>
+                          {getCities(profile.prefecture).map((city) => <option key={city} value={city}>{city}</option>)}
+                        </select>
                       </div>
                     </div>
+                    <p style={{ fontSize: "0.75rem", color: "#8a7868", lineHeight: 1.8, margin: 0 }}>
+                      本名と詳しい住所は、実際にお越しになった際に宿泊者台帳へ手書きでご記入いただきます。
+                    </p>
                     <div>
                       <label style={labelStyle}>
                         生年月日
@@ -753,7 +712,13 @@ export function Register() {
                         <select
                           name="hasFamily"
                           value={profile.hasFamily}
-                          onChange={handleProfileChange}
+                          onChange={(e) => setProfile((prev) => ({
+                            ...prev,
+                            hasFamily: e.target.value,
+                            familyBirthYears: e.target.value === "family"
+                              ? (prev.familyBirthYears.length > 0 ? prev.familyBirthYears : [""])
+                              : [],
+                          }))}
                           style={inputStyle}
                         >
                           <option value="individual">個人</option>
@@ -764,16 +729,74 @@ export function Register() {
                         </select>
                       </div>
                       {profile.hasFamily === "family" && (
-                        <div>
-                          <label style={labelStyle}>お子様の年齢など</label>
-                          <input
-                            type="text"
-                            name="familyDetail"
-                            value={profile.familyDetail}
-                            onChange={handleProfileChange}
-                            placeholder="例：小学生2人"
-                            style={inputStyle}
-                          />
+                        <div style={{ gridColumn: "1 / -1" }}>
+                          <label style={labelStyle}>ご家族の方の生まれ年</label>
+                          <p style={{ fontSize: "0.72rem", color: "#8a7868", lineHeight: 1.7, margin: "0 0 0.65rem" }}>
+                            お名前や生年月日は不要です。生まれ年だけご登録ください。
+                          </p>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                            {profile.familyBirthYears.map((birthYear, index) => (
+                              <div key={index} style={{ display: "grid", gridTemplateColumns: "1fr auto auto", gap: "0.5rem", alignItems: "center" }}>
+                                <select
+                                  value={birthYear}
+                                  onChange={(e) => setProfile((prev) => ({
+                                    ...prev,
+                                    familyBirthYears: prev.familyBirthYears.map((year, yearIndex) => yearIndex === index ? e.target.value : year),
+                                  }))}
+                                  style={inputStyle}
+                                  aria-label={`ご家族${index + 1}人目の生まれ年`}
+                                >
+                                  <option value="">生まれ年を選択</option>
+                                  {FAMILY_BIRTH_YEAR_OPTIONS.map((year) => <option key={year} value={year}>{year}年</option>)}
+                                </select>
+                                <span style={{ minWidth: "62px", color: "#8a7868", fontSize: "0.75rem" }}>
+                                  {getApproximateAge(birthYear)}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => setProfile((prev) => ({
+                                    ...prev,
+                                    familyBirthYears: prev.familyBirthYears.filter((_, yearIndex) => yearIndex !== index),
+                                  }))}
+                                  aria-label={`ご家族${index + 1}人目を削除`}
+                                  style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    width: "36px",
+                                    height: "36px",
+                                    border: "1px solid rgba(160,48,32,0.2)",
+                                    borderRadius: "10px",
+                                    backgroundColor: "transparent",
+                                    color: "#a03020",
+                                    cursor: "pointer",
+                                  }}
+                                >
+                                  <FaTrashAlt size={12} />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setProfile((prev) => ({ ...prev, familyBirthYears: [...prev.familyBirthYears, ""] }))}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "0.4rem",
+                              marginTop: "0.75rem",
+                              padding: "0.55rem 0.9rem",
+                              border: "1px solid rgba(37,104,64,0.25)",
+                              borderRadius: "10px",
+                              backgroundColor: "rgba(37,104,64,0.06)",
+                              color: "#256840",
+                              fontSize: "0.78rem",
+                              fontWeight: 700,
+                              cursor: "pointer",
+                            }}
+                          >
+                            <FaPlus size={11} /> ご家族を追加
+                          </button>
                         </div>
                       )}
                     </div>
@@ -889,11 +912,10 @@ export function Register() {
 
               {[
                 { heading: "基本情報", items: [
-                  { label: "お名前", value: `${profile.lastName} ${profile.firstName}` },
-                  { label: "ふりがな", value: `${profile.lastNameKana} ${profile.firstNameKana}` },
+                  { label: "ニックネーム", value: profile.nickname },
                   { label: "メールアドレス", value: email },
                   { label: "電話番号", value: profile.phone },
-                  { label: "住所", value: `${profile.postalCode ? `〒${profile.postalCode} ` : ""}${profile.address}` },
+                  { label: "お住まいの地域", value: formatArea(profile.prefecture, profile.city) },
                   { label: "生年月日", value: profile.birthDate
                     ? profile.birthDate.replace(/^(\d{4})-(\d{1,2})-(\d{1,2})$/, (_, y, m, d) => `${y}年${parseInt(m)}月${parseInt(d)}日`)
                     : "未記入" },
@@ -916,8 +938,8 @@ export function Register() {
                       family: "ご家族（お子さんあり）",
                     };
                     const label = familyLabels[profile.hasFamily] || profile.hasFamily;
-                    return profile.hasFamily === "family" && profile.familyDetail
-                      ? `${label}（${profile.familyDetail}）`
+                    return profile.hasFamily === "family"
+                      ? `${label}（${formatFamilyBirthYears(profile.familyBirthYears)}）`
                       : label;
                   })() },
                 ]},
@@ -1025,7 +1047,7 @@ export function Register() {
                 会員登録が完了しました
               </h2>
               <p style={{ fontSize: "0.9rem", color: "#5a4838", lineHeight: 1.9, marginBottom: "0.5rem" }}>
-                <strong>{profile.lastName} {profile.firstName}</strong> 様、ようこそ！
+                <strong>{profile.nickname}</strong> 様、ようこそ！
               </p>
               <p style={{ fontSize: "0.85rem", color: "#8a7868", lineHeight: 1.9, marginBottom: "2rem" }}>
                 ログイン状態でご予約に進めます。

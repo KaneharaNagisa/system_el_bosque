@@ -13,6 +13,7 @@ import {
   FaShieldAlt,
 } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+import { formatArea } from "../data/japanLocations";
 
 const WEEKDAY_NAMES = ["日", "月", "火", "水", "木", "金", "土"];
 
@@ -334,10 +335,10 @@ export function ReservationConfirm() {
 
               {/* 会員情報 */}
               <Section icon={<FaUser size={14} color="#7a4a1e" />} title="お客様情報">
-                <Row label="お名前" value={user?.name || ""} />
+                <Row label="ニックネーム" value={user?.nickname || ""} />
                 <Row label="メール" value={user?.email || ""} />
                 <Row label="電話番号" value={user?.phone || ""} />
-                {user?.address && <Row label="住所" value={user.address} />}
+                {user && <Row label="お住まいの地域" value={formatArea(user.prefecture, user.city)} />}
               </Section>
 
               <div style={dividerStyle} />

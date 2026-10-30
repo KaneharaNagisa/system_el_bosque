@@ -9,22 +9,21 @@ import {
 
 // ── モック会員データ ──
 interface Member {
-  id: string; lastName: string; firstName: string;
-  lastNameKana: string; firstNameKana: string;
+  id: string; nickname: string;
   email: string; phone: string;
   joinedAt: string; totalStays: number;
 }
 const mockMembers: Member[] = [
-  { id: "MBR-001", lastName: "山田",   firstName: "太郎",   lastNameKana: "やまだ",   firstNameKana: "たろう",   email: "yamada@example.com",    phone: "090-1234-5678", joinedAt: "2024-04-01", totalStays: 3 },
-  { id: "MBR-002", lastName: "佐藤",   firstName: "花子",   lastNameKana: "さとう",   firstNameKana: "はなこ",   email: "sato@example.com",      phone: "090-2345-6789", joinedAt: "2024-06-15", totalStays: 1 },
-  { id: "MBR-003", lastName: "鈴木",   firstName: "一郎",   lastNameKana: "すずき",   firstNameKana: "いちろう", email: "suzuki@example.com",    phone: "090-3456-7890", joinedAt: "2024-08-20", totalStays: 2 },
-  { id: "MBR-004", lastName: "田中",   firstName: "美咲",   lastNameKana: "たなか",   firstNameKana: "みさき",   email: "tanaka@example.com",    phone: "090-4567-8901", joinedAt: "2024-09-10", totalStays: 1 },
-  { id: "MBR-005", lastName: "高橋",   firstName: "健一",   lastNameKana: "たかはし", firstNameKana: "けんいち", email: "takahashi@example.com", phone: "090-5678-9012", joinedAt: "2024-10-05", totalStays: 4 },
-  { id: "MBR-006", lastName: "小林",   firstName: "太郎",   lastNameKana: "こばやし", firstNameKana: "たろう",   email: "kobayashi@example.com", phone: "090-6789-0123", joinedAt: "2024-11-01", totalStays: 0 },
-  { id: "MBR-007", lastName: "渡辺",   firstName: "幸子",   lastNameKana: "わたなべ", firstNameKana: "さちこ",   email: "watanabe@example.com",  phone: "080-1111-2222", joinedAt: "2025-01-10", totalStays: 2 },
-  { id: "MBR-008", lastName: "伊藤",   firstName: "直樹",   lastNameKana: "いとう",   firstNameKana: "なおき",   email: "ito@example.com",       phone: "080-3333-4444", joinedAt: "2025-02-20", totalStays: 1 },
-  { id: "MBR-009", lastName: "中村",   firstName: "さくら", lastNameKana: "なかむら", firstNameKana: "さくら",   email: "nakamura@example.com",  phone: "070-5555-6666", joinedAt: "2025-04-01", totalStays: 0 },
-  { id: "MBR-010", lastName: "加藤",   firstName: "雄太",   lastNameKana: "かとう",   firstNameKana: "ゆうた",   email: "kato@example.com",      phone: "070-7777-8888", joinedAt: "2025-06-15", totalStays: 3 },
+  { id: "MBR-001", nickname: "たろう", email: "yamada@example.com", phone: "090-1234-5678", joinedAt: "2024-04-01", totalStays: 3 },
+  { id: "MBR-002", nickname: "はな", email: "sato@example.com", phone: "090-2345-6789", joinedAt: "2024-06-15", totalStays: 1 },
+  { id: "MBR-003", nickname: "いちろう", email: "suzuki@example.com", phone: "090-3456-7890", joinedAt: "2024-08-20", totalStays: 2 },
+  { id: "MBR-004", nickname: "みさき", email: "tanaka@example.com", phone: "090-4567-8901", joinedAt: "2024-09-10", totalStays: 1 },
+  { id: "MBR-005", nickname: "ケン", email: "takahashi@example.com", phone: "090-5678-9012", joinedAt: "2024-10-05", totalStays: 4 },
+  { id: "MBR-006", nickname: "こば", email: "kobayashi@example.com", phone: "090-6789-0123", joinedAt: "2024-11-01", totalStays: 0 },
+  { id: "MBR-007", nickname: "さち", email: "watanabe@example.com", phone: "080-1111-2222", joinedAt: "2025-01-10", totalStays: 2 },
+  { id: "MBR-008", nickname: "なお", email: "ito@example.com", phone: "080-3333-4444", joinedAt: "2025-02-20", totalStays: 1 },
+  { id: "MBR-009", nickname: "さくら", email: "nakamura@example.com", phone: "070-5555-6666", joinedAt: "2025-04-01", totalStays: 0 },
+  { id: "MBR-010", nickname: "ゆうた", email: "kato@example.com", phone: "070-7777-8888", joinedAt: "2025-06-15", totalStays: 3 },
 ];
 
 // ── 料金調整マスタ（AdminPriceAdjustment と共有） ──
@@ -119,7 +118,7 @@ interface Reservation {
 // ── モックデータ ──
 const mockReservations: Reservation[] = [
   {
-    id: "RSV-001", memberName: "山田 太郎", memberEmail: "yamada@example.com", memberPhone: "090-1234-5678",
+    id: "RSV-001", memberName: "たろう", memberEmail: "yamada@example.com", memberPhone: "090-1234-5678",
     checkIn: "2026-03-15", checkOut: "2026-03-17", nights: 2, guests: 3,
     hasPet: "small1", petBreed: "トイプードル", supportFee: true,
     experiences: ["星空ガイド"],
@@ -128,14 +127,14 @@ const mockReservations: Reservation[] = [
     status: "confirmed", payment: "paid", totalAmount: 65000, createdAt: "2026-02-20",
   },
   {
-    id: "RSV-002", memberName: "佐藤 花子", memberEmail: "sato@example.com", memberPhone: "090-2345-6789",
+    id: "RSV-002", memberName: "はな", memberEmail: "sato@example.com", memberPhone: "090-2345-6789",
     checkIn: "2026-03-20", checkOut: "2026-03-22", nights: 2, guests: 2,
     hasPet: "none", supportFee: true, experiences: [], experienceDetails: [],
     breakdown: { baseAmount: 52000, guestExtra: 0, petFee: 0, supportFee: 8000, transferSurcharge: 0, experiencesTotal: 0, deposit: 10000, adjustment: -5200, adjustmentNote: "連泊割引適用", adjustmentRuleId: "ADJ-002" },
     status: "confirmed", payment: "unpaid", totalAmount: 64800, createdAt: "2026-02-25",
   },
   {
-    id: "RSV-003", memberName: "鈴木 一郎", memberEmail: "suzuki@example.com", memberPhone: "090-3456-7890",
+    id: "RSV-003", memberName: "いちろう", memberEmail: "suzuki@example.com", memberPhone: "090-3456-7890",
     checkIn: "2026-03-25", checkOut: "2026-03-27", nights: 2, guests: 4,
     hasPet: "large1", petBreed: "ゴールデンレトリバー", supportFee: false,
     experiences: ["BBQグリルレンタル"],
@@ -144,7 +143,7 @@ const mockReservations: Reservation[] = [
     status: "confirmed", payment: "unpaid", totalAmount: 60500, createdAt: "2026-03-01",
   },
   {
-    id: "RSV-004", memberName: "田中 美咲", memberEmail: "tanaka@example.com", memberPhone: "090-4567-8901",
+    id: "RSV-004", memberName: "みさき", memberEmail: "tanaka@example.com", memberPhone: "090-4567-8901",
     checkIn: "2026-04-01", checkOut: "2026-04-03", nights: 2, guests: 2,
     hasPet: "none", supportFee: true,
     experiences: ["星空ガイド", "薪割り体験"],
@@ -156,7 +155,7 @@ const mockReservations: Reservation[] = [
     status: "confirmed", payment: "paid", totalAmount: 42000, createdAt: "2026-03-02",
   },
   {
-    id: "RSV-005", memberName: "高橋 健一", memberEmail: "takahashi@example.com", memberPhone: "090-5678-9012",
+    id: "RSV-005", memberName: "ケン", memberEmail: "takahashi@example.com", memberPhone: "090-5678-9012",
     checkIn: "2026-04-05", checkOut: "2026-04-08", nights: 3, guests: 5,
     hasPet: "small2", petBreed: "チワワ（2頭）", supportFee: true, experiences: [], experienceDetails: [],
     breakdown: { baseAmount: 60000, guestExtra: 0, petFee: 12000, supportFee: 8000, transferSurcharge: 5000, experiencesTotal: 0, deposit: 10000 },
@@ -633,10 +632,7 @@ export function AdminReservations() {
     if (!memberQuery.trim()) return mockMembers;
     const q = memberQuery.trim().toLowerCase();
     return mockMembers.filter(m => {
-      const fullName = `${m.lastName}${m.firstName}`;
-      const fullKana = `${m.lastNameKana}${m.firstNameKana}`;
-      return fullName.includes(memberQuery) ||
-        fullKana.includes(memberQuery) ||
+      return m.nickname.includes(memberQuery) ||
         m.email.toLowerCase().includes(q) ||
         m.phone.includes(memberQuery) ||
         m.id.toLowerCase().includes(q);
@@ -657,7 +653,7 @@ export function AdminReservations() {
     }));
     const newRes: Reservation = {
       id: newId,
-      memberName: `${member.lastName} ${member.firstName}`,
+      memberName: member.nickname,
       memberEmail: member.email,
       memberPhone: member.phone,
       checkIn: newForm.checkIn,
@@ -766,7 +762,7 @@ export function AdminReservations() {
             <div className="space-y-3">
               <div className="relative">
                 <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                <input type="text" placeholder="会員名、予約ID、メールで検索" value={searchQuery}
+                <input type="text" placeholder="ニックネーム、予約ID、メールで検索" value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
               </div>
@@ -806,7 +802,7 @@ export function AdminReservations() {
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50">
                   <th className="text-left px-4 py-3 text-xs text-gray-500">予約ID</th>
-                  <th className="text-left px-4 py-3 text-xs text-gray-500">会員名</th>
+                  <th className="text-left px-4 py-3 text-xs text-gray-500">ニックネーム</th>
                   <th className="text-left px-4 py-3 text-xs text-gray-500">チェックイン</th>
                   <th className="text-left px-4 py-3 text-xs text-gray-500">チェックアウト</th>
                   <th className="text-center px-4 py-3 text-xs text-gray-500">泊数</th>
@@ -911,7 +907,7 @@ export function AdminReservations() {
                 {/* 宿泊者情報 */}
                 <Section icon={<FaUser className="w-3 h-3" />} title="宿泊者情報">
                   <div className="bg-gray-50 rounded-lg px-4 py-1">
-                    <InfoRow label="氏名" value={selectedRes.memberName} />
+                    <InfoRow label="ニックネーム" value={selectedRes.memberName} />
                     <InfoRow label="メール" value={selectedRes.memberEmail || <span className="text-gray-400">−</span>} />
                     <InfoRow label="電話番号" value={selectedRes.memberPhone} />
                     <InfoRow label="予約日" value={selectedRes.createdAt} />
@@ -1325,11 +1321,10 @@ export function AdminReservations() {
                     {selectedMember ? (
                       <div className="flex items-start gap-3 p-3 bg-[#e8f5e9] border-2 border-[#0a2105] rounded-lg">
                         <div className="w-9 h-9 rounded-full bg-[#0a2105] flex items-center justify-center shrink-0 text-white text-sm font-semibold">
-                          {selectedMember.lastName.charAt(0)}
+                          {selectedMember.nickname.charAt(0)}
 </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-[#0a2105]">{selectedMember.lastName} {selectedMember.firstName}</p>
-                          <p className="text-xs text-gray-400">{selectedMember.lastNameKana} {selectedMember.firstNameKana}</p>
+                          <p className="text-sm font-semibold text-[#0a2105]">{selectedMember.nickname}</p>
                           <p className="text-xs text-gray-600 mt-0.5">{selectedMember.email}</p>
                           <p className="text-xs text-gray-500">{selectedMember.phone} ／ {selectedMember.id}</p>
                           <p className="text-xs text-gray-400 mt-0.5">過去の宿泊: {selectedMember.totalStays}回</p>
@@ -1352,7 +1347,7 @@ export function AdminReservations() {
                             value={memberQuery}
                             onChange={e => { setMemberQuery(e.target.value); setShowMemberDrop(true); }}
                             onFocus={() => setShowMemberDrop(true)}
-                            placeholder="氏名・メール・電話番号・会員IDで検索"
+                            placeholder="ニックネーム・メール・電話番号・会員IDで検索"
                             className="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0a2105] outline-none"
                           />
                         </div>
@@ -1378,11 +1373,10 @@ export function AdminReservations() {
                                   className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#e8f5e9] text-left border-b border-gray-50 last:border-0"
                                 >
                                   <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0 text-gray-600 text-xs font-semibold">
-                                    {m.lastName.charAt(0)}
+                                    {m.nickname.charAt(0)}
                                   </div>
                                   <div className="flex-1 min-w-0">
-                                    <p className="text-sm text-gray-900 font-medium">{m.lastName} {m.firstName}</p>
-                                    <p className="text-xs text-gray-400">{m.lastNameKana} {m.firstNameKana}</p>
+                                    <p className="text-sm text-gray-900 font-medium">{m.nickname}</p>
                                     <p className="text-xs text-gray-500 truncate">{m.email} ／ {m.phone}</p>
                                   </div>
                                   <span className="text-xs text-gray-400 shrink-0">{m.id}</span>

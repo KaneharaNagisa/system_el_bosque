@@ -207,7 +207,7 @@ export function Reservation() {
                     fontWeight: 500,
                   }}
                 >
-                  {user.lastName} {user.firstName} 様でログイン中
+                  {user.nickname} 様でログイン中
                 </span>
               </div>
               <button
@@ -623,7 +623,7 @@ export function Reservation() {
                 marginBottom: "0.75rem",
               }}
             >
-              ご質問やご相談はお問い合わせフォームからお気軽にどうぞ。
+              ご質問やご相談は公式LINEからお気軽にどうぞ。
             </p>
             <Link
               to="/contact"
@@ -641,7 +641,7 @@ export function Reservation() {
                 border: "1px solid rgba(240,232,208,0.2)",
               }}
             >
-              お問い合わせフォーム
+              公式LINEでお問い合わせ
               <FaChevronRight size={11} />
             </Link>
           </div>

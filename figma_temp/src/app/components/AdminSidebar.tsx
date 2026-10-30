@@ -12,7 +12,6 @@ import {
   FileText,
   CalendarDays,
   CreditCard,
-  MessageSquare,
   BookOpen,
   BarChart3,
 } from "lucide-react";
@@ -24,7 +23,6 @@ export type AdminPage =
   | "members"
   | "reservations"
   | "billing"
-  | "contacts"
   | "news"
   | "pages"
   | "master-availability"
@@ -53,7 +51,6 @@ export default function AdminSidebar({
     { id: "members" as const, label: "会員管理", icon: Users, path: "/admin/members" },
     { id: "reservations" as const, label: "予約管理", icon: CalendarDays, path: "/admin/reservations" },
     { id: "billing" as const, label: "請求管理", icon: CreditCard, path: "/admin/billing" },
-    { id: "contacts" as const, label: "お問合せ管理", icon: MessageSquare, path: "/admin/contacts" },
     { id: "news" as const, label: "お知らせ管理", icon: Bell, path: "/admin/news" },
     { id: "pages" as const, label: "固定ページ管理", icon: FileText, path: "/admin/pages" },
   ];

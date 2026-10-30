@@ -79,7 +79,7 @@ function petLabel(hasPet: string, breed?: string) {
 const mockBillings: BillingRecord[] = [
   {
     id: "BIL-001", reservationId: "RSV-001",
-    memberName: "山田 太郎", memberEmail: "yamada@example.com", memberPhone: "090-1234-5678",
+    memberName: "たろう", memberEmail: "yamada@example.com", memberPhone: "090-1234-5678",
     checkIn: "2026-03-15", checkOut: "2026-03-17", nights: 2, guests: 3,
     hasPet: "small1", petBreed: "トイプードル", supportFee: true,
     experiences: [{ name: "星空ガイド", price: 2000, priceNote: "¥2,000/組" }],
@@ -88,7 +88,7 @@ const mockBillings: BillingRecord[] = [
   },
   {
     id: "BIL-002", reservationId: "RSV-002",
-    memberName: "佐藤 花子", memberEmail: "sato@example.com", memberPhone: "090-2345-6789",
+    memberName: "はな", memberEmail: "sato@example.com", memberPhone: "090-2345-6789",
     checkIn: "2026-03-20", checkOut: "2026-03-22", nights: 2, guests: 2,
     hasPet: "none", supportFee: true, experiences: [],
     breakdown: { baseAmount: 52000, guestExtra: 0, petFee: 0, supportFee: 8000, transferSurcharge: 0, experiencesTotal: 0, deposit: 10000, adjustment: -5200, adjustmentNote: "連泊割引適用", adjustmentRuleId: "ADJ-002" },
@@ -96,7 +96,7 @@ const mockBillings: BillingRecord[] = [
   },
   {
     id: "BIL-003", reservationId: "RSV-003",
-    memberName: "鈴木 一郎", memberEmail: "suzuki@example.com", memberPhone: "090-3456-7890",
+    memberName: "いちろう", memberEmail: "suzuki@example.com", memberPhone: "090-3456-7890",
     checkIn: "2026-03-25", checkOut: "2026-03-27", nights: 2, guests: 4,
     hasPet: "large1", petBreed: "ゴールデンレトリバー", supportFee: false,
     experiences: [{ name: "BBQグリルレンタル", price: 3500, priceNote: "¥3,500/回" }],
@@ -105,7 +105,7 @@ const mockBillings: BillingRecord[] = [
   },
   {
     id: "BIL-004", reservationId: "RSV-004",
-    memberName: "田中 美咲", memberEmail: "tanaka@example.com", memberPhone: "090-4567-8901",
+    memberName: "みさき", memberEmail: "tanaka@example.com", memberPhone: "090-4567-8901",
     checkIn: "2026-04-01", checkOut: "2026-04-03", nights: 2, guests: 2,
     hasPet: "none", supportFee: true,
     experiences: [
@@ -117,7 +117,7 @@ const mockBillings: BillingRecord[] = [
   },
   {
     id: "BIL-005", reservationId: "RSV-005",
-    memberName: "高橋 健一", memberEmail: "takahashi@example.com", memberPhone: "090-5678-9012",
+    memberName: "ケン", memberEmail: "takahashi@example.com", memberPhone: "090-5678-9012",
     checkIn: "2026-04-05", checkOut: "2026-04-08", nights: 3, guests: 5,
     hasPet: "small2", petBreed: "チワワ（2頭）", supportFee: true, experiences: [],
     breakdown: { baseAmount: 60000, guestExtra: 0, petFee: 12000, supportFee: 8000, transferSurcharge: 5000, experiencesTotal: 0, deposit: 10000 },
@@ -126,7 +126,7 @@ const mockBillings: BillingRecord[] = [
   },
   {
     id: "BIL-006", reservationId: "RSV-006",
-    memberName: "小林 太郎", memberEmail: "", memberPhone: "090-9999-8888",
+    memberName: "こば", memberEmail: "", memberPhone: "090-9999-8888",
     checkIn: "2026-04-10", checkOut: "2026-04-12", nights: 2, guests: 2,
     hasPet: "none", supportFee: true,
     experiences: [{ name: "BBQグリルレンタル", price: 3500, priceNote: "¥3,500/回" }],
@@ -285,7 +285,7 @@ export function AdminBilling() {
                 <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="会員名、請求ID、予約IDで検索"
+                  placeholder="ニックネーム、請求ID、予約IDで検索"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0a2105] outline-none"
@@ -310,7 +310,7 @@ export function AdminBilling() {
                 <tr className="border-b border-gray-100 bg-gray-50">
                   <th className="text-left px-4 py-3 text-xs text-gray-500">請求ID</th>
                   <th className="text-left px-4 py-3 text-xs text-gray-500">予約ID</th>
-                  <th className="text-left px-4 py-3 text-xs text-gray-500">会員名</th>
+                  <th className="text-left px-4 py-3 text-xs text-gray-500">ニックネーム</th>
                   <th className="text-left px-4 py-3 text-xs text-gray-500">チェックイン</th>
                   <th className="text-left px-4 py-3 text-xs text-gray-500">チェックアウト</th>
                   <th className="text-right px-4 py-3 text-xs text-gray-500">金額</th>
@@ -421,7 +421,7 @@ export function AdminBilling() {
               {/* 宿泊者情報 */}
               <Section icon={<FaUser className="w-3 h-3" />} title="宿泊者情報">
                 <div className="bg-gray-50 rounded-lg px-4 py-1">
-                  <InfoRow label="氏名" value={selected.memberName} />
+                  <InfoRow label="ニックネーム" value={selected.memberName} />
                   <InfoRow label="メール" value={selected.memberEmail || <span className="text-gray-400">−</span>} />
                   <InfoRow label="電話番号" value={selected.memberPhone} />
                   <InfoRow label="請求作成日" value={selected.createdAt} />

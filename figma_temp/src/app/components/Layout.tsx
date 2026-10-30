@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation } from "react-router";
-import { FaBars, FaTimes, FaMapMarkerAlt, FaPhone, FaEnvelope, FaSignInAlt, FaUserCircle, FaChevronRight, FaCalendarAlt, FaStar } from "react-icons/fa";
+import { FaBars, FaTimes, FaMapMarkerAlt, FaLine, FaSignInAlt, FaUserCircle, FaChevronRight, FaCalendarAlt, FaStar } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import logo4Src from "../../imports/logo4.png";
 import logo1Src from "../../imports/logo1.png";
@@ -366,7 +366,7 @@ export function Layout() {
         {[
           { to: "/reservation", label: "予約", icon: <FaCalendarAlt size={15} />, bg: "#c8251a" },
           { to: "/pricing",     label: "料金計算", icon: <FaStar size={14} />,        bg: "#256840" },
-          { to: "/contact",    label: "お問合せ", icon: <FaEnvelope size={14} />,    bg: "#3abcb0" },
+          { to: "/contact",    label: "お問合せ", icon: <FaLine size={14} />,        bg: "#3abcb0" },
         ].map((item) => (
           <Link
             key={item.to}
@@ -484,14 +484,19 @@ export function Layout() {
                     <br />新野3728-96
                   </span>
                 </div>
-                <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
-                  <FaEnvelope size={12} color="rgba(255,255,255,0.7)" />
-                  <span style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.82)" }}>info@elbosque.jp</span>
-                </div>
-                <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
-                  <FaPhone size={12} color="rgba(255,255,255,0.7)" />
-                  <span style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.82)" }}>お問い合わせはメールにて</span>
-                </div>
+                <Link
+                  to="/contact"
+                  style={{
+                    display: "flex",
+                    gap: "0.6rem",
+                    alignItems: "center",
+                    color: "rgba(255,255,255,0.82)",
+                    textDecoration: "none",
+                  }}
+                >
+                  <FaLine size={13} color="rgba(255,255,255,0.7)" />
+                  <span style={{ fontSize: "0.82rem" }}>お問い合わせは公式LINEから</span>
+                </Link>
               </div>
             </div>
 

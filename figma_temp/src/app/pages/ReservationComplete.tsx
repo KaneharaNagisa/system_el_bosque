@@ -254,7 +254,7 @@ export function ReservationComplete() {
               ご予約ありがとうございます
             </h2>
             <p style={{ color: "#5a4838", fontSize: "0.92rem", lineHeight: 1.9, marginBottom: "0.5rem" }}>
-              <strong style={{ color: "#7a4a1e" }}>{user?.name}</strong> 様のご予約を承りました。
+              <strong style={{ color: "#7a4a1e" }}>{user?.nickname}</strong> 様のご予約を承りました。
             </p>
             <p style={{ color: "#5a4838", fontSize: "0.88rem", lineHeight: 1.9, marginBottom: "2rem" }}>
               2〜3営業日以内に <strong>{user?.email}</strong> 宛にご連絡いたします。

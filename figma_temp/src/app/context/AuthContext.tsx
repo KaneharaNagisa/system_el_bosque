@@ -1,19 +1,19 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { PREFECTURES, getCities } from "../data/japanLocations";
 
 export interface UserProfile {
-  lastName: string;
-  firstName: string;
-  lastNameKana: string;
-  firstNameKana: string;
+  nickname: string;
   email: string;
   phone: string;
-  address: string;
+  prefecture: string;
+  city: string;
   password: string;
   birthDate: string;
   hasPet: string;
   petBreed: string;
   petBreed2?: string;
   hasFamily: string;
+  familyBirthYears: string[];
   concerns: string;
   howFound: string;
   expectations: string;
@@ -49,19 +49,39 @@ const AuthContext = createContext<AuthContextType>(defaultAuthContext);
 
 const STORAGE_KEY = "elbosque_user";
 
+function normalizeProfile(profile: any): UserProfile {
+  if (profile.nickname && profile.prefecture !== undefined && profile.city !== undefined) {
+    return {
+      ...profile,
+      familyBirthYears: profile.familyBirthYears ?? [],
+    } as UserProfile;
+  }
+
+  const legacyAddress = profile.address ?? "";
+  const prefecture = PREFECTURES.find((item) => legacyAddress.includes(item)) ?? "";
+  const city = getCities(prefecture).find((item) => legacyAddress.includes(item)) ?? "";
+
+  return {
+    ...profile,
+    nickname: profile.nickname || `${profile.lastName ?? ""}${profile.firstName ?? ""}` || "ゲスト",
+    prefecture,
+    city,
+    familyBirthYears: profile.familyBirthYears ?? [],
+  };
+}
+
 export const DEMO_USER: UserProfile = {
-  lastName: "山田",
-  firstName: "太郎",
-  lastNameKana: "やまだ",
-  firstNameKana: "たろう",
+  nickname: "たろう",
   email: "demo@elbosque.jp",
   phone: "090-1234-5678",
-  address: "東京都新宿区西新宿1-1-1",
+  prefecture: "東京都",
+  city: "新宿区",
   password: "demo1234",
   birthDate: "1985-06-15",
   hasPet: "small",
   petBreed: "トイプードル",
   hasFamily: "married",
+  familyBirthYears: [],
   concerns: "特になし",
   howFound: "インターネット検索",
   expectations: "自然の中でゆっくり過ごしたい",
@@ -71,7 +91,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : null;
+      if (!saved) return null;
+      return normalizeProfile(JSON.parse(saved));
     } catch {
       return null;
     }
@@ -96,7 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        const profile: UserProfile = JSON.parse(saved);
+        const profile = normalizeProfile(JSON.parse(saved));
         if (profile.email === email && profile.password === password) {
           setUser(profile);
           return true;

@@ -12,6 +12,7 @@ import {
   FaChevronLeft,
 } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+import { formatArea } from "../data/japanLocations";
 
 const WEEKDAY_NAMES = ["日", "月", "火", "水", "木", "金", "土"];
 
@@ -833,10 +834,10 @@ export function ReservationDetail() {
                   }}
                 >
                   {[
-                    { label: "お名前", value: user?.name },
+                    { label: "ニックネーム", value: user?.nickname },
                     { label: "メール", value: user?.email },
                     { label: "電話番号", value: user?.phone },
-                    { label: "住所", value: user?.address },
+                    { label: "お住まいの地域", value: user ? formatArea(user.prefecture, user.city) : "" },
                   ].map((item) => (
                     <div
                       key={item.label}
