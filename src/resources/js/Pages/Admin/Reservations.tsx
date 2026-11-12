@@ -28,10 +28,7 @@ import {
 interface Member {
     id: string;
     dbId: number;
-    lastName: string;
-    firstName: string;
-    lastNameKana: string;
-    firstNameKana: string;
+    nickname: string;
     email: string;
     phone: string;
     joinedAt: string;
@@ -871,11 +868,8 @@ export default function Reservations({
         if (!memberQuery.trim()) return members;
         const q = memberQuery.trim().toLowerCase();
         return members.filter((m) => {
-            const fullName = `${m.lastName}${m.firstName}`;
-            const fullKana = `${m.lastNameKana}${m.firstNameKana}`;
             return (
-                fullName.includes(memberQuery) ||
-                fullKana.includes(memberQuery) ||
+                m.nickname.includes(memberQuery) ||
                 m.email.toLowerCase().includes(q) ||
                 m.phone.includes(memberQuery) ||
                 m.id.toLowerCase().includes(q)
@@ -1333,7 +1327,7 @@ export default function Reservations({
                                 >
                                     <div className="bg-gray-50 rounded-lg px-4 py-1">
                                         <InfoRow
-                                            label="氏名"
+                                            label="ニックネーム"
                                             value={selectedRes.memberName}
                                         />
                                         <InfoRow
@@ -2267,26 +2261,11 @@ export default function Reservations({
                                         {selectedMember ? (
                                             <div className="flex items-start gap-3 p-3 bg-[#e8f5e9] border-2 border-[#0a2105] rounded-lg">
                                                 <div className="w-9 h-9 rounded-full bg-[#0a2105] flex items-center justify-center shrink-0 text-white text-sm font-semibold">
-                                                    {selectedMember.lastName.charAt(
-                                                        0,
-                                                    )}
+                                                    {selectedMember.nickname.charAt(0)}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-sm font-semibold text-[#0a2105]">
-                                                        {
-                                                            selectedMember.lastName
-                                                        }{" "}
-                                                        {
-                                                            selectedMember.firstName
-                                                        }
-                                                    </p>
-                                                    <p className="text-xs text-gray-400">
-                                                        {
-                                                            selectedMember.lastNameKana
-                                                        }{" "}
-                                                        {
-                                                            selectedMember.firstNameKana
-                                                        }
+                                                        {selectedMember.nickname || "−"}
                                                     </p>
                                                     <p className="text-xs text-gray-600 mt-0.5">
                                                         {selectedMember.email}
@@ -2336,7 +2315,7 @@ export default function Reservations({
                                                                 true,
                                                             )
                                                         }
-                                                        placeholder="氏名・メール・電話番号・会員IDで検索"
+                                                        placeholder="ニックネーム・メール・電話番号・会員IDで検索"
                                                         className="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0a2105] outline-none"
                                                     />
                                                 </div>
@@ -2378,26 +2357,11 @@ export default function Reservations({
                                                                         className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#e8f5e9] text-left border-b border-gray-50 last:border-0"
                                                                     >
                                                                         <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0 text-gray-600 text-xs font-semibold">
-                                                                            {m.lastName.charAt(
-                                                                                0,
-                                                                            )}
+                                                                            {m.nickname.charAt(0)}
                                                                         </div>
                                                                         <div className="flex-1 min-w-0">
                                                                             <p className="text-sm text-gray-900 font-medium">
-                                                                                {
-                                                                                    m.lastName
-                                                                                }{" "}
-                                                                                {
-                                                                                    m.firstName
-                                                                                }
-                                                                            </p>
-                                                                            <p className="text-xs text-gray-400">
-                                                                                {
-                                                                                    m.lastNameKana
-                                                                                }{" "}
-                                                                                {
-                                                                                    m.firstNameKana
-                                                                                }
+                                                                                {m.nickname || "−"}
                                                                             </p>
                                                                             <p className="text-xs text-gray-500 truncate">
                                                                                 {

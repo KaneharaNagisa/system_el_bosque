@@ -5,7 +5,6 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\AvailabilityController;
 use App\Http\Controllers\Admin\BillingController;
 use App\Http\Controllers\Admin\CancelPolicyController;
-use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ExperienceController;
 use App\Http\Controllers\Admin\FaqController;
@@ -100,6 +99,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // 会員管理
         Route::get('/members', [MemberController::class, 'index'])->name('members.index');
         Route::post('/members', [MemberController::class, 'store'])->name('members.store');
+        Route::patch('/members/{id}', [MemberController::class, 'update'])->name('members.update');
         Route::patch('/members/{id}/password', [MemberController::class, 'updatePassword'])->name('members.password');
         Route::delete('/members/{id}', [MemberController::class, 'destroy'])->name('members.destroy');
 
@@ -116,11 +116,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/billing', [BillingController::class, 'index'])->name('billing.index');
         Route::patch('/billing/{id}', [BillingController::class, 'update'])->name('billing.update');
         Route::patch('/billing/{id}/adjustment', [BillingController::class, 'updateAdjustment'])->name('billing.adjustment');
-
-        // お問合せ管理
-        Route::get('/contacts', [ContactController::class, 'index'])->name('contacts.index');
-        Route::post('/contacts/{id}/reply', [ContactController::class, 'reply'])->name('contacts.reply');
-        Route::patch('/contacts/{id}/status', [ContactController::class, 'updateStatus'])->name('contacts.status');
 
         // お知らせ管理
         Route::get('/news', [NewsController::class, 'index'])->name('news.index');

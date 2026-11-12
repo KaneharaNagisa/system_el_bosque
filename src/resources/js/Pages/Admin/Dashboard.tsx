@@ -5,7 +5,6 @@ import {
     FaUsers,
     FaChartLine,
     FaCalendarAlt,
-    FaEnvelope,
     FaCreditCard,
     FaDatabase,
 } from "react-icons/fa";
@@ -19,25 +18,16 @@ interface Reservation {
     status: string;
     payment: string;
 }
-interface Contact {
-    id: string;
-    name: string;
-    subject: string;
-    date: string;
-    status: string;
-}
 interface Stats {
     totalMembers: number;
     newMembersThisMonth: number;
     activeMembers: number;
     paidReservations: number;
     reservationsThisMonth: number;
-    unansweredContacts: number;
 }
 interface Props {
     stats: Stats;
     recentReservations: Reservation[];
-    recentContacts: Contact[];
 }
 
 const statusBadge = (status: string) => {
@@ -64,12 +54,6 @@ const statusBadge = (status: string) => {
             text: "text-orange-800",
         },
         refunded: { label: "返金済", bg: "bg-gray-100", text: "text-gray-800" },
-        unread: { label: "未対応", bg: "bg-red-100", text: "text-red-800" },
-        replied: {
-            label: "対応済",
-            bg: "bg-green-100",
-            text: "text-green-800",
-        },
     };
     const s = map[status] || {
         label: status,
@@ -86,7 +70,6 @@ const statusBadge = (status: string) => {
 export default function Dashboard({
     stats,
     recentReservations,
-    recentContacts,
 }: Props) {
     const { kpiEnabled } = usePage<SharedProps>().props;
     const menuCards = [
@@ -110,13 +93,6 @@ export default function Dashboard({
             desc: "支払状況・売上集計",
             path: "/admin/billing",
             color: "purple",
-        },
-        {
-            icon: FaEnvelope,
-            label: "お問合せ管理",
-            desc: "お問い合わせ内容の確認・対応",
-            path: "/admin/contacts",
-            color: "orange",
         },
         ...(kpiEnabled
             ? [
@@ -142,7 +118,6 @@ export default function Dashboard({
         blue: { bg: "bg-[#e8f5e9]", text: "text-[#0a2105]" },
         green: { bg: "bg-green-100", text: "text-green-700" },
         purple: { bg: "bg-purple-100", text: "text-purple-700" },
-        orange: { bg: "bg-orange-100", text: "text-orange-700" },
         pink: { bg: "bg-pink-100", text: "text-pink-700" },
         teal: { bg: "bg-teal-100", text: "text-teal-700" },
     };
@@ -160,7 +135,7 @@ export default function Dashboard({
                 </div>
 
                 {/* 統計カード */}
-                <div className="grid grid-cols-5 gap-4 mb-8">
+                <div className="grid grid-cols-4 gap-4 mb-8">
                     <div
                         className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow cursor-pointer"
                         onClick={() => router.visit("/admin/members")}
@@ -231,23 +206,6 @@ export default function Dashboard({
                         </div>
                         <p className="text-xs text-gray-400 mt-2">
                             今月受け付けた予約
-                        </p>
-                    </div>
-                    <div
-                        className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow cursor-pointer"
-                        onClick={() => router.visit("/admin/contacts")}
-                    >
-                        <p className="text-xs text-gray-500 mb-1">
-                            未対応の問合せ
-                        </p>
-                        <div className="flex items-center justify-between">
-                            <span className="text-3xl text-red-600">
-                                {stats.unansweredContacts}
-                            </span>
-                            <FaEnvelope className="w-6 h-6 text-red-600 opacity-50" />
-                        </div>
-                        <p className="text-xs text-gray-400 mt-2">
-                            返信が必要な問合せ
                         </p>
                     </div>
                 </div>
@@ -329,79 +287,6 @@ export default function Dashboard({
                                             className="px-6 py-8 text-center text-sm text-gray-400"
                                         >
                                             予約データがありません
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                {/* お問い合わせ */}
-                <div className="bg-white rounded-xl border border-gray-200 mb-8">
-                    <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                        <h3 className="text-base text-gray-900">
-                            お問い合わせ一覧
-                        </h3>
-                        <button
-                            onClick={() => router.visit("/admin/contacts")}
-                            className="text-sm hover:opacity-80"
-                            style={{ color: "#0a2105" }}
-                        >
-                            すべて見る →
-                        </button>
-                    </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="border-b border-gray-100 bg-gray-50">
-                                    <th className="text-left px-6 py-3 text-xs text-gray-500">
-                                        ID
-                                    </th>
-                                    <th className="text-left px-6 py-3 text-xs text-gray-500">
-                                        名前
-                                    </th>
-                                    <th className="text-left px-6 py-3 text-xs text-gray-500">
-                                        件名
-                                    </th>
-                                    <th className="text-left px-6 py-3 text-xs text-gray-500">
-                                        日付
-                                    </th>
-                                    <th className="text-center px-6 py-3 text-xs text-gray-500">
-                                        対応状況
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {recentContacts.map((c) => (
-                                    <tr
-                                        key={c.id}
-                                        className="border-b border-gray-50 hover:bg-gray-50"
-                                    >
-                                        <td className="px-6 py-3 text-sm text-gray-600">
-                                            {c.id}
-                                        </td>
-                                        <td className="px-6 py-3 text-sm text-gray-900">
-                                            {c.name}
-                                        </td>
-                                        <td className="px-6 py-3 text-sm text-gray-600">
-                                            {c.subject}
-                                        </td>
-                                        <td className="px-6 py-3 text-sm text-gray-600">
-                                            {c.date}
-                                        </td>
-                                        <td className="px-6 py-3 text-center">
-                                            {statusBadge(c.status)}
-                                        </td>
-                                    </tr>
-                                ))}
-                                {recentContacts.length === 0 && (
-                                    <tr>
-                                        <td
-                                            colSpan={5}
-                                            className="px-6 py-8 text-center text-sm text-gray-400"
-                                        >
-                                            お問い合わせはありません
                                         </td>
                                     </tr>
                                 )}

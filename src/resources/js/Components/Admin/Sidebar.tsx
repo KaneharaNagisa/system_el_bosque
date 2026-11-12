@@ -12,7 +12,6 @@ import {
     FileText,
     CalendarDays,
     CreditCard,
-    MessageSquare,
     BookOpen,
     BarChart3,
     Images,
@@ -25,7 +24,6 @@ export type AdminPage =
     | "members"
     | "reservations"
     | "billing"
-    | "contacts"
     | "news"
     | "pages"
     | "master-availability"
@@ -88,12 +86,6 @@ export default function AdminSidebar({
             label: "請求管理",
             icon: CreditCard,
             path: "/admin/billing",
-        },
-        {
-            id: "contacts" as const,
-            label: "お問合せ管理",
-            icon: MessageSquare,
-            path: "/admin/contacts",
         },
         {
             id: "news" as const,

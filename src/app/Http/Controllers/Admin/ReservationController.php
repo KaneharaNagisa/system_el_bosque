@@ -33,7 +33,7 @@ class ReservationController extends Controller
                     'id'           => 'RSV-' . str_pad($r->id, 3, '0', STR_PAD_LEFT),
                     'dbId'         => $r->id,
                     'memberId'     => 'MBR-' . str_pad($r->user_id, 3, '0', STR_PAD_LEFT),
-                    'memberName'   => $this->fullName($r->user),
+                    'memberName'   => $r->user->nickname ?? '−',
                     'memberEmail'  => $r->user->email ?? '−',
                     'memberPhone'  => $r->user->phone ?? '−',
                     'checkIn'      => $r->check_in->format('Y-m-d'),
@@ -71,15 +71,12 @@ class ReservationController extends Controller
                 'status'              => $r->status,
             ]);
 
-        $members = User::orderBy('last_name')->orderBy('first_name')
+        $members = User::orderBy('nickname')
             ->get()
             ->map(fn($u) => [
                 'id'            => 'MBR-' . str_pad($u->id, 3, '0', STR_PAD_LEFT),
                 'dbId'          => $u->id,
-                'lastName'      => $u->last_name ?? '',
-                'firstName'     => $u->first_name ?? '',
-                'lastNameKana'  => $u->last_name_kana ?? '',
-                'firstNameKana' => $u->first_name_kana ?? '',
+                'nickname'      => $u->nickname ?? '',
                 'email'         => $u->email,
                 'phone'         => $u->phone ?? '',
                 'joinedAt'      => $u->created_at->format('Y-m-d'),
@@ -292,13 +289,5 @@ class ReservationController extends Controller
         ]);
 
         return back()->with('message', '料金調整を保存しました');
-    }
-
-    private function fullName($user): string
-    {
-        if (!$user) return '−';
-        $last  = $user->last_name ?? $user->name ?? '';
-        $first = $user->first_name ?? '';
-        return trim("$last $first") ?: '−';
     }
 }

@@ -13,34 +13,60 @@ import {
     FaChevronLeft,
     FaChevronRight,
     FaTimes,
-    FaEye,
+    FaEdit,
     FaUser,
     FaPaw,
     FaMapMarkerAlt,
     FaCalendarAlt,
+    FaCheckCircle,
+    FaPlus,
 } from "react-icons/fa";
+import { PREFECTURES, getCities } from "../../Public/data/japanLocations";
+import {
+    FAMILY_BIRTH_YEAR_OPTIONS,
+    getApproximateAge,
+} from "../../Public/data/familyBirthYears";
 
 interface Member {
     id: string;
     dbId: number;
-    lastName: string;
-    firstName: string;
-    lastNameKana: string;
-    firstNameKana: string;
+    nickname: string;
     email: string;
     phone?: string;
-    address?: string;
+    prefecture: string;
+    city: string;
+    lineId: string;
     birthDate?: string;
     hasPet: string;
     petBreed?: string;
     petBreed2?: string;
     hasFamily?: string;
+    familyBirthYears: string[];
     concerns?: string;
     howFound?: string;
     expectations?: string;
     registeredAt: string;
     lastLoginAt?: string;
     status: string;
+}
+
+interface MemberEditForm {
+    nickname: string;
+    email: string;
+    phone: string;
+    prefecture: string;
+    city: string;
+    lineId: string;
+    birthDate: string;
+    hasFamily: string;
+    familyBirthYears: string[];
+    concerns: string;
+    howFound: string;
+    expectations: string;
+    hasPet: string;
+    petBreed: string;
+    petBreed2: string;
+    status: "active" | "withdrawn";
 }
 
 const petLabels: Record<string, string> = {
@@ -57,22 +83,13 @@ const familyLabels: Record<string, string> = {
     married: "ご夫婦",
     family: "ご家族（お子さんあり）",
 };
-const howFoundLabels: Record<string, string> = {
-    search: "検索エンジン",
-    sns: "SNS（Instagram・X等）",
-    friend: "知人の紹介",
-    media: "雑誌・テレビ",
-    other: "その他",
-};
-
 const emptyNewForm = {
-    lastName: "",
-    firstName: "",
-    lastNameKana: "",
-    firstNameKana: "",
+    nickname: "",
     email: "",
     phone: "",
-    address: "",
+    prefecture: "",
+    city: "",
+    lineId: "",
     birthDate: "",
     hasPet: "none",
     petBreed: "",
@@ -97,7 +114,27 @@ export default function Members({
     const [showFilters, setShowFilters] = useState(false);
     const [selectedMember, setSelectedMember] = useState<Member | null>(null);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
-    const [sortField, setSortField] = useState<string | null>(null);
+    const [editForm, setEditForm] = useState<MemberEditForm>({
+        nickname: "",
+        email: "",
+        phone: "",
+        prefecture: "",
+        city: "",
+        lineId: "",
+        birthDate: "",
+        hasFamily: "individual",
+        familyBirthYears: [],
+        concerns: "",
+        howFound: "",
+        expectations: "",
+        hasPet: "none",
+        petBreed: "",
+        petBreed2: "",
+        status: "active",
+    });
+    const [editSaved, setEditSaved] = useState(false);
+    const [editErrors, setEditErrors] = useState<Record<string, string>>({});
+    const [sortField, setSortField] = useState<keyof Member | null>(null);
     const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
     const [currentPage, setCurrentPage] = useState(1);
     const perPage = 20;
@@ -121,15 +158,107 @@ export default function Members({
         setNewErrors((e) => ({ ...e, [key]: undefined }));
     };
 
+    const openMemberEdit = (member: Member) => {
+        setSelectedMember(member);
+        setEditForm({
+            nickname: member.nickname,
+            email: member.email,
+            phone: member.phone ?? "",
+            prefecture: member.prefecture,
+            city: member.city,
+            lineId: member.lineId,
+            birthDate: member.birthDate ?? "",
+            hasFamily: member.hasFamily ?? "individual",
+            familyBirthYears: member.familyBirthYears ?? [],
+            concerns: member.concerns ?? "",
+            howFound: member.howFound ?? "",
+            expectations: member.expectations ?? "",
+            hasPet: member.hasPet,
+            petBreed: member.petBreed ?? "",
+            petBreed2: member.petBreed2 ?? "",
+            status: member.status === "withdrawn" ? "withdrawn" : "active",
+        });
+        setEditSaved(false);
+        setEditErrors({});
+        setPasswordForm({ password: "", passwordConfirmation: "" });
+        setPasswordError("");
+        setIsDetailOpen(true);
+    };
+
+    const setEF = <K extends keyof MemberEditForm>(
+        key: K,
+        value: MemberEditForm[K],
+    ) => {
+        setEditForm((form) => ({ ...form, [key]: value }));
+        setEditSaved(false);
+        setEditErrors((errors) => ({ ...errors, [key]: "" }));
+    };
+
+    const handleMemberSave = () => {
+        if (!selectedMember) return;
+
+        router.patch(
+            `/admin/members/${selectedMember.dbId}`,
+            {
+                nickname: editForm.nickname.trim(),
+                email: editForm.email.trim(),
+                phone: editForm.phone.trim(),
+                prefecture: editForm.prefecture || null,
+                city: editForm.city || null,
+                line_id: editForm.lineId.trim() || null,
+                birth_date: editForm.birthDate || null,
+                family_type: editForm.hasFamily || null,
+                family_birth_years:
+                    editForm.hasFamily === "family"
+                        ? editForm.familyBirthYears.filter(Boolean)
+                        : [],
+                concerns: editForm.concerns.trim() || null,
+                how_found: editForm.howFound.trim() || null,
+                expectations: editForm.expectations.trim() || null,
+                has_pet: editForm.hasPet,
+                pet_breed:
+                    editForm.hasPet === "none"
+                        ? null
+                        : editForm.petBreed.trim() || null,
+                pet_breed2:
+                    editForm.hasPet === "small2" ||
+                    editForm.hasPet === "large2"
+                        ? editForm.petBreed2.trim() || null
+                        : null,
+                status: editForm.status,
+            },
+            {
+                onSuccess: () => {
+                    setSelectedMember((member) =>
+                        member
+                            ? {
+                                  ...member,
+                                  ...editForm,
+                                  lineId: editForm.lineId,
+                                  familyBirthYears:
+                                      editForm.hasFamily === "family"
+                                          ? editForm.familyBirthYears.filter(
+                                                Boolean,
+                                            )
+                                          : [],
+                              }
+                            : member,
+                    );
+                    setEditSaved(true);
+                    setEditErrors({});
+                },
+                onError: (errors) => setEditErrors(errors),
+            },
+        );
+    };
+
     const filtered = useMemo(() => {
         return initialMembers.filter((m) => {
-            const fullName = `${m.lastName}${m.firstName}`;
-            const fullKana = `${m.lastNameKana}${m.firstNameKana}`;
             const matchSearch =
                 !searchQuery ||
-                fullName.includes(searchQuery) ||
-                fullKana.includes(searchQuery) ||
+                m.nickname.includes(searchQuery) ||
                 m.email.includes(searchQuery) ||
+                m.lineId.includes(searchQuery) ||
                 m.id.includes(searchQuery);
             const matchStatus =
                 filterStatus === "all" || m.status === filterStatus;
@@ -141,11 +270,9 @@ export default function Members({
     const sorted = useMemo(() => {
         if (!sortField) return filtered;
         return [...filtered].sort((a, b) => {
-            const aVal =
-                ((a as Record<string, unknown>)[sortField] as string) ?? "";
-            const bVal =
-                ((b as Record<string, unknown>)[sortField] as string) ?? "";
-            const cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+            const aVal = String(a[sortField] ?? "");
+            const bVal = String(b[sortField] ?? "");
+            const cmp = aVal.localeCompare(bVal);
             return sortDir === "asc" ? cmp : -cmp;
         });
     }, [filtered, sortField, sortDir]);
@@ -156,7 +283,7 @@ export default function Members({
         currentPage * perPage,
     );
 
-    const handleSort = (field: string) => {
+    const handleSort = (field: keyof Member) => {
         if (sortField === field) {
             if (sortDir === "asc") setSortDir("desc");
             else {
@@ -170,7 +297,7 @@ export default function Members({
         setCurrentPage(1);
     };
 
-    const SortIcon = ({ field }: { field: string }) => {
+    const SortIcon = ({ field }: { field: keyof Member }) => {
         if (sortField !== field)
             return <FaSort className="w-3 h-3 text-gray-400 ml-1" />;
         return sortDir === "asc" ? (
@@ -188,12 +315,8 @@ export default function Members({
 
     const validateNew = () => {
         const errs: typeof newErrors = {};
-        if (!newForm.lastName.trim()) errs.lastName = "姓は必須です";
-        if (!newForm.firstName.trim()) errs.firstName = "名は必須です";
-        if (!newForm.lastNameKana.trim())
-            errs.lastNameKana = "姓（ふりがな）は必須です";
-        if (!newForm.firstNameKana.trim())
-            errs.firstNameKana = "名（ふりがな）は必須です";
+        if (!newForm.nickname.trim())
+            errs.nickname = "ニックネームは必須です";
         if (!newForm.email.trim()) errs.email = "メールアドレスは必須です";
         else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newForm.email))
             errs.email = "正しいメールアドレスを入力してください";
@@ -212,13 +335,12 @@ export default function Members({
         router.post(
             "/admin/members",
             {
-                last_name: newForm.lastName.trim(),
-                first_name: newForm.firstName.trim(),
-                last_name_kana: newForm.lastNameKana.trim(),
-                first_name_kana: newForm.firstNameKana.trim(),
+                nickname: newForm.nickname.trim(),
                 email: newForm.email.trim(),
                 phone: newForm.phone.trim(),
-                address: newForm.address.trim() || null,
+                prefecture: newForm.prefecture || null,
+                city: newForm.city || null,
+                line_id: newForm.lineId.trim() || null,
                 birth_date: newForm.birthDate || null,
                 has_pet: newForm.hasPet,
                 pet_breed: newForm.petBreed.trim() || null,
@@ -278,7 +400,7 @@ export default function Members({
                                 <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                                 <input
                                     type="text"
-                                    placeholder="名前、ふりがな、メール、IDで検索"
+                                    placeholder="ニックネーム、メール、LINE ID、会員IDで検索"
                                     value={searchQuery}
                                     onChange={(e) => {
                                         setSearchQuery(e.target.value);
@@ -369,7 +491,7 @@ export default function Members({
                                         ID
                                     </th>
                                     <th className="text-left px-4 py-3 text-xs text-gray-500">
-                                        名前
+                                        ニックネーム
                                     </th>
                                     <th className="text-left px-4 py-3 text-xs text-gray-500">
                                         メール
@@ -410,11 +532,7 @@ export default function Members({
                                         </td>
                                         <td className="px-4 py-3">
                                             <div className="text-sm text-gray-900">
-                                                {m.lastName} {m.firstName}
-                                            </div>
-                                            <div className="text-xs text-gray-400">
-                                                {m.lastNameKana}{" "}
-                                                {m.firstNameKana}
+                                                {m.nickname || "−"}
                                             </div>
                                         </td>
                                         <td className="px-4 py-3 text-sm text-gray-600">
@@ -443,20 +561,11 @@ export default function Members({
                                         <td className="px-4 py-3 text-right">
                                             <div className="flex items-center justify-end gap-1">
                                                 <button
-                                                    onClick={() => {
-                                                        setSelectedMember(m);
-                                                        setPasswordForm({
-                                                            password: "",
-                                                            passwordConfirmation:
-                                                                "",
-                                                        });
-                                                        setPasswordError("");
-                                                        setIsDetailOpen(true);
-                                                    }}
+                                                    onClick={() => openMemberEdit(m)}
                                                     className="p-1.5 text-gray-500 hover:text-[#0a2105] hover:bg-[#e8f5e9] rounded"
-                                                    title="詳細"
+                                                    title="編集"
                                                 >
-                                                    <FaEye className="w-3.5 h-3.5" />
+                                                    <FaEdit className="w-3.5 h-3.5" />
                                                 </button>
                                                 <button
                                                     onClick={() =>
@@ -522,20 +631,25 @@ export default function Members({
                     )}
                 </div>
 
-                {/* 詳細モーダル */}
+                {/* 会員編集モーダル */}
                 {isDetailOpen && selectedMember && (
                     <div
                         className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
                         onClick={() => setIsDetailOpen(false)}
                     >
                         <div
-                            className="bg-white rounded-xl max-w-lg w-full max-h-[80vh] overflow-y-auto"
+                            className="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                                <h3 className="text-base text-gray-900">
-                                    会員詳細
-                                </h3>
+                                <div>
+                                    <h3 className="text-base text-gray-900">
+                                        会員情報編集
+                                    </h3>
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        {selectedMember.id} ／ {selectedMember.nickname || "−"}
+                                    </p>
+                                </div>
                                 <button
                                     onClick={() => setIsDetailOpen(false)}
                                     className="text-gray-400 hover:text-gray-600"
@@ -543,92 +657,291 @@ export default function Members({
                                     <FaTimes className="w-4 h-4" />
                                 </button>
                             </div>
-                            <div className="px-6 py-4 space-y-3">
-                                {(
-                                    [
-                                        ["ID", selectedMember.id],
-                                        [
-                                            "氏名",
-                                            `${selectedMember.lastName} ${selectedMember.firstName}`,
-                                        ],
-                                        [
-                                            "ふりがな",
-                                            `${selectedMember.lastNameKana} ${selectedMember.firstNameKana}`,
-                                        ],
-                                        ["メール", selectedMember.email],
-                                        ["電話", selectedMember.phone || "−"],
-                                        ["住所", selectedMember.address || "−"],
-                                        [
-                                            "生年月日",
-                                            selectedMember.birthDate || "−",
-                                        ],
-                                        [
-                                            "宿泊形態",
-                                            familyLabels[
-                                                selectedMember.hasFamily ?? ""
-                                            ] ||
-                                                selectedMember.hasFamily ||
-                                                "−",
-                                        ],
-                                        [
-                                            "ペット同伴",
-                                            petLabels[selectedMember.hasPet] ||
-                                                selectedMember.hasPet,
-                                        ],
-                                        ...(selectedMember.petBreed
-                                            ? [
-                                                  [
-                                                      "犬種①",
-                                                      selectedMember.petBreed,
-                                                  ],
-                                              ]
-                                            : []),
-                                        ...(selectedMember.petBreed2
-                                            ? [
-                                                  [
-                                                      "犬種②",
-                                                      selectedMember.petBreed2,
-                                                  ],
-                                              ]
-                                            : []),
-                                        [
-                                            "宿泊の際に気になること",
-                                            selectedMember.concerns || "−",
-                                        ],
-                                        [
-                                            "知ったきっかけ",
-                                            howFoundLabels[
-                                                selectedMember.howFound ?? ""
-                                            ] ||
-                                                selectedMember.howFound ||
-                                                "−",
-                                        ],
-                                        [
-                                            "エルボスケに期待すること",
-                                            selectedMember.expectations || "−",
-                                        ],
-                                        ["登録日", selectedMember.registeredAt],
-                                        [
-                                            "最終ログイン",
-                                            selectedMember.lastLoginAt || "−",
-                                        ],
-                                        [
-                                            "ステータス",
-                                            selectedMember.status === "active"
-                                                ? "利用中"
-                                                : "退会",
-                                        ],
-                                    ] as [string, string][]
-                                ).map(([label, value]) => (
-                                    <div key={label} className="flex">
-                                        <span className="w-40 shrink-0 text-sm text-gray-500">
-                                            {label}
-                                        </span>
-                                        <span className="text-sm text-gray-900">
-                                            {value}
-                                        </span>
-                                    </div>
-                                ))}
+                            <div className="px-6 py-4 space-y-5">
+                                {Object.entries(editErrors)
+                                    .filter(([, message]) => message)
+                                    .map(([field, message]) => (
+                                        <p key={field} className="text-xs text-red-600">
+                                            {message}
+                                        </p>
+                                    ))}
+                                <div className="grid grid-cols-2 gap-3">
+                                    <label className="text-xs text-gray-600">
+                                        ニックネーム
+                                        <input
+                                            value={editForm.nickname}
+                                            onChange={(e) =>
+                                                setEF("nickname", e.target.value)
+                                            }
+                                            className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                        />
+                                    </label>
+                                    <label className="text-xs text-gray-600">
+                                        メールアドレス
+                                        <input
+                                            type="email"
+                                            value={editForm.email}
+                                            onChange={(e) =>
+                                                setEF("email", e.target.value)
+                                            }
+                                            className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                        />
+                                    </label>
+                                    <label className="text-xs text-gray-600">
+                                        電話番号
+                                        <input
+                                            type="tel"
+                                            value={editForm.phone}
+                                            onChange={(e) =>
+                                                setEF("phone", e.target.value)
+                                            }
+                                            className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                        />
+                                    </label>
+                                    <label className="text-xs text-gray-600">
+                                        LINE ID
+                                        <input
+                                            value={editForm.lineId}
+                                            onChange={(e) =>
+                                                setEF("lineId", e.target.value)
+                                            }
+                                            className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                        />
+                                    </label>
+                                    <label className="text-xs text-gray-600">
+                                        都道府県
+                                        <select
+                                            value={editForm.prefecture}
+                                            onChange={(e) => {
+                                                setEF("prefecture", e.target.value);
+                                                setEF("city", "");
+                                            }}
+                                            className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+                                        >
+                                            <option value="">選択してください</option>
+                                            {PREFECTURES.map((prefecture) => (
+                                                <option key={prefecture} value={prefecture}>
+                                                    {prefecture}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </label>
+                                    <label className="text-xs text-gray-600">
+                                        市区町村
+                                        <select
+                                            value={editForm.city}
+                                            onChange={(e) => setEF("city", e.target.value)}
+                                            disabled={!editForm.prefecture}
+                                            className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white disabled:bg-gray-100"
+                                        >
+                                            <option value="">選択してください</option>
+                                            {getCities(editForm.prefecture).map((city) => (
+                                                <option key={city} value={city}>
+                                                    {city}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </label>
+                                    <label className="text-xs text-gray-600">
+                                        生年月日
+                                        <input
+                                            type="date"
+                                            value={editForm.birthDate}
+                                            onChange={(e) =>
+                                                setEF("birthDate", e.target.value)
+                                            }
+                                            className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                        />
+                                    </label>
+                                    <label className="text-xs text-gray-600">
+                                        宿泊形態
+                                        <select
+                                            value={editForm.hasFamily}
+                                            onChange={(e) => {
+                                                const hasFamily = e.target.value;
+                                                setEF("hasFamily", hasFamily);
+                                                setEF(
+                                                    "familyBirthYears",
+                                                    hasFamily === "family"
+                                                        ? editForm.familyBirthYears.length
+                                                            ? editForm.familyBirthYears
+                                                            : [""]
+                                                        : [],
+                                                );
+                                            }}
+                                            className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+                                        >
+                                            <option value="individual">個人</option>
+                                            <option value="friends">友人</option>
+                                            <option value="couple">カップル</option>
+                                            <option value="married">ご夫婦</option>
+                                            <option value="family">ご家族（お子さんあり）</option>
+                                        </select>
+                                    </label>
+                                </div>
+                                {editForm.hasFamily === "family" && (
+                                    <section>
+                                        <h4 className="text-xs font-semibold text-gray-500 mb-2">
+                                            ご家族の生まれ年
+                                        </h4>
+                                        {editForm.familyBirthYears.map((year, index) => (
+                                            <div key={index} className="flex gap-2 mb-2">
+                                                <select
+                                                    value={year}
+                                                    onChange={(e) =>
+                                                        setEF(
+                                                            "familyBirthYears",
+                                                            editForm.familyBirthYears.map(
+                                                                (current, yearIndex) =>
+                                                                    yearIndex === index
+                                                                        ? e.target.value
+                                                                        : current,
+                                                            ),
+                                                        )
+                                                    }
+                                                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+                                                >
+                                                    <option value="">生まれ年を選択</option>
+                                                    {FAMILY_BIRTH_YEAR_OPTIONS.map((option) => (
+                                                        <option key={option} value={option}>
+                                                            {option}年
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <span className="self-center text-xs text-gray-500">
+                                                    {getApproximateAge(year)}
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setEF(
+                                                            "familyBirthYears",
+                                                            editForm.familyBirthYears.filter(
+                                                                (_, yearIndex) =>
+                                                                    yearIndex !== index,
+                                                            ),
+                                                        )
+                                                    }
+                                                    className="px-3 text-red-600"
+                                                    aria-label={`家族${index + 1}人目を削除`}
+                                                >
+                                                    <FaTrashAlt />
+                                                </button>
+                                            </div>
+                                        ))}
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setEF("familyBirthYears", [
+                                                    ...editForm.familyBirthYears,
+                                                    "",
+                                                ])
+                                            }
+                                            className="flex items-center gap-1 text-sm text-[#0a2105]"
+                                        >
+                                            <FaPlus /> 家族を追加
+                                        </button>
+                                    </section>
+                                )}
+                                <div className="grid grid-cols-2 gap-3">
+                                    <label className="text-xs text-gray-600">
+                                        ペット同伴
+                                        <select
+                                            value={editForm.hasPet}
+                                            onChange={(e) =>
+                                                setEF("hasPet", e.target.value)
+                                            }
+                                            className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+                                        >
+                                            <option value="none">なし</option>
+                                            <option value="small1">小型犬1頭</option>
+                                            <option value="small2">小型犬2頭</option>
+                                            <option value="large1">大型犬1頭</option>
+                                            <option value="large2">大型犬2頭</option>
+                                        </select>
+                                    </label>
+                                    {editForm.hasPet !== "none" && (
+                                        <>
+                                            <label className="text-xs text-gray-600">
+                                                犬種
+                                                <input
+                                                    value={editForm.petBreed}
+                                                    onChange={(e) =>
+                                                        setEF("petBreed", e.target.value)
+                                                    }
+                                                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                                />
+                                            </label>
+                                            {(editForm.hasPet === "small2" ||
+                                                editForm.hasPet === "large2") && (
+                                                <label className="text-xs text-gray-600">
+                                                    犬種②
+                                                    <input
+                                                        value={editForm.petBreed2}
+                                                        onChange={(e) =>
+                                                            setEF("petBreed2", e.target.value)
+                                                        }
+                                                        className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                                    />
+                                                </label>
+                                            )}
+                                        </>
+                                    )}
+                                    <label className="text-xs text-gray-600">
+                                        ステータス
+                                        <select
+                                            value={editForm.status}
+                                            onChange={(e) =>
+                                                setEF(
+                                                    "status",
+                                                    e.target.value as MemberEditForm["status"],
+                                                )
+                                            }
+                                            className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+                                        >
+                                            <option value="active">利用中</option>
+                                            <option value="withdrawn">退会</option>
+                                        </select>
+                                    </label>
+                                </div>
+                                <label className="block text-xs text-gray-600">
+                                    宿泊の際に気になること
+                                    <textarea
+                                        value={editForm.concerns}
+                                        onChange={(e) =>
+                                            setEF("concerns", e.target.value)
+                                        }
+                                        rows={2}
+                                        className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                    />
+                                </label>
+                                <label className="block text-xs text-gray-600">
+                                    知ったきっかけ
+                                    <input
+                                        value={editForm.howFound}
+                                        onChange={(e) =>
+                                            setEF("howFound", e.target.value)
+                                        }
+                                        className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                    />
+                                </label>
+                                <label className="block text-xs text-gray-600">
+                                    エルボスケに期待すること
+                                    <textarea
+                                        value={editForm.expectations}
+                                        onChange={(e) =>
+                                            setEF("expectations", e.target.value)
+                                        }
+                                        rows={2}
+                                        className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                    />
+                                </label>
+                                {editSaved && (
+                                    <p className="flex items-center gap-2 text-sm text-green-700">
+                                        <FaCheckCircle />
+                                        会員情報を更新しました
+                                    </p>
+                                )}
                                 <div className="border-t border-gray-200 pt-4 mt-4">
                                     <h4 className="text-sm font-semibold text-gray-700 mb-3">
                                         パスワード変更
@@ -728,6 +1041,22 @@ export default function Members({
                                         </button>
                                     </div>
                                 </div>
+                                <div className="flex justify-end gap-3 border-t border-gray-200 pt-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsDetailOpen(false)}
+                                        className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                                    >
+                                        キャンセル
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleMemberSave}
+                                        className="px-5 py-2 text-sm bg-[#0a2105] text-white rounded-lg hover:bg-[#071a04]"
+                                    >
+                                        会員情報を保存
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -765,114 +1094,23 @@ export default function Members({
                                         <FaUser className="w-3 h-3" /> 基本情報
                                     </h4>
                                     <div className="space-y-3">
-                                        <div className="grid grid-cols-2 gap-3">
-                                            <div>
-                                                <label className="block text-xs text-gray-600 mb-1">
-                                                    姓{" "}
-                                                    <span className="text-red-500">
-                                                        *
-                                                    </span>
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    value={newForm.lastName}
-                                                    onChange={(e) =>
-                                                        setNF(
-                                                            "lastName",
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                    placeholder="例: 山田"
-                                                    className={`w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105] ${newErrors.lastName ? "border-red-400 bg-red-50" : "border-gray-300"}`}
-                                                />
-                                                {newErrors.lastName && (
-                                                    <p className="text-xs text-red-500 mt-1">
-                                                        {newErrors.lastName}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs text-gray-600 mb-1">
-                                                    名{" "}
-                                                    <span className="text-red-500">
-                                                        *
-                                                    </span>
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    value={newForm.firstName}
-                                                    onChange={(e) =>
-                                                        setNF(
-                                                            "firstName",
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                    placeholder="例: 太郎"
-                                                    className={`w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105] ${newErrors.firstName ? "border-red-400 bg-red-50" : "border-gray-300"}`}
-                                                />
-                                                {newErrors.firstName && (
-                                                    <p className="text-xs text-red-500 mt-1">
-                                                        {newErrors.firstName}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-3">
-                                            <div>
-                                                <label className="block text-xs text-gray-600 mb-1">
-                                                    姓（ふりがな）{" "}
-                                                    <span className="text-red-500">
-                                                        *
-                                                    </span>
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    value={newForm.lastNameKana}
-                                                    onChange={(e) =>
-                                                        setNF(
-                                                            "lastNameKana",
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                    placeholder="例: やまだ"
-                                                    className={`w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105] ${newErrors.lastNameKana ? "border-red-400 bg-red-50" : "border-gray-300"}`}
-                                                />
-                                                {newErrors.lastNameKana && (
-                                                    <p className="text-xs text-red-500 mt-1">
-                                                        {newErrors.lastNameKana}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs text-gray-600 mb-1">
-                                                    名（ふりがな）{" "}
-                                                    <span className="text-red-500">
-                                                        *
-                                                    </span>
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    value={
-                                                        newForm.firstNameKana
-                                                    }
-                                                    onChange={(e) =>
-                                                        setNF(
-                                                            "firstNameKana",
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                    placeholder="例: たろう"
-                                                    className={`w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105] ${newErrors.firstNameKana ? "border-red-400 bg-red-50" : "border-gray-300"}`}
-                                                />
-                                                {newErrors.firstNameKana && (
-                                                    <p className="text-xs text-red-500 mt-1">
-                                                        {
-                                                            newErrors.firstNameKana
-                                                        }
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
+                                        <label className="block text-xs text-gray-600">
+                                            ニックネーム{" "}
+                                            <span className="text-red-500">*</span>
+                                            <input
+                                                type="text"
+                                                value={newForm.nickname}
+                                                onChange={(e) =>
+                                                    setNF("nickname", e.target.value)
+                                                }
+                                                className={`mt-1 w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105] ${newErrors.nickname ? "border-red-400 bg-red-50" : "border-gray-300"}`}
+                                            />
+                                            {newErrors.nickname && (
+                                                <p className="text-xs text-red-500 mt-1">
+                                                    {newErrors.nickname}
+                                                </p>
+                                            )}
+                                        </label>
                                         <div className="grid grid-cols-2 gap-3">
                                             <div>
                                                 <label className="block text-xs text-gray-600 mb-1">
@@ -984,30 +1222,57 @@ export default function Members({
                                     </div>
                                 </section>
 
-                                {/* 住所・生年月日 */}
+                                {/* 居住地域・生年月日 */}
                                 <section>
                                     <h4 className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
                                         <FaMapMarkerAlt className="w-3 h-3" />{" "}
-                                        住所・生年月日
+                                        居住地域・生年月日
                                     </h4>
                                     <div className="grid grid-cols-2 gap-3">
-                                        <div className="col-span-2">
-                                            <label className="block text-xs text-gray-600 mb-1">
-                                                住所
-                                            </label>
+                                        <label className="block text-xs text-gray-600">
+                                            都道府県
+                                            <select
+                                                value={newForm.prefecture}
+                                                onChange={(e) => {
+                                                    setNF("prefecture", e.target.value);
+                                                    setNF("city", "");
+                                                }}
+                                                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+                                            >
+                                                <option value="">選択してください</option>
+                                                {PREFECTURES.map((prefecture) => (
+                                                    <option key={prefecture} value={prefecture}>
+                                                        {prefecture}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </label>
+                                        <label className="block text-xs text-gray-600">
+                                            市区町村
+                                            <select
+                                                value={newForm.city}
+                                                onChange={(e) => setNF("city", e.target.value)}
+                                                disabled={!newForm.prefecture}
+                                                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white disabled:bg-gray-100"
+                                            >
+                                                <option value="">選択してください</option>
+                                                {getCities(newForm.prefecture).map((city) => (
+                                                    <option key={city} value={city}>
+                                                        {city}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </label>
+                                        <label className="block text-xs text-gray-600">
+                                            LINE ID
                                             <input
-                                                type="text"
-                                                value={newForm.address}
+                                                value={newForm.lineId}
                                                 onChange={(e) =>
-                                                    setNF(
-                                                        "address",
-                                                        e.target.value,
-                                                    )
+                                                    setNF("lineId", e.target.value)
                                                 }
-                                                placeholder="例: 東京都新宿区西新宿1-1-1"
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105]"
+                                                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                                             />
-                                        </div>
+                                        </label>
                                         <div>
                                             <label className="block text-xs text-gray-600 mb-1">
                                                 <FaCalendarAlt className="inline w-2.5 h-2.5 mr-1" />
