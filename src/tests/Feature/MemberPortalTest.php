@@ -58,10 +58,12 @@ class MemberPortalTest extends TestCase
             'password' => 'password123',
             'password_confirmation' => 'password123',
             'phone' => '090-1234-5678',
-            'address' => '長野県下伊那郡',
+            'prefecture' => '長野県',
+            'city' => '阿南町',
             'birthDate' => '1990-01-01',
-            'hasPet' => 'no',
-            'hasFamily' => 'individual',
+            'hasPet' => 'none',
+            'hasFamily' => 'family',
+            'familyBirthYears' => ['2010', '2013'],
             'concerns' => '虫が苦手です',
             'howFound' => 'search',
             'expectations' => '自然の中で静かに過ごしたいです',
@@ -80,6 +82,10 @@ class MemberPortalTest extends TestCase
         $this->assertSame('虫が苦手です', $user->concerns);
         $this->assertSame('search', $user->how_found);
         $this->assertSame('自然の中で静かに過ごしたいです', $user->expectations);
+        $this->assertSame('長野県', $user->prefecture);
+        $this->assertSame('阿南町', $user->city);
+        $this->assertSame(['2010', '2013'], $user->family_birth_years);
+        $this->assertNull($user->line_id);
         $this->assertNotNull($pendingRegistration->fresh()->used_at);
     }
 
@@ -99,7 +105,7 @@ class MemberPortalTest extends TestCase
                 'password' => 'password123',
                 'password_confirmation' => 'password123',
                 'phone' => '090-1234-5678',
-                'hasPet' => 'no',
+                'hasPet' => 'none',
             ])
             ->assertSessionHasErrors('nickname');
 
@@ -121,6 +127,21 @@ class MemberPortalTest extends TestCase
                 && $mail->recipientEmail === 'new-member@example.com'
                 && str_contains($mail->registrationUrl, "/register/verify/{$pendingRegistration->id}/");
         });
+    }
+
+    public function test_existing_email_cannot_receive_a_registration_confirmation_email(): void
+    {
+        Mail::fake();
+        User::factory()->create(['email' => 'member@example.com']);
+
+        $this->from('/register')->post('/register/email', [
+            'email' => 'member@example.com',
+        ])->assertSessionHasErrors('email');
+
+        $this->assertDatabaseMissing('pending_registrations', [
+            'email' => 'member@example.com',
+        ]);
+        Mail::assertNothingSent();
     }
 
     public function test_valid_registration_link_starts_main_registration(): void
@@ -151,28 +172,47 @@ class MemberPortalTest extends TestCase
 
     public function test_member_can_update_own_profile(): void
     {
-        $user = User::factory()->create(['status' => 'active']);
+        $user = User::factory()->create([
+            'status' => 'active',
+            'nickname' => '既存ニックネーム',
+        ]);
 
         $this->actingAs($user)->patch('/mypage', [
-            'nickname' => 'はなこ',
-            'address' => '東京都新宿区1-1',
+            'nickname' => '変更不可ニックネーム',
+            'email' => 'changed@example.com',
+            'phone' => '090-9876-5432',
+            'prefecture' => '東京都',
+            'city' => '新宿区',
+            'birthDate' => '1992-03-04',
             'hasPet' => 'none',
             'petBreed' => '',
             'petBreed2' => '',
-            'hasFamily' => 'individual',
+            'hasFamily' => 'family',
+            'familyBirthYears' => ['2010', '2013'],
             'concerns' => 'アレルギーがあります',
             'howFound' => '検索',
             'expectations' => '犬とゆっくり過ごしたいです',
         ])->assertSessionHasNoErrors();
 
-        $this->assertDatabaseHas('users', [
-            'id' => $user->id,
-            'name' => 'はなこ',
-            'nickname' => 'はなこ',
-            'concerns' => 'アレルギーがあります',
-            'how_found' => '検索',
-            'expectations' => '犬とゆっくり過ごしたいです',
-        ]);
+        $updatedUser = $user->fresh();
+        $this->assertSame('既存ニックネーム', $updatedUser->nickname);
+        $this->assertSame($user->email, $updatedUser->email);
+        $this->assertSame('090-9876-5432', $updatedUser->phone);
+        $this->assertSame('東京都', $updatedUser->prefecture);
+        $this->assertSame('新宿区', $updatedUser->city);
+        $this->assertSame('1992-03-04', $updatedUser->birth_date->format('Y-m-d'));
+        $this->assertSame(['2010', '2013'], $updatedUser->family_birth_years);
+        $this->assertSame('アレルギーがあります', $updatedUser->concerns);
+        $this->assertSame('検索', $updatedUser->how_found);
+        $this->assertSame('犬とゆっくり過ごしたいです', $updatedUser->expectations);
+
+        $this->actingAs($user)->patch('/mypage', [
+            'phone' => $updatedUser->phone,
+            'hasPet' => 'none',
+            'birthDate' => null,
+        ])->assertSessionHasNoErrors();
+
+        $this->assertNull($user->fresh()->birth_date);
     }
 
     public function test_member_reservation_creates_pending_reservation_and_server_calculated_billing(): void

@@ -8,9 +8,16 @@ import {
     FaEnvelopeOpenText,
     FaCheckCircle,
     FaUserPlus,
+    FaPlus,
+    FaTrashAlt,
 } from "react-icons/fa";
 import { useAuth, type UserProfile } from "../context/AuthContext";
 import { BirthDatePicker } from "../components/BirthDatePicker";
+import { PREFECTURES, getCities } from "../data/japanLocations";
+import {
+    FAMILY_BIRTH_YEAR_OPTIONS,
+    getApproximateAge,
+} from "../data/familyBirthYears";
 
 const inputStyle: React.CSSProperties = {
     width: "100%",
@@ -146,16 +153,16 @@ export function Register() {
     const [profile, setProfile] = useState({
         nickname: "",
         phone: "",
-        postalCode: "",
-        address: "",
+        prefecture: "",
+        city: "",
         password: "",
         passwordConfirm: "",
         birthDate: "",
-        hasPet: "no",
+        hasPet: "none",
         petBreed: "",
         petBreed2: "",
         hasFamily: "individual",
-        familyDetail: "",
+        familyBirthYears: [] as string[],
         concerns: "",
         howFound: "",
         expectations: "",
@@ -175,7 +182,7 @@ export function Register() {
     ) => {
         const { name, value } = e.target;
         if (name === "hasPet") {
-            if (value === "no") {
+            if (value === "none") {
                 setProfile((prev) => ({
                     ...prev,
                     hasPet: value,
@@ -191,6 +198,17 @@ export function Register() {
             } else {
                 setProfile((prev) => ({ ...prev, hasPet: value }));
             }
+        } else if (name === "hasFamily") {
+            setProfile((prev) => ({
+                ...prev,
+                hasFamily: value,
+                familyBirthYears:
+                    value === "family"
+                        ? prev.familyBirthYears.length > 0
+                            ? prev.familyBirthYears
+                            : [""]
+                        : [],
+            }));
         } else {
             setProfile((prev) => ({ ...prev, [name]: value }));
         }
@@ -232,14 +250,18 @@ export function Register() {
             nickname: profile.nickname,
             email,
             phone: profile.phone,
-            address: profile.address,
             password: profile.password,
             birthDate: profile.birthDate,
+            prefecture: profile.prefecture,
+            city: profile.city,
             hasPet: profile.hasPet,
             petBreed: profile.petBreed,
             petBreed2:
-                profile.hasPet === "small2" ? profile.petBreed2 : undefined,
+                profile.hasPet === "small2" || profile.hasPet === "large2"
+                    ? profile.petBreed2
+                    : undefined,
             hasFamily: profile.hasFamily,
+            familyBirthYears: profile.familyBirthYears.filter(Boolean),
             concerns: profile.concerns,
             howFound: profile.howFound,
             expectations: profile.expectations,
@@ -264,10 +286,10 @@ export function Register() {
 
     const petLabel = (val: string) => {
         const map: Record<string, string> = {
-            no: "なし",
-            small: "小型犬1頭",
+            none: "なし",
+            small1: "小型犬1頭",
             small2: "小型犬2頭",
-            large: "大型犬1頭",
+            large1: "大型犬1頭",
             large2: "大型犬2頭",
         };
         return map[val] || val;
@@ -632,58 +654,58 @@ export function Register() {
                                         <div
                                             style={{
                                                 display: "grid",
-                                                gridTemplateColumns:
-                                                    "140px 1fr",
+                                                gridTemplateColumns: "1fr 1fr",
                                                 gap: "0.75rem",
                                             }}
+                                            className="form-2col"
                                         >
                                             <div>
                                                 <label style={labelStyle}>
-                                                    郵便番号
+                                                    都道府県
                                                 </label>
-                                                <input
-                                                    type="text"
-                                                    name="postalCode"
-                                                    value={profile.postalCode}
-                                                    onChange={
-                                                        handleProfileChange
+                                                <select
+                                                    name="prefecture"
+                                                    value={profile.prefecture}
+                                                    onChange={(e) =>
+                                                        setProfile((prev) => ({
+                                                            ...prev,
+                                                            prefecture:
+                                                                e.target.value,
+                                                            city: "",
+                                                        }))
                                                     }
-                                                    placeholder="000-0000"
                                                     style={inputStyle}
-                                                />
+                                                >
+                                                    <option value="">
+                                                        選択してください
+                                                    </option>
+                                                    {PREFECTURES.map((prefecture) => (
+                                                        <option key={prefecture} value={prefecture}>
+                                                            {prefecture}
+                                                        </option>
+                                                    ))}
+                                                </select>
                                             </div>
                                             <div>
                                                 <label style={labelStyle}>
-                                                    住所{" "}
-                                                    <span
-                                                        style={{
-                                                            color: "#a03020",
-                                                        }}
-                                                    >
-                                                        *
-                                                    </span>
+                                                    市区町村
                                                 </label>
-                                                <input
-                                                    type="text"
-                                                    name="address"
-                                                    value={profile.address}
-                                                    onChange={
-                                                        handleProfileChange
-                                                    }
-                                                    onFocus={() =>
-                                                        setFocusedField(
-                                                            "address",
-                                                        )
-                                                    }
-                                                    onBlur={() =>
-                                                        setFocusedField("")
-                                                    }
-                                                    placeholder="東京都渋谷区..."
-                                                    required
-                                                    style={focusedInputStyle(
-                                                        "address",
-                                                    )}
-                                                />
+                                                <select
+                                                    name="city"
+                                                    value={profile.city}
+                                                    onChange={handleProfileChange}
+                                                    disabled={!profile.prefecture}
+                                                    style={inputStyle}
+                                                >
+                                                    <option value="">
+                                                        選択してください
+                                                    </option>
+                                                    {getCities(profile.prefecture).map((city) => (
+                                                        <option key={city} value={city}>
+                                                            {city}
+                                                        </option>
+                                                    ))}
+                                                </select>
                                             </div>
                                         </div>
                                         <div>
@@ -823,16 +845,16 @@ export function Register() {
                                                     }
                                                     style={inputStyle}
                                                 >
-                                                    <option value="no">
+                                                    <option value="none">
                                                         なし
                                                     </option>
-                                                    <option value="small">
+                                                    <option value="small1">
                                                         小型犬1頭
                                                     </option>
                                                     <option value="small2">
                                                         小型犬2頭
                                                     </option>
-                                                    <option value="large">
+                                                    <option value="large1">
                                                         大型犬1頭
                                                     </option>
                                                     <option value="large2">
@@ -840,8 +862,8 @@ export function Register() {
                                                     </option>
                                                 </select>
                                             </div>
-                                            {(profile.hasPet === "small" ||
-                                                profile.hasPet === "large") && (
+                                            {(profile.hasPet === "small1" ||
+                                                profile.hasPet === "large1") && (
                                                 <div>
                                                     <label style={labelStyle}>
                                                         犬種
@@ -1004,22 +1026,145 @@ export function Register() {
                                                 </select>
                                             </div>
                                             {profile.hasFamily === "family" && (
-                                                <div>
+                                                <div
+                                                    style={{
+                                                        gridColumn: "1 / -1",
+                                                    }}
+                                                >
                                                     <label style={labelStyle}>
-                                                        お子様の年齢など
+                                                        ご家族の方の生まれ年
                                                     </label>
-                                                    <input
-                                                        type="text"
-                                                        name="familyDetail"
-                                                        value={
-                                                            profile.familyDetail
+                                                    <p
+                                                        style={{
+                                                            fontSize: "0.72rem",
+                                                            color: "#8a7868",
+                                                            lineHeight: 1.7,
+                                                            margin: "0 0 0.65rem",
+                                                        }}
+                                                    >
+                                                        お名前や生年月日は不要です。生まれ年だけご登録ください。
+                                                    </p>
+                                                    <div
+                                                        style={{
+                                                            display: "flex",
+                                                            flexDirection:
+                                                                "column",
+                                                            gap: "0.6rem",
+                                                        }}
+                                                    >
+                                                        {profile.familyBirthYears.map(
+                                                            (birthYear, index) => (
+                                                                <div
+                                                                    key={index}
+                                                                    style={{
+                                                                        display: "grid",
+                                                                        gridTemplateColumns: "1fr auto auto",
+                                                                        gap: "0.5rem",
+                                                                        alignItems: "center",
+                                                                    }}
+                                                                >
+                                                                    <select
+                                                                        value={birthYear}
+                                                                        onChange={(e) =>
+                                                                            setProfile((prev) => ({
+                                                                                ...prev,
+                                                                                familyBirthYears:
+                                                                                    prev.familyBirthYears.map(
+                                                                                        (year, yearIndex) =>
+                                                                                            yearIndex === index
+                                                                                                ? e.target.value
+                                                                                                : year,
+                                                                                    ),
+                                                                            }))
+                                                                        }
+                                                                        style={inputStyle}
+                                                                        aria-label={`ご家族${index + 1}人目の生まれ年`}
+                                                                    >
+                                                                        <option value="">
+                                                                            生まれ年を選択
+                                                                        </option>
+                                                                        {FAMILY_BIRTH_YEAR_OPTIONS.map(
+                                                                            (year) => (
+                                                                                <option
+                                                                                    key={year}
+                                                                                    value={year}
+                                                                                >
+                                                                                    {year}年
+                                                                                </option>
+                                                                            ),
+                                                                        )}
+                                                                    </select>
+                                                                    <span
+                                                                        style={{
+                                                                            minWidth: "62px",
+                                                                            color: "#8a7868",
+                                                                            fontSize: "0.75rem",
+                                                                        }}
+                                                                    >
+                                                                        {getApproximateAge(
+                                                                            birthYear,
+                                                                        )}
+                                                                    </span>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() =>
+                                                                            setProfile((prev) => ({
+                                                                                ...prev,
+                                                                                familyBirthYears:
+                                                                                    prev.familyBirthYears.filter(
+                                                                                        (_, yearIndex) =>
+                                                                                            yearIndex !== index,
+                                                                                    ),
+                                                                            }))
+                                                                        }
+                                                                        aria-label={`ご家族${index + 1}人目を削除`}
+                                                                        style={{
+                                                                            display: "inline-flex",
+                                                                            alignItems: "center",
+                                                                            justifyContent: "center",
+                                                                            width: "36px",
+                                                                            height: "36px",
+                                                                            border: "1px solid rgba(160,48,32,0.2)",
+                                                                            borderRadius: "10px",
+                                                                            backgroundColor: "transparent",
+                                                                            color: "#a03020",
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                    >
+                                                                        <FaTrashAlt size={12} />
+                                                                    </button>
+                                                                </div>
+                                                            ),
+                                                        )}
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setProfile((prev) => ({
+                                                                ...prev,
+                                                                familyBirthYears: [
+                                                                    ...prev.familyBirthYears,
+                                                                    "",
+                                                                ],
+                                                            }))
                                                         }
-                                                        onChange={
-                                                            handleProfileChange
-                                                        }
-                                                        placeholder="例：小学生2人"
-                                                        style={inputStyle}
-                                                    />
+                                                        style={{
+                                                            display: "inline-flex",
+                                                            alignItems: "center",
+                                                            gap: "0.4rem",
+                                                            marginTop: "0.75rem",
+                                                            padding: "0.55rem 0.9rem",
+                                                            border: "1px solid rgba(100,55,20,0.25)",
+                                                            borderRadius: "10px",
+                                                            backgroundColor: "rgba(100,55,20,0.06)",
+                                                            color: "#7a4a1e",
+                                                            fontSize: "0.78rem",
+                                                            fontWeight: 700,
+                                                            cursor: "pointer",
+                                                        }}
+                                                    >
+                                                        <FaPlus size={11} /> ご家族を追加
+                                                    </button>
                                                 </div>
                                             )}
                                         </div>
@@ -1225,8 +1370,12 @@ export function Register() {
                                             value: profile.phone,
                                         },
                                         {
-                                            label: "住所",
-                                            value: `${profile.postalCode ? `〒${profile.postalCode} ` : ""}${profile.address}`,
+                                            label: "都道府県",
+                                            value: profile.prefecture || "未選択",
+                                        },
+                                        {
+                                            label: "市区町村",
+                                            value: profile.city || "未選択",
                                         },
                                         {
                                             label: "生年月日",
@@ -1246,20 +1395,16 @@ export function Register() {
                                         {
                                             label: "ペット",
                                             value: (() => {
-                                                if (profile.hasPet === "no")
+                                                if (profile.hasPet === "none")
                                                     return "なし";
-                                                if (
-                                                    profile.hasPet === "small2"
-                                                ) {
-                                                    const breeds = [
-                                                        profile.petBreed,
-                                                        profile.petBreed2,
-                                                    ].filter(Boolean);
-                                                    return breeds.length > 0
-                                                        ? `小型犬2頭（${breeds.join(" / ")}）`
-                                                        : "小型犬2頭";
-                                                }
-                                                return `${petLabel(profile.hasPet)}${profile.petBreed ? `（${profile.petBreed}）` : ""}`;
+                                                const breeds = [
+                                                    profile.petBreed,
+                                                    ...(profile.hasPet === "small2" ||
+                                                    profile.hasPet === "large2"
+                                                        ? [profile.petBreed2]
+                                                        : []),
+                                                ].filter(Boolean);
+                                                return `${petLabel(profile.hasPet)}${breeds.length ? `（${breeds.join(" / ")}）` : ""}`;
                                             })(),
                                         },
                                         {
@@ -1279,10 +1424,15 @@ export function Register() {
                                                     familyLabels[
                                                         profile.hasFamily
                                                     ] || profile.hasFamily;
+                                                const familyBirthYears =
+                                                    profile.familyBirthYears
+                                                        .filter(Boolean)
+                                                        .map((year) => `${year}年`)
+                                                        .join("、");
                                                 return profile.hasFamily ===
                                                     "family" &&
-                                                    profile.familyDetail
-                                                    ? `${label}（${profile.familyDetail}）`
+                                                    familyBirthYears
+                                                    ? `${label}（${familyBirthYears}）`
                                                     : label;
                                             })(),
                                         },

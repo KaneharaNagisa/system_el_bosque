@@ -70,15 +70,16 @@ class MyPageController extends Controller
     {
         $user = $request->user();
         $validated = $request->validate([
-            'nickname' => ['required', 'string', 'max:100', Rule::unique('users', 'nickname')->ignore($user->id)],
-            'email' => ['sometimes', 'email', Rule::unique('users', 'email')->ignore($user->id)],
-            'phone' => ['sometimes', 'nullable', 'string', 'max:20'],
-            'address' => ['nullable', 'string', 'max:255'],
+            'phone' => ['required', 'string', 'max:20'],
+            'prefecture' => ['nullable', 'string', 'max:20'],
+            'city' => ['nullable', 'string', 'max:50'],
             'birthDate' => ['sometimes', 'nullable', 'date'],
             'hasPet' => ['required', 'in:no,none,small,small1,small2,large,large1,large2'],
             'petBreed' => ['nullable', 'string', 'max:100'],
             'petBreed2' => ['nullable', 'string', 'max:100'],
             'hasFamily' => ['nullable', 'in:individual,friends,couple,married,family'],
+            'familyBirthYears' => ['nullable', 'array'],
+            'familyBirthYears.*' => ['nullable', 'digits:4'],
             'concerns' => ['nullable', 'string'],
             'howFound' => ['nullable', 'string', 'max:255'],
             'expectations' => ['nullable', 'string'],
@@ -91,17 +92,20 @@ class MyPageController extends Controller
             default => $validated['hasPet'],
         };
 
+        $familyBirthYears = array_values(array_filter($validated['familyBirthYears'] ?? []));
+
         $user->update([
-            'name' => $validated['nickname'],
-            'nickname' => $validated['nickname'],
-            'email' => $validated['email'] ?? $user->email,
-            'phone' => $validated['phone'] ?? $user->phone,
-            'address' => $validated['address'] ?? null,
-            'birth_date' => $validated['birthDate'] ?? $user->birth_date,
+            'phone' => $validated['phone'],
+            'prefecture' => $validated['prefecture'] ?? null,
+            'city' => $validated['city'] ?? null,
+            'birth_date' => array_key_exists('birthDate', $validated)
+                ? $validated['birthDate']
+                : $user->birth_date,
             'has_pet' => $petType,
             'pet_breed' => $validated['petBreed'] ?? null,
             'pet_breed2' => $validated['petBreed2'] ?? null,
             'family_type' => $validated['hasFamily'] ?? null,
+            'family_birth_years' => $familyBirthYears,
             'concerns' => $validated['concerns'] ?? null,
             'how_found' => $validated['howFound'] ?? null,
             'expectations' => $validated['expectations'] ?? null,

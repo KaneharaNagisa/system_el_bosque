@@ -3,21 +3,17 @@ import { createContext, useContext, type ReactNode } from "react";
 
 export interface UserProfile {
     nickname: string;
-    lastName?: string;
-    firstName?: string;
-    lastNameKana?: string;
-    firstNameKana?: string;
     email: string;
     phone: string;
-    address: string;
     password: string;
     birthDate: string;
-    prefecture?: string;
-    city?: string;
+    prefecture: string;
+    city: string;
     hasPet: string;
     petBreed: string;
     petBreed2?: string;
     hasFamily: string;
+    familyBirthYears: string[];
     concerns: string;
     howFound: string;
     expectations: string;

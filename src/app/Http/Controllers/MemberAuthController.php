@@ -20,7 +20,9 @@ class MemberAuthController extends Controller
     public function sendRegistrationEmail(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'email' => ['required', 'email', 'max:255'],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')],
+        ], [
+            'email.unique' => 'このメールアドレスは既に登録されています。',
         ]);
 
         $token = Str::random(64);
@@ -60,12 +62,15 @@ class MemberAuthController extends Controller
             'nickname' => ['required', 'string', 'max:100', Rule::unique('users', 'nickname')],
             'password' => ['required', 'confirmed', Password::min(8)],
             'phone' => ['required', 'string', 'max:20'],
-            'address' => ['nullable', 'string', 'max:255'],
+            'prefecture' => ['nullable', 'string', 'max:20'],
+            'city' => ['nullable', 'string', 'max:50'],
             'birthDate' => ['nullable', 'date'],
             'hasPet' => ['required', 'in:no,none,small,small1,small2,large,large1,large2'],
             'petBreed' => ['nullable', 'string', 'max:100'],
             'petBreed2' => ['nullable', 'string', 'max:100'],
             'hasFamily' => ['nullable', 'in:individual,friends,couple,married,family'],
+            'familyBirthYears' => ['nullable', 'array'],
+            'familyBirthYears.*' => ['nullable', 'digits:4'],
             'concerns' => ['nullable', 'string'],
             'howFound' => ['nullable', 'string', 'max:255'],
             'expectations' => ['nullable', 'string'],
@@ -102,18 +107,22 @@ class MemberAuthController extends Controller
                 abort(422, '確認メールの有効期限が切れています。再度仮登録してください。');
             }
 
+            $familyBirthYears = array_values(array_filter($validated['familyBirthYears'] ?? []));
+
             return User::create([
                 'name' => $validated['nickname'],
                 'nickname' => $validated['nickname'],
                 'email' => $pendingRegistration->email,
                 'password' => $validated['password'],
                 'phone' => $validated['phone'],
-                'address' => $validated['address'] ?? null,
+                'prefecture' => $validated['prefecture'] ?? null,
+                'city' => $validated['city'] ?? null,
                 'birth_date' => $validated['birthDate'] ?? null,
                 'has_pet' => $petType,
                 'pet_breed' => $validated['petBreed'] ?? null,
                 'pet_breed2' => $validated['petBreed2'] ?? null,
                 'family_type' => $validated['hasFamily'] ?? null,
+                'family_birth_years' => $familyBirthYears,
                 'concerns' => $validated['concerns'] ?? null,
                 'how_found' => $validated['howFound'] ?? null,
                 'expectations' => $validated['expectations'] ?? null,

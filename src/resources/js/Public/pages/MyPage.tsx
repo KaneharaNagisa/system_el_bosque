@@ -20,8 +20,15 @@ import {
     FaBell,
     FaChevronDown,
     FaChevronUp,
+    FaPlus,
+    FaTrashAlt,
 } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+import { PREFECTURES, getCities } from "../data/japanLocations";
+import {
+    FAMILY_BIRTH_YEAR_OPTIONS,
+    getApproximateAge,
+} from "../data/familyBirthYears";
 
 const inputStyle: React.CSSProperties = {
     width: "100%",
@@ -63,9 +70,12 @@ const textareaStyle: React.CSSProperties = {
 };
 
 const petLabelMap: Record<string, string> = {
+    none: "なし",
     no: "なし",
+    small1: "小型犬1頭",
     small: "小型犬1頭",
     small2: "小型犬2頭",
+    large1: "大型犬1頭",
     large: "大型犬1頭",
     large2: "大型犬2頭",
 };
@@ -91,7 +101,7 @@ function formatPetDisplay(
     petBreed: string,
     petBreed2?: string,
 ): string {
-    if (!hasPet || hasPet === "no") return "なし";
+    if (!hasPet || hasPet === "no" || hasPet === "none") return "なし";
     if (hasPet === "small2" || hasPet === "large2") {
         const breeds = [petBreed, petBreed2].filter(Boolean);
         const label = petLabelMap[hasPet] || hasPet;
@@ -103,6 +113,15 @@ function formatPetDisplay(
 
 function formatFamilyDisplay(hasFamily: string): string {
     return familyLabelMap[hasFamily] || hasFamily || "−";
+}
+
+function normalizePetType(hasPet: string): string {
+    return ({ no: "none", small: "small1", large: "large1" } as Record<string, string>)[hasPet] ?? hasPet;
+}
+
+function formatFamilyBirthYears(birthYears: string[] = []): string {
+    const years = birthYears.filter(Boolean).map((year) => `${year}年`);
+    return years.length > 0 ? years.join("、") : "−";
 }
 
 function formatHowFoundDisplay(howFound: string): string {
@@ -276,13 +295,15 @@ export function MyPage() {
     );
 
     const [editForm, setEditForm] = useState({
-        nickname: user?.nickname || "",
-        postalCode: "",
-        address: user?.address || "",
-        hasPet: user?.hasPet || "no",
+        phone: user?.phone || "",
+        prefecture: user?.prefecture || "",
+        city: user?.city || "",
+        birthDate: user?.birthDate || "",
+        hasPet: normalizePetType(user?.hasPet || "none"),
         petBreed: user?.petBreed || "",
         petBreed2: user?.petBreed2 || "",
         hasFamily: user?.hasFamily || "individual",
+        familyBirthYears: user?.familyBirthYears || [],
         concerns: user?.concerns || "",
         howFound: user?.howFound || "",
         expectations: user?.expectations || "",
@@ -349,10 +370,10 @@ export function MyPage() {
     ) => {
         const { name, value } = e.target;
         if (name === "hasPet") {
-            if (value === "no") {
+            if (value === "no" || value === "none") {
                 setEditForm((prev) => ({
                     ...prev,
-                    hasPet: value,
+                    hasPet: "none",
                     petBreed: "",
                     petBreed2: "",
                 }));
@@ -365,31 +386,34 @@ export function MyPage() {
             } else {
                 setEditForm((prev) => ({ ...prev, hasPet: value }));
             }
+        } else if (name === "hasFamily") {
+            setEditForm((prev) => ({
+                ...prev,
+                hasFamily: value,
+                familyBirthYears:
+                    value === "family"
+                        ? prev.familyBirthYears.length > 0
+                            ? prev.familyBirthYears
+                            : [""]
+                        : [],
+            }));
         } else {
             setEditForm((prev) => ({ ...prev, [name]: value }));
         }
     };
 
-    const parseAddress = (
-        addr: string,
-    ): { postalCode: string; address: string } => {
-        const match = addr.match(/^〒(\d{3}-?\d{4})\s*(.*)$/);
-        if (match) return { postalCode: match[1], address: match[2] };
-        return { postalCode: "", address: addr };
-    };
-
     const handleSave = () => {
-        const combinedAddress = editForm.postalCode
-            ? `〒${editForm.postalCode} ${editForm.address}`
-            : editForm.address;
         updateProfile(
             {
-                nickname: editForm.nickname,
-                address: combinedAddress,
+                phone: editForm.phone,
+                prefecture: editForm.prefecture,
+                city: editForm.city,
+                birthDate: editForm.birthDate,
                 hasPet: editForm.hasPet,
                 petBreed: editForm.petBreed,
                 petBreed2: editForm.petBreed2,
                 hasFamily: editForm.hasFamily,
+                familyBirthYears: editForm.familyBirthYears.filter(Boolean),
                 concerns: editForm.concerns,
                 howFound: editForm.howFound,
                 expectations: editForm.expectations,
@@ -776,20 +800,19 @@ export function MyPage() {
                                     <button
                                         onClick={() => {
                                             setEditForm({
-                                                nickname: user.nickname,
-                                                postalCode: parseAddress(
-                                                    user.address,
-                                                ).postalCode,
-                                                address: parseAddress(
-                                                    user.address,
-                                                ).address,
-                                                hasPet: user.hasPet,
-                                                petBreed: user.petBreed,
+                                                phone: user.phone,
+                                                prefecture: user.prefecture,
+                                                city: user.city,
+                                                birthDate: user.birthDate,
+                                                hasPet: normalizePetType(user.hasPet),
+                                                petBreed: user.petBreed || "",
                                                 petBreed2: user.petBreed2 || "",
-                                                hasFamily: user.hasFamily,
-                                                concerns: user.concerns,
-                                                howFound: user.howFound,
-                                                expectations: user.expectations,
+                                                hasFamily: user.hasFamily || "individual",
+                                                familyBirthYears:
+                                                    user.familyBirthYears || [],
+                                                concerns: user.concerns || "",
+                                                howFound: user.howFound || "",
+                                                expectations: user.expectations || "",
                                             });
                                             setEditing(true);
                                         }}
@@ -843,7 +866,7 @@ export function MyPage() {
                                                 fontWeight: 600,
                                             }}
                                         >
-                                            ※ 以下の項目は変更できません
+                                            ※ ニックネームとメールアドレスは変更できません
                                         </p>
                                         <div
                                             style={{
@@ -853,6 +876,21 @@ export function MyPage() {
                                             }}
                                             className="mypage-edit-grid"
                                         >
+                                            <div>
+                                                <label style={labelStyle}>
+                                                    ニックネーム
+                                                </label>
+                                                <input
+                                                    value={user.nickname}
+                                                    disabled
+                                                    style={{
+                                                        ...inputStyle,
+                                                        backgroundColor:
+                                                            "#eee5d5",
+                                                        color: "#8a7868",
+                                                    }}
+                                                />
+                                            </div>
                                             <div>
                                                 <label style={labelStyle}>
                                                     メールアドレス
@@ -868,38 +906,24 @@ export function MyPage() {
                                                     }}
                                                 />
                                             </div>
-                                            <div>
-                                                <label style={labelStyle}>
-                                                    生年月日
-                                                </label>
-                                                <input
-                                                    value={
-                                                        user.birthDate
-                                                            ? user.birthDate.replace(
-                                                                  /^(\d{4})-(\d{1,2})-(\d{1,2})$/,
-                                                                  (
-                                                                      _,
-                                                                      y,
-                                                                      m,
-                                                                      d,
-                                                                  ) =>
-                                                                      `${y}年${parseInt(m)}月${parseInt(d)}日`,
-                                                              )
-                                                            : "未登録"
-                                                    }
-                                                    disabled
-                                                    style={{
-                                                        ...inputStyle,
-                                                        backgroundColor:
-                                                            "#eee5d5",
-                                                        color: "#8a7868",
-                                                    }}
-                                                />
-                                            </div>
                                         </div>
                                     </div>
 
                                     {/* ── Editable fields ── */}
+                                    {Object.entries(errors)
+                                        .filter(([, message]) => message)
+                                        .map(([field, message]) => (
+                                            <p
+                                                key={field}
+                                                style={{
+                                                    color: "#a03020",
+                                                    fontSize: "0.78rem",
+                                                    margin: 0,
+                                                }}
+                                            >
+                                                {message}
+                                            </p>
+                                        ))}
                                     <div
                                         style={{
                                             display: "grid",
@@ -908,55 +932,87 @@ export function MyPage() {
                                         }}
                                         className="mypage-edit-grid"
                                     >
-                                        {/* ニックネーム */}
                                         <div>
                                             <label style={labelStyle}>
-                                                ニックネーム
+                                                電話番号
                                             </label>
                                             <input
-                                                name="nickname"
-                                                value={editForm.nickname}
+                                                type="tel"
+                                                name="phone"
+                                                value={editForm.phone}
                                                 onChange={handleEditChange}
-                                                placeholder="例：たろう"
+                                                placeholder="090-0000-0000"
                                                 required
-                                                maxLength={100}
-                                                style={inputStyle}
-                                            />
-                                            {errors.nickname && (
-                                                <p
-                                                    style={{
-                                                        color: "#a03020",
-                                                        fontSize: "0.75rem",
-                                                        marginTop: "0.3rem",
-                                                    }}
-                                                >
-                                                    {errors.nickname}
-                                                </p>
-                                            )}
-                                        </div>
-
-                                        {/* 郵便番号 + 住所 */}
-                                        <div>
-                                            <label style={labelStyle}>
-                                                郵便番号
-                                            </label>
-                                            <input
-                                                name="postalCode"
-                                                value={editForm.postalCode}
-                                                onChange={handleEditChange}
-                                                placeholder="000-0000"
                                                 style={inputStyle}
                                             />
                                         </div>
                                         <div>
                                             <label style={labelStyle}>
-                                                住所
+                                                都道府県
+                                            </label>
+                                            <select
+                                                name="prefecture"
+                                                value={editForm.prefecture}
+                                                onChange={(e) =>
+                                                    setEditForm((prev) => ({
+                                                        ...prev,
+                                                        prefecture:
+                                                            e.target.value,
+                                                        city: "",
+                                                    }))
+                                                }
+                                                style={inputStyle}
+                                            >
+                                                <option value="">
+                                                    選択してください
+                                                </option>
+                                                {PREFECTURES.map(
+                                                    (prefecture) => (
+                                                        <option
+                                                            key={prefecture}
+                                                            value={prefecture}
+                                                        >
+                                                            {prefecture}
+                                                        </option>
+                                                    ),
+                                                )}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style={labelStyle}>
+                                                市区町村
+                                            </label>
+                                            <select
+                                                name="city"
+                                                value={editForm.city}
+                                                onChange={handleEditChange}
+                                                disabled={!editForm.prefecture}
+                                                style={inputStyle}
+                                            >
+                                                <option value="">
+                                                    選択してください
+                                                </option>
+                                                {getCities(
+                                                    editForm.prefecture,
+                                                ).map((city) => (
+                                                    <option
+                                                        key={city}
+                                                        value={city}
+                                                    >
+                                                        {city}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style={labelStyle}>
+                                                生年月日
                                             </label>
                                             <input
-                                                name="address"
-                                                value={editForm.address}
+                                                type="date"
+                                                name="birthDate"
+                                                value={editForm.birthDate}
                                                 onChange={handleEditChange}
-                                                placeholder="都道府県市区町村番地"
                                                 style={inputStyle}
                                             />
                                         </div>
@@ -972,14 +1028,14 @@ export function MyPage() {
                                                 onChange={handleEditChange}
                                                 style={selectStyle}
                                             >
-                                                <option value="no">なし</option>
-                                                <option value="small">
+                                                <option value="none">なし</option>
+                                                <option value="small1">
                                                     小型犬1頭
                                                 </option>
                                                 <option value="small2">
                                                     小型犬2頭
                                                 </option>
-                                                <option value="large">
+                                                <option value="large1">
                                                     大型犬1頭
                                                 </option>
                                                 <option value="large2">
@@ -987,8 +1043,8 @@ export function MyPage() {
                                                 </option>
                                             </select>
                                         </div>
-                                        {(editForm.hasPet === "small" ||
-                                            editForm.hasPet === "large") && (
+                                        {(editForm.hasPet === "small1" ||
+                                            editForm.hasPet === "large1") && (
                                             <div>
                                                 <label style={labelStyle}>
                                                     犬種
@@ -1132,6 +1188,183 @@ export function MyPage() {
                                                 </option>
                                             </select>
                                         </div>
+                                        {editForm.hasFamily === "family" && (
+                                            <div
+                                                style={{
+                                                    gridColumn: "1 / -1",
+                                                }}
+                                            >
+                                                <label style={labelStyle}>
+                                                    ご家族の方の生まれ年
+                                                </label>
+                                                <p
+                                                    style={{
+                                                        fontSize: "0.72rem",
+                                                        color: "#8a7868",
+                                                        lineHeight: 1.7,
+                                                        margin: "0 0 0.65rem",
+                                                    }}
+                                                >
+                                                    お名前や生年月日は不要です。生まれ年だけご登録ください。
+                                                </p>
+                                                <div
+                                                    style={{
+                                                        display: "flex",
+                                                        flexDirection:
+                                                            "column",
+                                                        gap: "0.6rem",
+                                                    }}
+                                                >
+                                                    {editForm.familyBirthYears.map(
+                                                        (birthYear, index) => (
+                                                            <div
+                                                                key={index}
+                                                                style={{
+                                                                    display: "grid",
+                                                                    gridTemplateColumns: "1fr auto auto",
+                                                                    gap: "0.5rem",
+                                                                    alignItems: "center",
+                                                                }}
+                                                            >
+                                                                <select
+                                                                    value={
+                                                                        birthYear
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) =>
+                                                                        setEditForm(
+                                                                            (
+                                                                                prev,
+                                                                            ) => ({
+                                                                                ...prev,
+                                                                                familyBirthYears:
+                                                                                    prev.familyBirthYears.map(
+                                                                                        (
+                                                                                            year,
+                                                                                            yearIndex,
+                                                                                        ) =>
+                                                                                            yearIndex ===
+                                                                                            index
+                                                                                                ? e
+                                                                                                      .target
+                                                                                                      .value
+                                                                                                : year,
+                                                                                    ),
+                                                                            }),
+                                                                        )
+                                                                    }
+                                                                    style={
+                                                                        selectStyle
+                                                                    }
+                                                                    aria-label={`ご家族${index + 1}人目の生まれ年`}
+                                                                >
+                                                                    <option value="">
+                                                                        生まれ年を選択
+                                                                    </option>
+                                                                    {FAMILY_BIRTH_YEAR_OPTIONS.map(
+                                                                        (
+                                                                            year,
+                                                                        ) => (
+                                                                            <option
+                                                                                key={
+                                                                                    year
+                                                                                }
+                                                                                value={
+                                                                                    year
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    year
+                                                                                }
+                                                                                年
+                                                                            </option>
+                                                                        ),
+                                                                    )}
+                                                                </select>
+                                                                <span
+                                                                    style={{
+                                                                        minWidth:
+                                                                            "62px",
+                                                                        color: "#8a7868",
+                                                                        fontSize:
+                                                                            "0.75rem",
+                                                                    }}
+                                                                >
+                                                                    {getApproximateAge(
+                                                                        birthYear,
+                                                                    )}
+                                                                </span>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() =>
+                                                                        setEditForm(
+                                                                            (
+                                                                                prev,
+                                                                            ) => ({
+                                                                                ...prev,
+                                                                                familyBirthYears:
+                                                                                    prev.familyBirthYears.filter(
+                                                                                        (
+                                                                                            _,
+                                                                                            yearIndex,
+                                                                                        ) =>
+                                                                                            yearIndex !==
+                                                                                            index,
+                                                                                    ),
+                                                                            }),
+                                                                        )
+                                                                    }
+                                                                    aria-label={`ご家族${index + 1}人目を削除`}
+                                                                    style={{
+                                                                        display: "inline-flex",
+                                                                        alignItems: "center",
+                                                                        justifyContent: "center",
+                                                                        width: "36px",
+                                                                        height: "36px",
+                                                                        border: "1px solid rgba(160,48,32,0.2)",
+                                                                        borderRadius: "10px",
+                                                                        backgroundColor: "transparent",
+                                                                        color: "#a03020",
+                                                                        cursor: "pointer",
+                                                                    }}
+                                                                >
+                                                                    <FaTrashAlt size={12} />
+                                                                </button>
+                                                            </div>
+                                                        ),
+                                                    )}
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setEditForm((prev) => ({
+                                                            ...prev,
+                                                            familyBirthYears: [
+                                                                ...prev.familyBirthYears,
+                                                                "",
+                                                            ],
+                                                        }))
+                                                    }
+                                                    style={{
+                                                        display: "inline-flex",
+                                                        alignItems: "center",
+                                                        gap: "0.4rem",
+                                                        marginTop: "0.75rem",
+                                                        padding: "0.55rem 0.9rem",
+                                                        border: "1px solid rgba(100,55,20,0.25)",
+                                                        borderRadius: "10px",
+                                                        backgroundColor: "rgba(100,55,20,0.06)",
+                                                        color: "#7a4a1e",
+                                                        fontSize: "0.78rem",
+                                                        fontWeight: 700,
+                                                        cursor: "pointer",
+                                                    }}
+                                                >
+                                                    <FaPlus size={11} /> ご家族を追加
+                                                </button>
+                                            </div>
+                                        )}
 
                                         {/* 宿泊の際に気になること */}
                                         <div style={{ gridColumn: "1 / -1" }}>
@@ -1266,7 +1499,14 @@ export function MyPage() {
                                             label: "電話番号",
                                             value: user.phone,
                                         },
-                                        { label: "住所", value: user.address },
+                                        {
+                                            label: "都道府県",
+                                            value: user.prefecture || "−",
+                                        },
+                                        {
+                                            label: "市区町村",
+                                            value: user.city || "−",
+                                        },
                                         {
                                             label: "生年月日",
                                             value: user.birthDate
@@ -1287,9 +1527,7 @@ export function MyPage() {
                                         },
                                         {
                                             label: "利用頻度の高い宿泊形態",
-                                            value: formatFamilyDisplay(
-                                                user.hasFamily || "",
-                                            ),
+                                            value: `${formatFamilyDisplay(user.hasFamily || "")}${user.hasFamily === "family" ? `（${formatFamilyBirthYears(user.familyBirthYears)}）` : ""}`,
                                         },
                                         {
                                             label: "宿泊の際に気になること",
