@@ -344,7 +344,7 @@ export function ReservationComplete() {
                             }}
                         >
                             <strong style={{ color: "#256840" }}>
-                                {user?.name}
+                                {user?.nickname}
                             </strong>{" "}
                             様のご予約を承りました。
                         </p>

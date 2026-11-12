@@ -481,14 +481,20 @@ export function ReservationConfirm() {
                                 icon={<FaUser size={14} color="#7a4a1e" />}
                                 title="お客様情報"
                             >
-                                <Row label="お名前" value={user?.name || ""} />
+                                <Row
+                                    label="ニックネーム"
+                                    value={user?.nickname || ""}
+                                />
                                 <Row label="メール" value={user?.email || ""} />
                                 <Row
                                     label="電話番号"
                                     value={user?.phone || ""}
                                 />
-                                {user?.address && (
-                                    <Row label="住所" value={user.address} />
+                                {(user?.prefecture || user?.city) && (
+                                    <Row
+                                        label="居住地域"
+                                        value={`${user?.prefecture || ""}${user?.city || ""}`}
+                                    />
                                 )}
                             </Section>
 

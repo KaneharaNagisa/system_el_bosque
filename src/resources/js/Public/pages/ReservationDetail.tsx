@@ -1135,13 +1135,19 @@ export function ReservationDetail() {
                                     }}
                                 >
                                     {[
-                                        { label: "お名前", value: user?.name },
+                                        {
+                                            label: "ニックネーム",
+                                            value: user?.nickname,
+                                        },
                                         { label: "メール", value: user?.email },
                                         {
                                             label: "電話番号",
                                             value: user?.phone,
                                         },
-                                        { label: "住所", value: user?.address },
+                                        {
+                                            label: "居住地域",
+                                            value: `${user?.prefecture || ""}${user?.city || ""}`,
+                                        },
                                     ].map((item) => (
                                         <div
                                             key={item.label}
