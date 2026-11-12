@@ -2,15 +2,18 @@ import { router, usePage } from "@inertiajs/react";
 import { createContext, useContext, type ReactNode } from "react";
 
 export interface UserProfile {
-    lastName: string;
-    firstName: string;
-    lastNameKana: string;
-    firstNameKana: string;
+    nickname: string;
+    lastName?: string;
+    firstName?: string;
+    lastNameKana?: string;
+    firstNameKana?: string;
     email: string;
     phone: string;
     address: string;
     password: string;
     birthDate: string;
+    prefecture?: string;
+    city?: string;
     hasPet: string;
     petBreed: string;
     petBreed2?: string;

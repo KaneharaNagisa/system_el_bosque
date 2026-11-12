@@ -70,15 +70,12 @@ class MyPageController extends Controller
     {
         $user = $request->user();
         $validated = $request->validate([
-            'lastName' => ['required', 'string', 'max:50'],
-            'firstName' => ['required', 'string', 'max:50'],
-            'lastNameKana' => ['required', 'string', 'max:100'],
-            'firstNameKana' => ['required', 'string', 'max:100'],
+            'nickname' => ['required', 'string', 'max:100', Rule::unique('users', 'nickname')->ignore($user->id)],
             'email' => ['sometimes', 'email', Rule::unique('users', 'email')->ignore($user->id)],
             'phone' => ['sometimes', 'nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string', 'max:255'],
             'birthDate' => ['sometimes', 'nullable', 'date'],
-            'hasPet' => ['required', 'in:none,small1,small2,large1,large2'],
+            'hasPet' => ['required', 'in:no,none,small,small1,small2,large,large1,large2'],
             'petBreed' => ['nullable', 'string', 'max:100'],
             'petBreed2' => ['nullable', 'string', 'max:100'],
             'hasFamily' => ['nullable', 'in:individual,friends,couple,married,family'],
@@ -87,17 +84,21 @@ class MyPageController extends Controller
             'expectations' => ['nullable', 'string'],
         ]);
 
+        $petType = match ($validated['hasPet']) {
+            'no' => 'none',
+            'small' => 'small1',
+            'large' => 'large1',
+            default => $validated['hasPet'],
+        };
+
         $user->update([
-            'name' => trim($validated['lastName'] . ' ' . $validated['firstName']),
-            'last_name' => $validated['lastName'],
-            'first_name' => $validated['firstName'],
-            'last_name_kana' => $validated['lastNameKana'],
-            'first_name_kana' => $validated['firstNameKana'],
+            'name' => $validated['nickname'],
+            'nickname' => $validated['nickname'],
             'email' => $validated['email'] ?? $user->email,
             'phone' => $validated['phone'] ?? $user->phone,
             'address' => $validated['address'] ?? null,
             'birth_date' => $validated['birthDate'] ?? $user->birth_date,
-            'has_pet' => $validated['hasPet'],
+            'has_pet' => $petType,
             'pet_breed' => $validated['petBreed'] ?? null,
             'pet_breed2' => $validated['petBreed2'] ?? null,
             'family_type' => $validated['hasFamily'] ?? null,

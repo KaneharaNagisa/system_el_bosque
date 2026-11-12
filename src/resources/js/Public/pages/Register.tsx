@@ -16,7 +16,7 @@ const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "0.75rem 1rem",
     backgroundColor: "#faf5e8",
-    border: "1px solid rgba(37,104,64,0.2)",
+    border: "1px solid rgba(100,55,20,0.2)",
     borderRadius: "12px",
     fontSize: "0.9rem",
     color: "#2c1e10",
@@ -30,7 +30,7 @@ const labelStyle: React.CSSProperties = {
     display: "block",
     fontSize: "0.8rem",
     fontWeight: 700,
-    color: "#256840",
+    color: "#7a4a1e",
     marginBottom: "0.4rem",
     letterSpacing: "0.04em",
 };
@@ -85,9 +85,9 @@ function StepIndicator({ current }: { current: number }) {
                                 fontWeight: 700,
                                 backgroundColor:
                                     current > s.num
-                                        ? "#256840"
+                                        ? "#7a4a1e"
                                         : current === s.num
-                                          ? "#256840"
+                                          ? "#7a4a1e"
                                           : "#d8cbb8",
                                 color: current >= s.num ? "#ffffff" : "#8a7a68",
                                 transition: "all 0.3s",
@@ -99,7 +99,7 @@ function StepIndicator({ current }: { current: number }) {
                             style={{
                                 fontSize: "0.6rem",
                                 color:
-                                    current === s.num ? "#256840" : "#8a7a68",
+                                    current === s.num ? "#7a4a1e" : "#8a7a68",
                                 marginTop: "0.25rem",
                                 fontWeight: current === s.num ? 700 : 400,
                                 whiteSpace: "nowrap",
@@ -114,7 +114,7 @@ function StepIndicator({ current }: { current: number }) {
                                 width: "24px",
                                 height: "2px",
                                 backgroundColor:
-                                    current > s.num ? "#256840" : "#d8cbb8",
+                                    current > s.num ? "#7a4a1e" : "#d8cbb8",
                                 marginBottom: "1rem",
                             }}
                         />
@@ -144,10 +144,7 @@ export function Register() {
     const isExpired = searchParams.get("expired") === "1";
 
     const [profile, setProfile] = useState({
-        lastName: "",
-        firstName: "",
-        lastNameKana: "",
-        firstNameKana: "",
+        nickname: "",
         phone: "",
         postalCode: "",
         address: "",
@@ -166,9 +163,9 @@ export function Register() {
 
     const focusedInputStyle = (field: string): React.CSSProperties => ({
         ...inputStyle,
-        borderColor: focusedField === field ? "#256840" : "rgba(37,104,64,0.2)",
+        borderColor: focusedField === field ? "#7a4a1e" : "rgba(100,55,20,0.2)",
         boxShadow:
-            focusedField === field ? "0 0 0 3px rgba(37,104,64,0.1)" : "none",
+            focusedField === field ? "0 0 0 3px rgba(100,55,20,0.1)" : "none",
     });
 
     const handleProfileChange = (
@@ -232,10 +229,7 @@ export function Register() {
     // Step 4: Confirm → Complete
     const handleConfirm = () => {
         const userData: UserProfile = {
-            lastName: profile.lastName,
-            firstName: profile.firstName,
-            lastNameKana: profile.lastNameKana,
-            firstNameKana: profile.firstNameKana,
+            nickname: profile.nickname,
             email,
             phone: profile.phone,
             address: profile.address,
@@ -361,7 +355,7 @@ export function Register() {
                                         fontFamily: "'Noto Serif JP', serif",
                                         fontSize: "1.15rem",
                                         fontWeight: 700,
-                                        color: "#256840",
+                                        color: "#7a4a1e",
                                         marginBottom: "1rem",
                                         textAlign: "center",
                                     }}
@@ -491,7 +485,7 @@ export function Register() {
                         >
                             <FaEnvelopeOpenText
                                 size={48}
-                                color="#3abcb0"
+                                color="#7a4a1e"
                                 style={{ marginBottom: "1.25rem" }}
                             />
                             <h2
@@ -499,7 +493,7 @@ export function Register() {
                                     fontFamily: "'Noto Serif JP', serif",
                                     fontSize: "1.15rem",
                                     fontWeight: 700,
-                                    color: "#256840",
+                                    color: "#7a4a1e",
                                     marginBottom: "1rem",
                                 }}
                             >
@@ -519,10 +513,10 @@ export function Register() {
                                 style={{
                                     fontSize: "0.95rem",
                                     fontWeight: 700,
-                                    color: "#256840",
+                                    color: "#7a4a1e",
                                     marginBottom: "1.25rem",
                                     padding: "0.6rem 1rem",
-                                    backgroundColor: "rgba(37,104,64,0.06)",
+                                    backgroundColor: "rgba(100,55,20,0.06)",
                                     borderRadius: "12px",
                                     display: "inline-block",
                                 }}
@@ -561,7 +555,7 @@ export function Register() {
                                         fontFamily: "'Noto Serif JP', serif",
                                         fontSize: "1.15rem",
                                         fontWeight: 700,
-                                        color: "#256840",
+                                        color: "#7a4a1e",
                                         marginBottom: "0.5rem",
                                         textAlign: "center",
                                     }}
@@ -589,155 +583,24 @@ export function Register() {
                                             gap: "1rem",
                                         }}
                                     >
-                                        <div
-                                            style={{
-                                                display: "grid",
-                                                gridTemplateColumns: "1fr 1fr",
-                                                gap: "0.75rem",
-                                            }}
-                                        >
-                                            <div>
-                                                <label style={labelStyle}>
-                                                    姓{" "}
-                                                    <span
-                                                        style={{
-                                                            color: "#a03020",
-                                                        }}
-                                                    >
-                                                        *
-                                                    </span>
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    name="lastName"
-                                                    value={profile.lastName}
-                                                    onChange={
-                                                        handleProfileChange
-                                                    }
-                                                    onFocus={() =>
-                                                        setFocusedField(
-                                                            "lastName",
-                                                        )
-                                                    }
-                                                    onBlur={() =>
-                                                        setFocusedField("")
-                                                    }
-                                                    placeholder="山田"
-                                                    required
-                                                    style={focusedInputStyle(
-                                                        "lastName",
-                                                    )}
-                                                />
-                                            </div>
-                                            <div>
-                                                <label style={labelStyle}>
-                                                    名{" "}
-                                                    <span
-                                                        style={{
-                                                            color: "#a03020",
-                                                        }}
-                                                    >
-                                                        *
-                                                    </span>
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    name="firstName"
-                                                    value={profile.firstName}
-                                                    onChange={
-                                                        handleProfileChange
-                                                    }
-                                                    onFocus={() =>
-                                                        setFocusedField(
-                                                            "firstName",
-                                                        )
-                                                    }
-                                                    onBlur={() =>
-                                                        setFocusedField("")
-                                                    }
-                                                    placeholder="太郎"
-                                                    required
-                                                    style={focusedInputStyle(
-                                                        "firstName",
-                                                    )}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div
-                                            style={{
-                                                display: "grid",
-                                                gridTemplateColumns: "1fr 1fr",
-                                                gap: "0.75rem",
-                                            }}
-                                        >
-                                            <div>
-                                                <label style={labelStyle}>
-                                                    姓（ふりがな）{" "}
-                                                    <span
-                                                        style={{
-                                                            color: "#a03020",
-                                                        }}
-                                                    >
-                                                        *
-                                                    </span>
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    name="lastNameKana"
-                                                    value={profile.lastNameKana}
-                                                    onChange={
-                                                        handleProfileChange
-                                                    }
-                                                    onFocus={() =>
-                                                        setFocusedField(
-                                                            "lastNameKana",
-                                                        )
-                                                    }
-                                                    onBlur={() =>
-                                                        setFocusedField("")
-                                                    }
-                                                    placeholder="やまだ"
-                                                    required
-                                                    style={focusedInputStyle(
-                                                        "lastNameKana",
-                                                    )}
-                                                />
-                                            </div>
-                                            <div>
-                                                <label style={labelStyle}>
-                                                    名（ふりがな）{" "}
-                                                    <span
-                                                        style={{
-                                                            color: "#a03020",
-                                                        }}
-                                                    >
-                                                        *
-                                                    </span>
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    name="firstNameKana"
-                                                    value={
-                                                        profile.firstNameKana
-                                                    }
-                                                    onChange={
-                                                        handleProfileChange
-                                                    }
-                                                    onFocus={() =>
-                                                        setFocusedField(
-                                                            "firstNameKana",
-                                                        )
-                                                    }
-                                                    onBlur={() =>
-                                                        setFocusedField("")
-                                                    }
-                                                    placeholder="たろう"
-                                                    required
-                                                    style={focusedInputStyle(
-                                                        "firstNameKana",
-                                                    )}
-                                                />
-                                            </div>
+                                        <div>
+                                            <label style={labelStyle}>
+                                                ニックネーム{" "}
+                                                <span style={{ color: "#a03020" }}>
+                                                    *
+                                                </span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="nickname"
+                                                value={profile.nickname}
+                                                onChange={handleProfileChange}
+                                                onFocus={() => setFocusedField("nickname")}
+                                                onBlur={() => setFocusedField("")}
+                                                placeholder="例：たろう"
+                                                required
+                                                style={focusedInputStyle("nickname")}
+                                            />
                                         </div>
                                         <div>
                                             <label style={labelStyle}>
@@ -1337,7 +1200,7 @@ export function Register() {
                                     fontFamily: "'Noto Serif JP', serif",
                                     fontSize: "1.15rem",
                                     fontWeight: 700,
-                                    color: "#256840",
+                                    color: "#7a4a1e",
                                     marginBottom: "2rem",
                                     textAlign: "center",
                                 }}
@@ -1350,12 +1213,8 @@ export function Register() {
                                     heading: "基本情報",
                                     items: [
                                         {
-                                            label: "お名前",
-                                            value: `${profile.lastName} ${profile.firstName}`,
-                                        },
-                                        {
-                                            label: "ふりがな",
-                                            value: `${profile.lastNameKana} ${profile.firstNameKana}`,
+                                            label: "ニックネーム",
+                                            value: profile.nickname,
                                         },
                                         {
                                             label: "メールアドレス",
@@ -1598,7 +1457,7 @@ export function Register() {
                         >
                             <FaCheckCircle
                                 size={56}
-                                color="#3abcb0"
+                                color="#7a4a1e"
                                 style={{ marginBottom: "1.5rem" }}
                             />
                             <h2
@@ -1606,7 +1465,7 @@ export function Register() {
                                     fontFamily: "'Noto Serif JP', serif",
                                     fontSize: "1.4rem",
                                     fontWeight: 700,
-                                    color: "#256840",
+                                    color: "#7a4a1e",
                                     marginBottom: "1rem",
                                 }}
                             >
@@ -1621,7 +1480,7 @@ export function Register() {
                                 }}
                             >
                                 <strong>
-                                    {profile.lastName} {profile.firstName}
+                                    {profile.nickname}
                                 </strong>{" "}
                                 様、ようこそ！
                             </p>

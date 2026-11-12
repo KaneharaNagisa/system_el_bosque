@@ -53,10 +53,7 @@ class MemberPortalTest extends TestCase
         ]);
 
         $this->withSession(['pending_registration_id' => $pendingRegistration->id])->from('/register')->post('/register', [
-            'lastName' => '山田',
-            'firstName' => '太郎',
-            'lastNameKana' => 'やまだ',
-            'firstNameKana' => 'たろう',
+            'nickname' => 'たろう',
             'email' => 'new-member@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
@@ -75,11 +72,38 @@ class MemberPortalTest extends TestCase
 
         $this->assertAuthenticatedAs($user);
         $this->assertSame('active', $user->status);
+        $this->assertSame('たろう', $user->nickname);
+        $this->assertSame('たろう', $user->name);
+        $this->assertNull($user->last_name);
+        $this->assertNull($user->first_name);
         $this->assertSame('none', $user->has_pet);
         $this->assertSame('虫が苦手です', $user->concerns);
         $this->assertSame('search', $user->how_found);
         $this->assertSame('自然の中で静かに過ごしたいです', $user->expectations);
         $this->assertNotNull($pendingRegistration->fresh()->used_at);
+    }
+
+    public function test_nickname_must_be_unique_during_member_registration(): void
+    {
+        User::factory()->create(['nickname' => 'たろう']);
+        $pendingRegistration = PendingRegistration::create([
+            'email' => 'new-member@example.com',
+            'token' => Hash::make('test-token'),
+            'expires_at' => now()->addHour(),
+        ]);
+
+        $this->withSession(['pending_registration_id' => $pendingRegistration->id])
+            ->from('/register')
+            ->post('/register', [
+                'nickname' => 'たろう',
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+                'phone' => '090-1234-5678',
+                'hasPet' => 'no',
+            ])
+            ->assertSessionHasErrors('nickname');
+
+        $this->assertDatabaseMissing('users', ['email' => 'new-member@example.com']);
     }
 
     public function test_guest_can_receive_a_registration_confirmation_email(): void
@@ -130,10 +154,7 @@ class MemberPortalTest extends TestCase
         $user = User::factory()->create(['status' => 'active']);
 
         $this->actingAs($user)->patch('/mypage', [
-            'lastName' => '山田',
-            'firstName' => '花子',
-            'lastNameKana' => 'やまだ',
-            'firstNameKana' => 'はなこ',
+            'nickname' => 'はなこ',
             'address' => '東京都新宿区1-1',
             'hasPet' => 'none',
             'petBreed' => '',
@@ -146,9 +167,8 @@ class MemberPortalTest extends TestCase
 
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
-            'name' => '山田 花子',
-            'last_name' => '山田',
-            'first_name' => '花子',
+            'name' => 'はなこ',
+            'nickname' => 'はなこ',
             'concerns' => 'アレルギーがあります',
             'how_found' => '検索',
             'expectations' => '犬とゆっくり過ごしたいです',

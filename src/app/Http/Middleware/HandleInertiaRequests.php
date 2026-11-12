@@ -35,6 +35,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'admin' => $request->session()->get('admin_user'),
                 'user' => fn() => $request->user() ? [
+                    'nickname' => $request->user()->nickname ?? '',
                     'lastName' => $request->user()->last_name ?? '',
                     'firstName' => $request->user()->first_name ?? '',
                     'lastNameKana' => $request->user()->last_name_kana ?? '',
@@ -42,6 +43,8 @@ class HandleInertiaRequests extends Middleware
                     'email' => $request->user()->email,
                     'phone' => $request->user()->phone ?? '',
                     'address' => $request->user()->address ?? '',
+                    'prefecture' => $request->user()->prefecture ?? '',
+                    'city' => $request->user()->city ?? '',
                     'birthDate' => $request->user()->birth_date?->format('Y-m-d') ?? '',
                     'hasPet' => $request->user()->has_pet ?? 'none',
                     'petBreed' => $request->user()->pet_breed ?? '',

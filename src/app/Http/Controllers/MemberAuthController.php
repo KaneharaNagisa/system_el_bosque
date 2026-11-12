@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class MemberAuthController extends Controller
@@ -56,10 +57,7 @@ class MemberAuthController extends Controller
     public function register(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'lastName' => ['required', 'string', 'max:50'],
-            'firstName' => ['required', 'string', 'max:50'],
-            'lastNameKana' => ['required', 'string', 'max:100'],
-            'firstNameKana' => ['required', 'string', 'max:100'],
+            'nickname' => ['required', 'string', 'max:100', Rule::unique('users', 'nickname')],
             'password' => ['required', 'confirmed', Password::min(8)],
             'phone' => ['required', 'string', 'max:20'],
             'address' => ['nullable', 'string', 'max:255'],
@@ -105,11 +103,8 @@ class MemberAuthController extends Controller
             }
 
             return User::create([
-                'name' => trim($validated['lastName'] . ' ' . $validated['firstName']),
-                'last_name' => $validated['lastName'],
-                'first_name' => $validated['firstName'],
-                'last_name_kana' => $validated['lastNameKana'],
-                'first_name_kana' => $validated['firstNameKana'],
+                'name' => $validated['nickname'],
+                'nickname' => $validated['nickname'],
                 'email' => $pendingRegistration->email,
                 'password' => $validated['password'],
                 'phone' => $validated['phone'],

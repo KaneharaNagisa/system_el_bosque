@@ -375,7 +375,7 @@ export function FAQ() {
                 >
                     お気軽にお問い合わせください。
                     <br />
-                    メールにてご返答いたします（通常2〜3営業日以内）。
+                    公式LINEからご質問・ご相談を承ります。
                 </p>
                 <Link
                     to="/contact"
@@ -390,7 +390,7 @@ export function FAQ() {
                         fontSize: "1rem",
                     }}
                 >
-                    お問い合わせフォーム
+                    公式LINEでお問い合わせ
                 </Link>
             </section>
         </div>

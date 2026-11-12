@@ -27,7 +27,7 @@ const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "0.7rem 1rem",
     backgroundColor: "#faf5e8",
-    border: "1px solid rgba(37,104,64,0.2)",
+    border: "1px solid rgba(100,55,20,0.2)",
     borderRadius: "12px",
     fontSize: "0.88rem",
     color: "#2c1e10",
@@ -41,7 +41,7 @@ const labelStyle: React.CSSProperties = {
     display: "block",
     fontSize: "0.78rem",
     fontWeight: 700,
-    color: "#256840",
+    color: "#7a4a1e",
     marginBottom: "0.35rem",
     letterSpacing: "0.04em",
 };
@@ -214,9 +214,9 @@ function statusColor(status: string) {
     switch (status) {
         case "confirmed":
             return {
-                bg: "rgba(37,104,64,0.08)",
-                color: "#256840",
-                border: "rgba(37,104,64,0.2)",
+                bg: "rgba(100,55,20,0.08)",
+                color: "#7a4a1e",
+                border: "rgba(100,55,20,0.2)",
             };
         case "pending":
             return {
@@ -246,6 +246,7 @@ export function MyPage() {
         news = [],
         reservations = [],
         reservationCount = 0,
+        errors = {},
     } = usePage<{
         news?: Array<{
             id: number;
@@ -255,6 +256,7 @@ export function MyPage() {
         }>;
         reservations?: typeof mockReservations;
         reservationCount?: number;
+        errors?: Record<string, string>;
     }>().props;
     const databaseNews = news.map((item) => ({
         id: String(item.id),
@@ -274,10 +276,7 @@ export function MyPage() {
     );
 
     const [editForm, setEditForm] = useState({
-        lastName: user?.lastName || "",
-        firstName: user?.firstName || "",
-        lastNameKana: user?.lastNameKana || "",
-        firstNameKana: user?.firstNameKana || "",
+        nickname: user?.nickname || "",
         postalCode: "",
         address: user?.address || "",
         hasPet: user?.hasPet || "no",
@@ -385,10 +384,7 @@ export function MyPage() {
             : editForm.address;
         updateProfile(
             {
-                lastName: editForm.lastName,
-                firstName: editForm.firstName,
-                lastNameKana: editForm.lastNameKana,
-                firstNameKana: editForm.firstNameKana,
+                nickname: editForm.nickname,
                 address: combinedAddress,
                 hasPet: editForm.hasPet,
                 petBreed: editForm.petBreed,
@@ -435,7 +431,7 @@ export function MyPage() {
                 fontFamily: "'Noto Serif JP', serif",
                 fontSize: "1.1rem",
                 fontWeight: 700,
-                color: "#256840",
+                color: "#7a4a1e",
                 marginBottom: "1.5rem",
                 paddingBottom: "0.75rem",
                 borderBottom: "2px solid rgba(180,140,80,0.2)",
@@ -490,7 +486,7 @@ export function MyPage() {
                         fontSize: "0.92rem",
                     }}
                 >
-                    {user.lastName} {user.firstName} 様
+                    {user.nickname} 様
                 </p>
             </div>
 
@@ -502,8 +498,8 @@ export function MyPage() {
                     {editSaved && (
                         <div
                             style={{
-                                backgroundColor: "rgba(37,104,64,0.08)",
-                                border: "1px solid rgba(37,104,64,0.2)",
+                                backgroundColor: "rgba(100,55,20,0.08)",
+                                border: "1px solid rgba(100,55,20,0.2)",
                                 borderRadius: "12px",
                                 padding: "1rem 1.25rem",
                                 marginBottom: "1.5rem",
@@ -512,11 +508,11 @@ export function MyPage() {
                                 gap: "0.6rem",
                             }}
                         >
-                            <FaCheckCircle size={16} color="#256840" />
+                            <FaCheckCircle size={16} color="#7a4a1e" />
                             <span
                                 style={{
                                     fontSize: "0.88rem",
-                                    color: "#256840",
+                                    color: "#7a4a1e",
                                     fontWeight: 500,
                                 }}
                             >
@@ -530,7 +526,7 @@ export function MyPage() {
                         sectionCard(
                             <>
                                 {sectionTitle(
-                                    <FaBell size={16} color="#256840" />,
+                                    <FaBell size={16} color="#7a4a1e" />,
                                     "お知らせ",
                                 )}
                                 <div
@@ -663,7 +659,7 @@ export function MyPage() {
                                                                             ? 700
                                                                             : 500,
                                                                     color: isExpanded
-                                                                        ? "#256840"
+                                                                        ? "#7a4a1e"
                                                                         : "#2c1e10",
                                                                     lineHeight: 1.5,
                                                                     transition:
@@ -704,8 +700,8 @@ export function MyPage() {
                                                         <div
                                                             style={{
                                                                 backgroundColor:
-                                                                    "rgba(37,104,64,0.04)",
-                                                                border: "1px solid rgba(37,104,64,0.1)",
+                                                                    "rgba(100,55,20,0.04)",
+                                                                border: "1px solid rgba(100,55,20,0.1)",
                                                                 borderRadius:
                                                                     "3px",
                                                                 padding:
@@ -746,7 +742,7 @@ export function MyPage() {
                                                 display: "inline-flex",
                                                 alignItems: "center",
                                                 gap: "0.4rem",
-                                                color: "#256840",
+                                                color: "#7a4a1e",
                                                 fontSize: "0.83rem",
                                                 fontWeight: 700,
                                                 textDecoration: "none",
@@ -773,18 +769,14 @@ export function MyPage() {
                                 }}
                             >
                                 {sectionTitle(
-                                    <FaUser size={16} color="#256840" />,
+                                    <FaUser size={16} color="#7a4a1e" />,
                                     "会員情報",
                                 )}
                                 {!editing && (
                                     <button
                                         onClick={() => {
                                             setEditForm({
-                                                lastName: user.lastName,
-                                                firstName: user.firstName,
-                                                lastNameKana: user.lastNameKana,
-                                                firstNameKana:
-                                                    user.firstNameKana,
+                                                nickname: user.nickname,
                                                 postalCode: parseAddress(
                                                     user.address,
                                                 ).postalCode,
@@ -806,9 +798,9 @@ export function MyPage() {
                                             alignItems: "center",
                                             gap: "0.35rem",
                                             backgroundColor:
-                                                "rgba(37,104,64,0.06)",
-                                            color: "#256840",
-                                            border: "1px solid rgba(37,104,64,0.15)",
+                                                "rgba(100,55,20,0.06)",
+                                            color: "#7a4a1e",
+                                            border: "1px solid rgba(100,55,20,0.15)",
                                             borderRadius: "12px",
                                             padding: "0.5rem 1rem",
                                             fontSize: "0.82rem",
@@ -916,50 +908,31 @@ export function MyPage() {
                                         }}
                                         className="mypage-edit-grid"
                                     >
-                                        {/* お名前 */}
-                                        <div>
-                                            <label style={labelStyle}>姓</label>
-                                            <input
-                                                name="lastName"
-                                                value={editForm.lastName}
-                                                onChange={handleEditChange}
-                                                placeholder="例: 山田"
-                                                style={inputStyle}
-                                            />
-                                        </div>
-                                        <div>
-                                            <label style={labelStyle}>名</label>
-                                            <input
-                                                name="firstName"
-                                                value={editForm.firstName}
-                                                onChange={handleEditChange}
-                                                placeholder="例: 太郎"
-                                                style={inputStyle}
-                                            />
-                                        </div>
+                                        {/* ニックネーム */}
                                         <div>
                                             <label style={labelStyle}>
-                                                姓（ふりがな）
+                                                ニックネーム
                                             </label>
                                             <input
-                                                name="lastNameKana"
-                                                value={editForm.lastNameKana}
+                                                name="nickname"
+                                                value={editForm.nickname}
                                                 onChange={handleEditChange}
-                                                placeholder="例: やまだ"
+                                                placeholder="例：たろう"
+                                                required
+                                                maxLength={100}
                                                 style={inputStyle}
                                             />
-                                        </div>
-                                        <div>
-                                            <label style={labelStyle}>
-                                                名（ふりがな）
-                                            </label>
-                                            <input
-                                                name="firstNameKana"
-                                                value={editForm.firstNameKana}
-                                                onChange={handleEditChange}
-                                                placeholder="例: たろう"
-                                                style={inputStyle}
-                                            />
+                                            {errors.nickname && (
+                                                <p
+                                                    style={{
+                                                        color: "#a03020",
+                                                        fontSize: "0.75rem",
+                                                        marginTop: "0.3rem",
+                                                    }}
+                                                >
+                                                    {errors.nickname}
+                                                </p>
+                                            )}
                                         </div>
 
                                         {/* 郵便番号 + 住所 */}
@@ -1254,7 +1227,7 @@ export function MyPage() {
                                                 display: "inline-flex",
                                                 alignItems: "center",
                                                 gap: "0.3rem",
-                                                backgroundColor: "#256840",
+                                                backgroundColor: "#7a4a1e",
                                                 color: "#f0e8d0",
                                                 border: "none",
                                                 borderRadius: "12px",
@@ -1282,12 +1255,8 @@ export function MyPage() {
                                 >
                                     {[
                                         {
-                                            label: "お名前",
-                                            value: `${user.lastName} ${user.firstName}`,
-                                        },
-                                        {
-                                            label: "ふりがな",
-                                            value: `${user.lastNameKana} ${user.firstNameKana}`,
+                                            label: "ニックネーム",
+                                            value: user.nickname,
                                         },
                                         {
                                             label: "メールアドレス",
@@ -1380,7 +1349,7 @@ export function MyPage() {
                     {sectionCard(
                         <>
                             {sectionTitle(
-                                <FaKey size={16} color="#256840" />,
+                                <FaKey size={16} color="#7a4a1e" />,
                                 "アカウント管理",
                             )}
                             <div
@@ -1632,7 +1601,7 @@ export function MyPage() {
                     {sectionCard(
                         <>
                             {sectionTitle(
-                                <FaCalendarAlt size={16} color="#256840" />,
+                                <FaCalendarAlt size={16} color="#7a4a1e" />,
                                 "予約履歴",
                             )}
                             {reservations.length === 0 ? (
@@ -1703,7 +1672,7 @@ export function MyPage() {
                                                         padding:
                                                             "0.75rem 1.25rem",
                                                         backgroundColor:
-                                                            "rgba(37,104,64,0.04)",
+                                                            "rgba(100,55,20,0.04)",
                                                         borderBottom:
                                                             "1px solid rgba(180,140,80,0.12)",
                                                         flexWrap: "wrap",
@@ -1880,7 +1849,7 @@ export function MyPage() {
                                                                     color:
                                                                         r.supportPlan ===
                                                                         "yes"
-                                                                            ? "#256840"
+                                                                            ? "#7a4a1e"
                                                                             : "#8a7868",
                                                                     marginTop:
                                                                         "0.15rem",
@@ -1934,9 +1903,9 @@ export function MyPage() {
                                                                             }
                                                                             style={{
                                                                                 backgroundColor:
-                                                                                    "rgba(37,104,64,0.06)",
-                                                                                color: "#256840",
-                                                                                border: "1px solid rgba(37,104,64,0.12)",
+                                                                                    "rgba(100,55,20,0.06)",
+                                                                                color: "#7a4a1e",
+                                                                                border: "1px solid rgba(100,55,20,0.12)",
                                                                                 padding:
                                                                                     "0.15rem 0.5rem",
                                                                                 borderRadius:
@@ -2229,10 +2198,10 @@ export function MyPage() {
                                             display: "inline-flex",
                                             alignItems: "center",
                                             gap: "0.4rem",
-                                            color: "#256840",
+                                            color: "#7a4a1e",
                                             padding: "0.65rem 1.25rem",
                                             marginRight: "0.5rem",
-                                            border: "1px solid rgba(37,104,64,0.25)",
+                                            border: "1px solid rgba(100,55,20,0.25)",
                                             borderRadius: "12px",
                                             textDecoration: "none",
                                             fontWeight: 700,

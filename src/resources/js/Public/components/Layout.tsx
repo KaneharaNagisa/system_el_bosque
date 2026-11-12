@@ -865,7 +865,7 @@ export function Layout({ children }: { children: ReactNode }) {
                                             color: "rgba(255,255,255,0.82)",
                                         }}
                                     >
-                                        お問い合わせはメールにて
+                                        お問い合わせは公式LINEから
                                     </span>
                                 </div>
                             </div>
