@@ -142,7 +142,7 @@ export default function Members({
     const [isNewOpen, setIsNewOpen] = useState(false);
     const [newForm, setNewForm] = useState(emptyNewForm);
     const [newErrors, setNewErrors] = useState<
-        Partial<Record<keyof typeof emptyNewForm, string>>
+        Partial<Record<string, string>>
     >({});
     const [passwordForm, setPasswordForm] = useState({
         password: "",
@@ -359,6 +359,7 @@ export default function Members({
                     setNewForm(emptyNewForm);
                     setNewErrors({});
                 },
+                onError: (errors) => setNewErrors(errors),
             },
         );
     };
@@ -1088,6 +1089,13 @@ export default function Members({
                                 </button>
                             </div>
                             <div className="px-6 py-5 space-y-6">
+                                {Object.entries(newErrors)
+                                    .filter(([, message]) => message)
+                                    .map(([field, message]) => (
+                                        <p key={field} className="text-xs text-red-600">
+                                            {message}
+                                        </p>
+                                    ))}
                                 {/* 基本情報 */}
                                 <section>
                                     <h4 className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">

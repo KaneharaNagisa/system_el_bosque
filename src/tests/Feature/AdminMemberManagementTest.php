@@ -84,6 +84,86 @@ class AdminMemberManagementTest extends TestCase
         $this->assertSame(['2018', '2020'], $updated->family_birth_years);
     }
 
+    public function test_admin_cannot_register_member_with_duplicate_nickname_or_email(): void
+    {
+        $admin = Admin::create([
+            'name' => '管理者',
+            'email' => 'admin@example.com',
+            'password' => 'password',
+        ]);
+        User::factory()->create([
+            'nickname' => '既存ニックネーム',
+            'email' => 'existing@example.com',
+        ]);
+
+        $this->withSession(['admin_user' => $admin->id])
+            ->from('/admin/members')
+            ->post('/admin/members', [
+                'nickname' => '既存ニックネーム',
+                'email' => 'new@example.com',
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+                'phone' => '090-1234-5678',
+            ])
+            ->assertRedirect('/admin/members')
+            ->assertSessionHasErrors(['nickname']);
+
+        $this->withSession(['admin_user' => $admin->id])
+            ->from('/admin/members')
+            ->post('/admin/members', [
+                'nickname' => '別のニックネーム',
+                'email' => 'existing@example.com',
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+                'phone' => '090-1234-5678',
+            ])
+            ->assertRedirect('/admin/members')
+            ->assertSessionHasErrors(['email']);
+
+        $this->assertDatabaseCount('users', 1);
+    }
+
+    public function test_admin_cannot_edit_member_to_duplicate_nickname_or_email(): void
+    {
+        $admin = Admin::create([
+            'name' => '管理者',
+            'email' => 'admin@example.com',
+            'password' => 'password',
+        ]);
+        $member = User::factory()->create([
+            'nickname' => '編集対象',
+            'email' => 'member@example.com',
+        ]);
+        User::factory()->create([
+            'nickname' => '他の会員',
+            'email' => 'other@example.com',
+        ]);
+        $fields = [
+            'phone' => '090-1234-5678',
+            'has_pet' => 'none',
+            'status' => 'active',
+        ];
+
+        $this->withSession(['admin_user' => $admin->id])
+            ->patch("/admin/members/{$member->id}", [
+                ...$fields,
+                'nickname' => '他の会員',
+                'email' => 'member@example.com',
+            ])
+            ->assertSessionHasErrors(['nickname']);
+
+        $this->withSession(['admin_user' => $admin->id])
+            ->patch("/admin/members/{$member->id}", [
+                ...$fields,
+                'nickname' => '編集対象',
+                'email' => 'other@example.com',
+            ])
+            ->assertSessionHasErrors(['email']);
+
+        $this->assertSame('編集対象', $member->fresh()->nickname);
+        $this->assertSame('member@example.com', $member->fresh()->email);
+    }
+
     public function test_admin_reservation_management_displays_member_nickname(): void
     {
         $admin = Admin::create([

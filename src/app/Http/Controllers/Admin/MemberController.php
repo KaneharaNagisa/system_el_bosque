@@ -69,8 +69,8 @@ class MemberController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'nickname'       => ['required', 'string', 'max:100'],
-            'email'          => ['required', 'email', 'unique:users,email'],
+            'nickname'       => ['required', 'string', 'max:100', Rule::unique('users', 'nickname')],
+            'email'          => ['required', 'email', Rule::unique('users', 'email')],
             'password'       => ['required', 'confirmed', Password::min(8)],
             'phone'          => ['required', 'string', 'max:20'],
             'address'        => ['nullable', 'string', 'max:255'],
@@ -88,6 +88,9 @@ class MemberController extends Controller
             'how_found'      => ['nullable', 'string', 'max:255'],
             'expectations'   => ['nullable', 'string'],
             'status'         => ['nullable', 'in:active,withdrawn'],
+        ], [
+            'nickname.unique' => 'このニックネームは既に登録されています。',
+            'email.unique' => 'このメールアドレスは既に登録されています。',
         ]);
 
         $validated['name']     = $validated['nickname'];
@@ -102,7 +105,7 @@ class MemberController extends Controller
     public function update(Request $request, int $id): RedirectResponse
     {
         $validated = $request->validate([
-            'nickname'       => ['required', 'string', 'max:100'],
+            'nickname'       => ['required', 'string', 'max:100', Rule::unique('users', 'nickname')->ignore($id)],
             'email'          => ['required', 'email', Rule::unique('users', 'email')->ignore($id)],
             'phone'          => ['required', 'string', 'max:20'],
             'prefecture'     => ['nullable', 'string', 'max:20'],
@@ -119,6 +122,9 @@ class MemberController extends Controller
             'how_found'      => ['nullable', 'string', 'max:255'],
             'expectations'   => ['nullable', 'string'],
             'status'         => ['required', 'in:active,withdrawn'],
+        ], [
+            'nickname.unique' => 'このニックネームは既に登録されています。',
+            'email.unique' => 'このメールアドレスは既に登録されています。',
         ]);
 
         $validated['name'] = $validated['nickname'];
