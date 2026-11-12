@@ -43,3 +43,21 @@ Copilotへの基本指示（ルール）
 docker-compose exec app php artisan storage:link
 docker compose exec app php artisan migrate
 docker compose exec app npm run build
+
+## デザイン更新
+
+### プロンプトの頭に「デザイン更新 管理画面」と記載があった場合
+
+- system_el_bosque\figma_temp内のソースは変更しないでください。
+- エンドユーザー画面側のソースは変更しないでください。
+- system_el_bosque\figma_temp\src内のReactソースをsystem_el_bosque\src内に反映してください。
+- 変更内容に合わせてsystem_el_bosque\obsidian_system_el_bosque\01_project_spec\adminの仕様を書き換えてください。
+
+### プロンプトの頭に「デザイン更新 エンドユーザー画面」と記載があった場合
+
+- system_el_bosque\figma_temp内のソースは変更しないでください。
+- 管理画面側のソースは変更しないでください。
+- system_el_bosque\figma_temp\src内のReactソースをsystem_el_bosque\src内に反映してください。
+- エンドユーザー側のレスポンシブ対応（ブレイクポイント）も反映してください。
+- DBなどは管理画面側の情報を利用してください。すでにDB接続している箇所は変更しないでください。
+- 変更内容に合わせてsystem_el_bosque\obsidian_system_el_bosque\01_project_spec\enduserの仕様を書き換えてください。
