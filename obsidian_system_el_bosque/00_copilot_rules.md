@@ -61,3 +61,10 @@ docker compose exec app npm run build
 - エンドユーザー側のレスポンシブ対応（ブレイクポイント）も反映してください。
 - DBなどは管理画面側の情報を利用してください。すでにDB接続している箇所は変更しないでください。
 - 変更内容に合わせてsystem_el_bosque\obsidian_system_el_bosque\01_project_spec\enduserの仕様を書き換えてください。
+
+## 仕様変更
+
+### プロンプトの頭に「仕様変更」と記載があった場合
+
+- 変更内容に合わせてsystem_el_bosque\obsidian_system_el_bosque\01_project_spec\adminの仕様を書き換えてください。
+- 変更内容に合わせてsystem_el_bosque\obsidian_system_el_bosque\01_project_spec\enduserの仕様を書き換えてください。
