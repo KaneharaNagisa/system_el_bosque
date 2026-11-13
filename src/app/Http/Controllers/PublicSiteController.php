@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Availability;
 use App\Models\Contact;
 use App\Models\Experience;
+use App\Models\FacilityGalleryItem;
 use App\Models\Faq;
 use App\Models\ImageAsset;
 use App\Models\News;
@@ -37,6 +38,8 @@ class PublicSiteController extends Controller
             'reservation-confirm',
         ], true);
 
+        $images = ImageAsset::query()->get()->keyBy('key');
+
         return Inertia::render('Public/Page', [
             'page' => $page,
             'isTestEnvironment' => config('app.env') !== 'production',
@@ -46,7 +49,7 @@ class PublicSiteController extends Controller
             'availability' => $this->availability($page),
             'fixedPage' => $fixedPage,
             'pricingSetting' => $usesPricing ? PricingSetting::current()->toFrontend() : null,
-            'images' => ImageAsset::query()->get()->mapWithKeys(function (ImageAsset $image) {
+            'images' => $images->mapWithKeys(function (ImageAsset $image) {
                 $variants = $image->variants ?? [];
                 return [$image->key => [
                     'url' => asset('storage/' . $image->path),
@@ -56,6 +59,24 @@ class PublicSiteController extends Controller
                     'sizes' => '(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 1440px',
                 ]];
             })->all(),
+            'facilityGallery' => $page === 'about'
+                ? FacilityGalleryItem::query()->orderBy('id')->get()->map(function (FacilityGalleryItem $item) use ($images) {
+                    $fallback = $item->fallback_key ? $images->get($item->fallback_key) : null;
+                    $path = $item->image_path ?? $fallback?->path;
+                    $variants = $item->image_path ? $item->variants ?? [] : $fallback?->variants ?? [];
+
+                    return [
+                        'id' => $item->id,
+                        'title' => $item->title,
+                        'fallbackKey' => $item->fallback_key,
+                        'url' => $path ? asset('storage/' . $path) : null,
+                        'srcSet' => collect($variants)
+                            ->map(fn(string $variantPath, string $width) => asset('storage/' . $variantPath) . ' ' . $width . 'w')
+                            ->implode(', ') ?: null,
+                        'sizes' => $path ? '(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 1440px' : null,
+                    ];
+                })->values()->all()
+                : [],
             ...$props,
         ]);
     }

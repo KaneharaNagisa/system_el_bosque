@@ -135,6 +135,15 @@ const amenityCategories = [
     },
 ];
 
+type FacilityGalleryItem = {
+    id: number;
+    title: string;
+    fallbackKey: string | null;
+    url: string | null;
+    srcSet: string | null;
+    sizes: string | null;
+};
+
 /* ── 利用ルール ── */
 const rules = [
     {
@@ -196,14 +205,26 @@ const SectionHeading = ({
 );
 
 export function About() {
-    const { pricingSetting, images = {} } = usePage().props as unknown as {
+    const { pricingSetting, images = {}, facilityGallery = [] } = usePage().props as unknown as {
         pricingSetting?: PricingSetting;
         images?: PublicImages;
+        facilityGallery?: FacilityGalleryItem[];
     };
-    const galleryImages = gallery.map((item) => ({
-        ...item,
-        ...responsiveImage(images, item.key, item.src),
-    }));
+    const galleryImages = facilityGallery.map((item) => {
+        const fallback = gallery.find((image) => image.key === item.fallbackKey);
+        const defaultImage = fallback
+            ? responsiveImage(images, fallback.key, fallback.src)
+            : null;
+
+        return {
+            id: item.id,
+            alt: item.title,
+            caption: item.title,
+            src: item.url ?? defaultImage?.src ?? "",
+            srcSet: item.url ? item.srcSet : defaultImage?.srcSet,
+            sizes: item.url ? item.sizes : defaultImage?.sizes,
+        };
+    });
     const exteriorImage = responsiveImage(images, "about.exterior", cabinPhoto);
     const rates = pricingSetting ?? defaultPricingSetting;
 
@@ -455,14 +476,16 @@ export function About() {
                         style={{
                             display: "grid",
                             gridTemplateColumns: "repeat(3, 1fr)",
-                            gridTemplateRows: "240px 240px",
+                            gridTemplateRows: galleryImages.length
+                                ? `repeat(${Math.ceil(galleryImages.length / 3)}, 240px)`
+                                : "none",
                             gap: "0.6rem",
                         }}
                         className="about-gallery-grid"
                     >
-                        {galleryImages.map((item, idx) => (
+                        {galleryImages.map((item) => (
                             <div
-                                key={idx}
+                                key={item.id}
                                 style={{
                                     position: "relative",
                                     borderRadius: "5px",
@@ -472,6 +495,8 @@ export function About() {
                                 <ImageWithFallback
                                     src={item.src}
                                     alt={item.alt}
+                                    srcSet={item.srcSet ?? undefined}
+                                    sizes={item.sizes ?? undefined}
                                     style={{
                                         width: "100%",
                                         height: "100%",

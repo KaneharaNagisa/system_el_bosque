@@ -172,6 +172,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // 画像管理
         Route::get('/images', [ImageAssetController::class, 'index'])->name('images.index');
+        Route::post('/images/gallery', [ImageAssetController::class, 'storeGalleryItem'])->name('images.gallery.store');
+        Route::patch('/images/gallery/{id}', [ImageAssetController::class, 'updateGalleryItem'])->name('images.gallery.update');
+        Route::post('/images/gallery/{id}/image', [ImageAssetController::class, 'uploadGalleryImage'])->name('images.gallery.image');
+        Route::delete('/images/gallery/{id}', [ImageAssetController::class, 'destroyGalleryItem'])->name('images.gallery.destroy');
         Route::post('/images/{key}', [ImageAssetController::class, 'upload'])->where('key', '.*')->name('images.upload');
         Route::delete('/images/{key}', [ImageAssetController::class, 'destroy'])->where('key', '.*')->name('images.destroy');
     });

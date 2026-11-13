@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\FacilityGalleryItem;
 use App\Models\ImageAsset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -41,11 +43,23 @@ class ImageAssetController extends Controller
             return [
                 ...$asset,
                 'path' => $image?->path,
-                ...$this->imageResponse($image),
+                ...$this->imageResponse($image?->path, $image?->variants),
+            ];
+        })->values();
+        $gallery = FacilityGalleryItem::query()->orderBy('id')->get()->map(function (FacilityGalleryItem $item) use ($saved) {
+            $fallback = $item->fallback_key ? $saved->get($item->fallback_key) : null;
+            $path = $item->image_path ?? $fallback?->path;
+            $variants = $item->image_path ? $item->variants : $fallback?->variants;
+
+            return [
+                'id' => $item->id,
+                'title' => $item->title,
+                'fallbackKey' => $item->fallback_key,
+                ...$this->imageResponse($path, $variants),
             ];
         })->values();
 
-        return Inertia::render('Admin/Images', ['images' => $images]);
+        return Inertia::render('Admin/Images', ['images' => $images, 'gallery' => $gallery]);
     }
 
     public function upload(Request $request, string $key): JsonResponse|RedirectResponse
@@ -55,22 +69,79 @@ class ImageAssetController extends Controller
 
         $asset = ImageAsset::firstOrNew(['key' => $key]);
         [$path, $variants] = $this->storeVariants($request->file('image'), $key);
-        $this->deleteFiles($asset);
+        $this->deleteFiles($asset->path, $asset->variants ?? []);
         $asset->label = collect(self::ASSETS)->firstWhere('key', $key)['label'];
         $asset->path = $path;
         $asset->variants = $variants;
         $asset->save();
 
-        return response()->json($this->imageResponse($asset));
+        return response()->json($this->imageResponse($asset->path, $asset->variants));
     }
 
     public function destroy(string $key): RedirectResponse
     {
         $asset = ImageAsset::where('key', $key)->firstOrFail();
-        $this->deleteFiles($asset);
+        $this->deleteFiles($asset->path, $asset->variants ?? []);
         $asset->delete();
 
         return back()->with('message', '画像を初期状態に戻しました');
+    }
+
+    public function storeGalleryItem(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:10240'],
+        ]);
+
+        $item = FacilityGalleryItem::create([
+            'title' => $validated['title'],
+        ]);
+        [$item->image_path, $item->variants] = $this->storeVariants(
+            $request->file('image'),
+            'about.gallery.' . $item->id,
+        );
+        $item->save();
+
+        return response()->json($this->galleryResponse($item), 201);
+    }
+
+    public function updateGalleryItem(Request $request, int $id): JsonResponse
+    {
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+        ]);
+
+        $item = FacilityGalleryItem::findOrFail($id);
+        $item->update(['title' => $validated['title']]);
+
+        return response()->json($this->galleryResponse($item));
+    }
+
+    public function uploadGalleryImage(Request $request, int $id): JsonResponse
+    {
+        $request->validate([
+            'image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:10240'],
+        ]);
+
+        $item = FacilityGalleryItem::findOrFail($id);
+        $this->deleteFiles($item->image_path, $item->variants ?? []);
+        [$item->image_path, $item->variants] = $this->storeVariants(
+            $request->file('image'),
+            'about.gallery.' . $item->id,
+        );
+        $item->save();
+
+        return response()->json($this->galleryResponse($item));
+    }
+
+    public function destroyGalleryItem(int $id): JsonResponse
+    {
+        $item = FacilityGalleryItem::findOrFail($id);
+        $this->deleteFiles($item->image_path, $item->variants ?? []);
+        $item->delete();
+
+        return response()->json(['success' => true]);
     }
 
     public static function keys(): array
@@ -78,7 +149,7 @@ class ImageAssetController extends Controller
         return collect(self::ASSETS)->pluck('key')->all();
     }
 
-    private function storeVariants($file, string $key): array
+    private function storeVariants(UploadedFile $file, string $key): array
     {
         $directory = 'images/' . Str::slug($key) . '/' . Str::uuid();
         $contents = file_get_contents($file->getRealPath());
@@ -125,32 +196,41 @@ class ImageAssetController extends Controller
         return [end($paths), $variants];
     }
 
-    private function deleteFiles(ImageAsset $asset): void
+    private function deleteFiles(?string $path, array $variants): void
     {
-        $paths = array_values($asset->variants ?? []);
-        if ($asset->path) {
-            $paths[] = $asset->path;
+        $paths = array_values($variants);
+        if ($path) {
+            $paths[] = $path;
         }
         if ($paths) {
             Storage::disk('public')->delete(array_unique($paths));
         }
     }
 
-    private function imageResponse(?ImageAsset $asset): array
+    private function imageResponse(?string $path, ?array $variants): array
     {
-        if (!$asset) {
+        if (!$path) {
             return ['url' => null, 'srcSet' => null, 'sizes' => null];
         }
 
-        $variants = $asset->variants ?? [];
         $srcSet = collect($variants)
             ->map(fn(string $path, string $width) => asset('storage/' . $path) . ' ' . $width . 'w')
             ->implode(', ');
 
         return [
-            'url' => asset('storage/' . $asset->path),
+            'url' => asset('storage/' . $path),
             'srcSet' => $srcSet ?: null,
             'sizes' => '(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 1440px',
+        ];
+    }
+
+    private function galleryResponse(FacilityGalleryItem $item): array
+    {
+        return [
+            'id' => $item->id,
+            'title' => $item->title,
+            'fallbackKey' => $item->fallback_key,
+            ...$this->imageResponse($item->image_path, $item->variants),
         ];
     }
 }

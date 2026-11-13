@@ -10,10 +10,40 @@ interface ImageAsset {
     url: string | null;
 }
 
-export default function Images({ images }: { images: ImageAsset[] }) {
+interface GalleryItem {
+    id: number;
+    title: string;
+    fallbackKey: string | null;
+    url: string | null;
+    srcSet: string | null;
+    sizes: string | null;
+}
+
+const galleryKeys = [
+    "about.living",
+    "about.kitchen",
+    "about.loft",
+    "about.lake",
+    "about.bbq",
+    "about.stars",
+];
+
+export default function Images({
+    images,
+    gallery: initialGallery,
+}: {
+    images: ImageAsset[];
+    gallery: GalleryItem[];
+}) {
     const [items, setItems] = useState(images);
+    const [gallery, setGallery] = useState(initialGallery);
     const [uploading, setUploading] = useState<string | null>(null);
+    const [galleryBusy, setGalleryBusy] = useState<string | null>(null);
+    const [newGalleryTitle, setNewGalleryTitle] = useState("");
+    const [newGalleryImage, setNewGalleryImage] = useState<File | null>(null);
     const inputs = useRef<Record<string, HTMLInputElement | null>>({});
+    const galleryInputs = useRef<Record<number, HTMLInputElement | null>>({});
+    const newGalleryInput = useRef<HTMLInputElement | null>(null);
     const groups = [
         { key: "home", label: "トップページ" },
         { key: "about", label: "施設紹介" },
@@ -60,6 +90,79 @@ export default function Images({ images }: { images: ImageAsset[] }) {
         }
     };
 
+    const createGalleryItem = async () => {
+        if (!newGalleryTitle.trim() || !newGalleryImage) return;
+        setGalleryBusy("new");
+        try {
+            const body = new FormData();
+            body.append("title", newGalleryTitle.trim());
+            body.append("image", newGalleryImage);
+            const response = await axios.post<GalleryItem>(
+                "/admin/images/gallery",
+                body,
+            );
+            setGallery((current) => [...current, response.data]);
+            setNewGalleryTitle("");
+            setNewGalleryImage(null);
+            if (newGalleryInput.current) newGalleryInput.current.value = "";
+        } catch {
+            alert("ギャラリー画像の追加に失敗しました。入力内容を確認してください。");
+        } finally {
+            setGalleryBusy(null);
+        }
+    };
+
+    const saveGalleryTitle = async (item: GalleryItem) => {
+        setGalleryBusy(`title-${item.id}`);
+        try {
+            await axios.patch(`/admin/images/gallery/${item.id}`, {
+                title: item.title,
+            });
+        } catch {
+            alert("画像タイトルの保存に失敗しました。");
+        } finally {
+            setGalleryBusy(null);
+        }
+    };
+
+    const uploadGalleryImage = async (item: GalleryItem, file: File) => {
+        setGalleryBusy(`image-${item.id}`);
+        try {
+            const body = new FormData();
+            body.append("image", file);
+            const response = await axios.post<GalleryItem>(
+                `/admin/images/gallery/${item.id}/image`,
+                body,
+            );
+            setGallery((current) =>
+                current.map((entry) =>
+                    entry.id === item.id ? response.data : entry,
+                ),
+            );
+        } catch {
+            alert(
+                "画像のアップロードに失敗しました。画像形式とサイズを確認してください。",
+            );
+        } finally {
+            setGalleryBusy(null);
+        }
+    };
+
+    const deleteGalleryItem = async (item: GalleryItem) => {
+        if (!confirm(`「${item.title}」を削除しますか？`)) return;
+        setGalleryBusy(`delete-${item.id}`);
+        try {
+            await axios.delete(`/admin/images/gallery/${item.id}`);
+            setGallery((current) =>
+                current.filter((entry) => entry.id !== item.id),
+            );
+        } catch {
+            alert("ギャラリーブロックの削除に失敗しました。");
+        } finally {
+            setGalleryBusy(null);
+        }
+    };
+
     return (
         <AdminLayout currentPage="images" title="画像管理">
             <div className="max-w-6xl mx-auto">
@@ -80,7 +183,8 @@ export default function Images({ images }: { images: ImageAsset[] }) {
                     <div className="p-6 space-y-8">
                         {groups.map((group) => {
                             const groupItems = items.filter((item) =>
-                                item.key.startsWith(`${group.key}.`),
+                                item.key.startsWith(`${group.key}.`) &&
+                                !galleryKeys.includes(item.key),
                             );
 
                             return (
@@ -178,6 +282,156 @@ export default function Images({ images }: { images: ImageAsset[] }) {
                                             </div>
                                         ))}
                                     </div>
+                                    {group.key === "about" && (
+                                        <section className="mt-8 border-t border-gray-200 pt-6">
+                                            <div className="flex items-center gap-3 mb-4">
+                                                <h4 className="text-sm font-semibold text-gray-900">
+                                                    フォトギャラリー
+                                                </h4>
+                                                <span className="text-xs text-gray-400">
+                                                    {gallery.length}件
+                                                </span>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                                                {gallery.map((item) => (
+                                                    <div
+                                                        key={item.id}
+                                                        className="border border-gray-200 rounded-lg overflow-hidden"
+                                                    >
+                                                        <div className="aspect-[16/9] bg-gray-100">
+                                                            {item.url ? (
+                                                                <img
+                                                                    src={item.url}
+                                                                    alt={item.title}
+                                                                    className="w-full h-full object-cover"
+                                                                />
+                                                            ) : (
+                                                                <div className="h-full flex items-center justify-center text-gray-400 text-sm">
+                                                                    現在の画像を使用中
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className="p-4">
+                                                            <label className="block text-xs text-gray-600">
+                                                                画像タイトル
+                                                                <input
+                                                                    value={item.title}
+                                                                    maxLength={255}
+                                                                    onChange={(event) =>
+                                                                        setGallery((current) =>
+                                                                            current.map((entry) =>
+                                                                                entry.id === item.id
+                                                                                    ? { ...entry, title: event.target.value }
+                                                                                    : entry,
+                                                                            ),
+                                                                        )
+                                                                    }
+                                                                    className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                                                                />
+                                                            </label>
+                                                            <input
+                                                                ref={(element) => {
+                                                                    galleryInputs.current[item.id] =
+                                                                        element;
+                                                                }}
+                                                                type="file"
+                                                                accept="image/jpeg,image/png,image/webp,image/gif"
+                                                                className="hidden"
+                                                                onChange={(event) => {
+                                                                    const file =
+                                                                        event.target.files?.[0];
+                                                                    if (file)
+                                                                        void uploadGalleryImage(
+                                                                            item,
+                                                                            file,
+                                                                        );
+                                                                    event.target.value = "";
+                                                                }}
+                                                            />
+                                                            <div className="mt-3 flex gap-2">
+                                                                <button
+                                                                    type="button"
+                                                                    disabled={
+                                                                        galleryBusy !== null ||
+                                                                        !item.title.trim()
+                                                                    }
+                                                                    onClick={() =>
+                                                                        void saveGalleryTitle(item)
+                                                                    }
+                                                                    className="flex-1 px-3 py-2 border border-gray-200 rounded-md text-xs disabled:opacity-50"
+                                                                >
+                                                                    タイトルを保存
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    disabled={galleryBusy !== null}
+                                                                    onClick={() =>
+                                                                        galleryInputs.current[
+                                                                            item.id
+                                                                        ]?.click()
+                                                                    }
+                                                                    className="flex-1 px-3 py-2 bg-[#0a2105] text-white rounded-md text-xs disabled:opacity-50"
+                                                                >
+                                                                    画像を変更
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    disabled={galleryBusy !== null}
+                                                                    onClick={() =>
+                                                                        void deleteGalleryItem(item)
+                                                                    }
+                                                                    className="px-3 py-2 border border-gray-200 rounded-md text-xs text-red-600 disabled:opacity-50"
+                                                                >
+                                                                    削除
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                                <div className="border border-dashed border-gray-300 rounded-lg p-4">
+                                                    <label className="block text-xs text-gray-600">
+                                                        画像タイトル
+                                                        <input
+                                                            value={newGalleryTitle}
+                                                            maxLength={255}
+                                                            onChange={(event) =>
+                                                                setNewGalleryTitle(
+                                                                    event.target.value,
+                                                                )
+                                                            }
+                                                            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                                                        />
+                                                    </label>
+                                                    <input
+                                                        ref={newGalleryInput}
+                                                        type="file"
+                                                        accept="image/jpeg,image/png,image/webp,image/gif"
+                                                        onChange={(event) =>
+                                                            setNewGalleryImage(
+                                                                event.target.files?.[0] ??
+                                                                    null,
+                                                            )
+                                                        }
+                                                        className="mt-3 block w-full text-xs"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        disabled={
+                                                            galleryBusy !== null ||
+                                                            !newGalleryTitle.trim() ||
+                                                            !newGalleryImage
+                                                        }
+                                                        onClick={() =>
+                                                            void createGalleryItem()
+                                                        }
+                                                        className="mt-3 w-full px-3 py-2 bg-[#0a2105] text-white rounded-md text-xs disabled:opacity-50"
+                                                    >
+                                                        ギャラリーブロックを追加
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </section>
+                                    )}
                                 </section>
                             );
                         })}
