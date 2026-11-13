@@ -257,28 +257,26 @@ export function Area() {
                                     )}
                                 </div>
 
-                                {onsen.websiteUrl && (
-                                    <a
-                                        href={onsen.websiteUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        style={{
-                                            display: "inline-flex",
-                                            alignItems: "center",
-                                            gap: "0.4rem",
-                                            color: "#7a4020",
-                                            fontSize: "0.85rem",
-                                            fontWeight: 700,
-                                            textDecoration: "none",
-                                            borderBottom: "1px solid #c47a30",
-                                            alignSelf: "flex-start",
-                                            paddingBottom: "2px",
-                                        }}
-                                    >
-                                        公式サイト
-                                        <FaExternalLinkAlt size={11} />
-                                    </a>
-                                )}
+                                <a
+                                    href={onsen.websiteUrl ?? "#"}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                        gap: "0.4rem",
+                                        color: "#7a4020",
+                                        fontSize: "0.85rem",
+                                        fontWeight: 700,
+                                        textDecoration: "none",
+                                        borderBottom: "1px solid #c47a30",
+                                        alignSelf: "flex-start",
+                                        paddingBottom: "2px",
+                                    }}
+                                >
+                                    公式サイト
+                                    <FaExternalLinkAlt size={11} />
+                                </a>
                             </div>
                         ))}
                     </div>
