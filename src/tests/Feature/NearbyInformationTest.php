@@ -77,7 +77,7 @@ class NearbyInformationTest extends TestCase
             ->where('type', 'spot')
             ->orderBy('sort_order')
             ->pluck('id')
-            ->map(fn($id) => (int) $id)
+            ->map(fn ($id) => (int) $id)
             ->reverse()
             ->values()
             ->all();
@@ -93,13 +93,13 @@ class NearbyInformationTest extends TestCase
                 ->where('type', 'spot')
                 ->orderBy('sort_order')
                 ->pluck('id')
-                ->map(fn($id) => (int) $id)
+                ->map(fn ($id) => (int) $id)
                 ->all(),
         );
 
         $this->get('/area')
             ->assertOk()
-            ->assertInertia(fn(Assert $page) => $page
+            ->assertInertia(fn (Assert $page) => $page
                 ->component('Public/Page')
                 ->where('nearbySpots.0.id', $ids[0])
                 ->where('nearbySpots.0.name', '新野の道の駅')

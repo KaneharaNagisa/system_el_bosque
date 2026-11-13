@@ -10,7 +10,7 @@ class PublicImageStorage
 {
     public function storeVariants(UploadedFile $file, string $key): array
     {
-        $directory = 'images/' . Str::slug($key) . '/' . Str::uuid();
+        $directory = 'images/'.Str::slug($key).'/'.Str::uuid();
         $contents = $file->get();
         $gdInfo = function_exists('gd_info') ? gd_info() : [];
         $source = ($gdInfo['JPEG Support'] ?? false) && ($gdInfo['WebP Support'] ?? false)
@@ -19,7 +19,7 @@ class PublicImageStorage
 
         if ($source === false) {
             $extension = strtolower($file->getClientOriginalExtension() ?: 'jpg');
-            $path = $directory . '/original.' . $extension;
+            $path = $directory.'/original.'.$extension;
             Storage::disk('public')->put($path, $contents);
 
             return [$path, []];
@@ -40,7 +40,7 @@ class PublicImageStorage
             imagesavealpha($canvas, true);
             imagecopyresampled($canvas, $source, 0, 0, 0, 0, $targetWidth, $targetHeight, $sourceWidth, $sourceHeight);
 
-            $path = $directory . '/' . $targetWidth . '.webp';
+            $path = $directory.'/'.$targetWidth.'.webp';
             ob_start();
             imagewebp($canvas, null, 82);
             Storage::disk('public')->put($path, ob_get_clean());
@@ -52,6 +52,7 @@ class PublicImageStorage
         ksort($variants);
 
         $paths = array_values($variants);
+
         return [end($paths), $variants];
     }
 

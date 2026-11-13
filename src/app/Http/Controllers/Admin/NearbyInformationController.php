@@ -14,9 +14,7 @@ use Inertia\Response;
 
 class NearbyInformationController extends Controller
 {
-    public function __construct(private PublicImageStorage $imageStorage)
-    {
-    }
+    public function __construct(private PublicImageStorage $imageStorage) {}
 
     public function index(): Response
     {
@@ -38,7 +36,7 @@ class NearbyInformationController extends Controller
         if ($request->hasFile('image')) {
             [$item->image_path, $item->variants] = $this->imageStorage->storeVariants(
                 $request->file('image'),
-                'nearby.' . $type . '.' . $item->id,
+                'nearby.'.$type.'.'.$item->id,
             );
             $item->save();
         }
@@ -58,7 +56,7 @@ class NearbyInformationController extends Controller
         if ($request->hasFile('image')) {
             $newImage = $this->imageStorage->storeVariants(
                 $request->file('image'),
-                'nearby.' . $type . '.' . $item->id,
+                'nearby.'.$type.'.'.$item->id,
             );
         }
 
@@ -95,7 +93,7 @@ class NearbyInformationController extends Controller
             ->orderBy('sort_order')
             ->orderBy('id')
             ->pluck('id')
-            ->map(fn($id) => (int) $id)
+            ->map(fn ($id) => (int) $id)
             ->all();
 
         if (count($ids) !== count($currentIds)
@@ -122,7 +120,7 @@ class NearbyInformationController extends Controller
             ->orderBy('sort_order')
             ->orderBy('id')
             ->get()
-            ->map(fn(NearbyInformationItem $item) => [
+            ->map(fn (NearbyInformationItem $item) => [
                 'id' => $item->id,
                 'name' => $item->name,
                 'subtitle' => $item->subtitle,
@@ -135,7 +133,7 @@ class NearbyInformationController extends Controller
                 'websiteUrl' => $item->website_url,
                 'icon' => $item->icon,
                 'sortOrder' => $item->sort_order,
-                'imageUrl' => $item->image_path ? asset('storage/' . $item->image_path) : null,
+                'imageUrl' => $item->image_path ? asset('storage/'.$item->image_path) : null,
             ])
             ->all();
     }
