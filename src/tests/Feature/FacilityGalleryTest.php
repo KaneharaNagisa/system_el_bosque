@@ -58,4 +58,43 @@ class FacilityGalleryTest extends TestCase
                 ->where('facilityGallery.0.fallbackKey', 'about.living')
                 ->has('facilityGallery', 6));
     }
+
+    public function test_admin_can_reorder_gallery_items_and_public_page_uses_saved_order(): void
+    {
+        $admin = Admin::create([
+            'name' => '管理者',
+            'email' => 'admin@example.com',
+            'password' => 'password',
+        ]);
+        $ids = FacilityGalleryItem::query()
+            ->orderBy('sort_order')
+            ->pluck('id')
+            ->map(fn($id) => (int) $id)
+            ->reverse()
+            ->values()
+            ->all();
+
+        $this->withSession(['admin_user' => $admin->id])
+            ->patchJson('/admin/images/gallery/order', ['ids' => $ids])
+            ->assertOk()
+            ->assertJsonPath('success', true);
+
+        $this->assertSame(
+            $ids,
+            FacilityGalleryItem::query()
+                ->orderBy('sort_order')
+                ->pluck('id')
+                ->map(fn($id) => (int) $id)
+                ->all(),
+        );
+
+        $this->get('/about')
+            ->assertOk()
+            ->assertInertia(fn(Assert $page) => $page
+                ->where('facilityGallery.0.id', $ids[0]));
+
+        $this->patchJson('/admin/images/gallery/order', [
+            'ids' => array_slice($ids, 1),
+        ])->assertUnprocessable();
+    }
 }

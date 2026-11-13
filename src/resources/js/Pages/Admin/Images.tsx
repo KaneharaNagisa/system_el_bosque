@@ -1,8 +1,24 @@
 import { useRef, useState } from "react";
 import axios from "axios";
 import { router } from "@inertiajs/react";
-import { Image as ImageIcon, RotateCcw, Upload } from "lucide-react";
+import {
+    GripVertical,
+    Image as ImageIcon,
+    RotateCcw,
+    Upload,
+} from "lucide-react";
 import AdminLayout from "../../Components/Admin/Layout";
+import homeHeroLake from "../../Public/assets/260924-0111.jpg";
+import homeHeroCabin from "../../Public/assets/260924-0015.jpg";
+import homeInterior from "../../Public/assets/260924-0074-1.jpg";
+import homeLake from "../../Public/assets/260924-0103.jpg";
+import aboutBbq from "../../Public/assets/260924-0027.jpg";
+import aboutExterior from "../../Public/assets/260924-0007-3.jpg";
+import aboutLiving from "../../Public/assets/260924-0052.jpg";
+import aboutKitchen from "../../Public/assets/260924-0041.jpg";
+import aboutLoft from "../../Public/assets/260924-0065.jpg";
+import aboutLake from "../../Public/assets/260924-0109.jpg";
+import areaLake from "../../Public/assets/22a4426011bdad96a789860b3ad337bbb50cb96f.png";
 
 interface ImageAsset {
     key: string;
@@ -13,6 +29,7 @@ interface ImageAsset {
 interface GalleryItem {
     id: number;
     title: string;
+    sortOrder: number;
     fallbackKey: string | null;
     url: string | null;
     srcSet: string | null;
@@ -27,6 +44,28 @@ const galleryKeys = [
     "about.bbq",
     "about.stars",
 ];
+
+const defaultImages: Record<string, string> = {
+    "home.hero": homeHeroLake,
+    "home.hero.2": homeHeroCabin,
+    "home.lake": homeLake,
+    "home.interior": homeInterior,
+    "home.stars":
+        "https://images.unsplash.com/photo-1570399747403-6f3af992698f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080",
+    "home.bbq":
+        "https://images.unsplash.com/photo-1763062690254-be377d55dacf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080",
+    "about.exterior": aboutExterior,
+    "about.living": aboutLiving,
+    "about.kitchen": aboutKitchen,
+    "about.loft": aboutLoft,
+    "about.bbq": aboutBbq,
+    "about.lake": aboutLake,
+    "about.stars":
+        "https://images.unsplash.com/photo-1715535478808-8b01355c7c8b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080",
+    "area.lake": areaLake,
+    "area.autumn":
+        "https://images.unsplash.com/photo-1610238115729-2d54b7aa8498?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080",
+};
 
 export default function Images({
     images,
@@ -163,6 +202,32 @@ export default function Images({
         }
     };
 
+    const reorderGallery = async (draggedId: number, targetId: number) => {
+        const fromIndex = gallery.findIndex((item) => item.id === draggedId);
+        const toIndex = gallery.findIndex((item) => item.id === targetId);
+        if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) return;
+
+        const reordered = [...gallery];
+        const [draggedItem] = reordered.splice(fromIndex, 1);
+        reordered.splice(toIndex, 0, draggedItem);
+        const orderedItems = reordered.map((item, sortOrder) => ({
+            ...item,
+            sortOrder,
+        }));
+
+        setGalleryBusy("order");
+        try {
+            await axios.patch("/admin/images/gallery/order", {
+                ids: orderedItems.map((item) => item.id),
+            });
+            setGallery(orderedItems);
+        } catch {
+            alert("ギャラリーの並び替えに失敗しました。再度お試しください。");
+        } finally {
+            setGalleryBusy(null);
+        }
+    };
+
     return (
         <AdminLayout currentPage="images" title="画像管理">
             <div className="max-w-6xl mx-auto">
@@ -204,9 +269,15 @@ export default function Images({
                                                 className="border border-gray-200 rounded-lg overflow-hidden"
                                             >
                                                 <div className="aspect-[16/9] bg-gray-100">
-                                                    {item.url ? (
+                                                    {item.url ||
+                                                    defaultImages[item.key] ? (
                                                         <img
-                                                            src={item.url}
+                                                            src={
+                                                                item.url ??
+                                                                defaultImages[
+                                                                    item.key
+                                                                ]
+                                                            }
                                                             alt={item.label}
                                                             className="w-full h-full object-cover"
                                                         />
@@ -297,11 +368,47 @@ export default function Images({
                                                     <div
                                                         key={item.id}
                                                         className="border border-gray-200 rounded-lg overflow-hidden"
+                                                        onDragOver={(event) => {
+                                                            event.preventDefault();
+                                                            event.dataTransfer.dropEffect =
+                                                                "move";
+                                                        }}
+                                                        onDrop={(event) => {
+                                                            event.preventDefault();
+                                                            const draggedId =
+                                                                Number(
+                                                                    event.dataTransfer.getData(
+                                                                        "text/plain",
+                                                                    ),
+                                                                );
+                                                            if (
+                                                                Number.isSafeInteger(
+                                                                    draggedId,
+                                                                )
+                                                            ) {
+                                                                void reorderGallery(
+                                                                    draggedId,
+                                                                    item.id,
+                                                                );
+                                                            }
+                                                        }}
                                                     >
-                                                        <div className="aspect-[16/9] bg-gray-100">
-                                                            {item.url ? (
+                                                        <div className="relative aspect-[16/9] bg-gray-100">
+                                                            {item.url ||
+                                                            (item.fallbackKey
+                                                                ? defaultImages[
+                                                                      item.fallbackKey
+                                                                  ]
+                                                                : undefined) ? (
                                                                 <img
-                                                                    src={item.url}
+                                                                    src={
+                                                                        item.url ??
+                                                                        (item.fallbackKey
+                                                                            ? defaultImages[
+                                                                                  item.fallbackKey
+                                                                              ]
+                                                                            : undefined)
+                                                                    }
                                                                     alt={item.title}
                                                                     className="w-full h-full object-cover"
                                                                 />
@@ -310,6 +417,30 @@ export default function Images({
                                                                     現在の画像を使用中
                                                                 </div>
                                                             )}
+                                                            <button
+                                                                type="button"
+                                                                draggable={
+                                                                    galleryBusy ===
+                                                                    null
+                                                                }
+                                                                onDragStart={(
+                                                                    event,
+                                                                ) => {
+                                                                    event.dataTransfer.effectAllowed =
+                                                                        "move";
+                                                                    event.dataTransfer.setData(
+                                                                        "text/plain",
+                                                                        String(
+                                                                            item.id,
+                                                                        ),
+                                                                    );
+                                                                }}
+                                                                title="ドラッグして並び替え"
+                                                                aria-label={`${item.title}をドラッグして並び替え`}
+                                                                className="absolute left-2 top-2 rounded bg-white/90 p-1 text-gray-700 shadow cursor-grab active:cursor-grabbing"
+                                                            >
+                                                                <GripVertical className="h-5 w-5" />
+                                                            </button>
                                                         </div>
                                                         <div className="p-4">
                                                             <label className="block text-xs text-gray-600">

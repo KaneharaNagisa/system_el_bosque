@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -46,7 +47,7 @@ class ImageAssetController extends Controller
                 ...$this->imageResponse($image?->path, $image?->variants),
             ];
         })->values();
-        $gallery = FacilityGalleryItem::query()->orderBy('id')->get()->map(function (FacilityGalleryItem $item) use ($saved) {
+        $gallery = FacilityGalleryItem::query()->orderBy('sort_order')->orderBy('id')->get()->map(function (FacilityGalleryItem $item) use ($saved) {
             $fallback = $item->fallback_key ? $saved->get($item->fallback_key) : null;
             $path = $item->image_path ?? $fallback?->path;
             $variants = $item->image_path ? $item->variants : $fallback?->variants;
@@ -54,6 +55,7 @@ class ImageAssetController extends Controller
             return [
                 'id' => $item->id,
                 'title' => $item->title,
+                'sortOrder' => $item->sort_order,
                 'fallbackKey' => $item->fallback_key,
                 ...$this->imageResponse($path, $variants),
             ];
@@ -96,6 +98,7 @@ class ImageAssetController extends Controller
 
         $item = FacilityGalleryItem::create([
             'title' => $validated['title'],
+            'sort_order' => ((int) FacilityGalleryItem::max('sort_order')) + 1,
         ]);
         [$item->image_path, $item->variants] = $this->storeVariants(
             $request->file('image'),
@@ -140,6 +143,37 @@ class ImageAssetController extends Controller
         $item = FacilityGalleryItem::findOrFail($id);
         $this->deleteFiles($item->image_path, $item->variants ?? []);
         $item->delete();
+
+        return response()->json(['success' => true]);
+    }
+
+    public function reorderGallery(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array'],
+            'ids.*' => ['required', 'integer', 'distinct', 'exists:facility_gallery_items,id'],
+        ]);
+        $ids = array_map('intval', $validated['ids']);
+        $currentIds = FacilityGalleryItem::query()
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->pluck('id')
+            ->map(fn($id) => (int) $id)
+            ->all();
+
+        if (count($ids) !== count($currentIds)
+            || array_diff($ids, $currentIds)
+            || array_diff($currentIds, $ids)) {
+            abort(422, 'ギャラリーの並び順を更新できませんでした。画面を再読み込みしてください。');
+        }
+
+        DB::transaction(function () use ($ids) {
+            foreach ($ids as $sortOrder => $id) {
+                FacilityGalleryItem::query()
+                    ->whereKey($id)
+                    ->update(['sort_order' => $sortOrder]);
+            }
+        });
 
         return response()->json(['success' => true]);
     }
@@ -229,6 +263,7 @@ class ImageAssetController extends Controller
         return [
             'id' => $item->id,
             'title' => $item->title,
+            'sortOrder' => $item->sort_order,
             'fallbackKey' => $item->fallback_key,
             ...$this->imageResponse($item->image_path, $item->variants),
         ];

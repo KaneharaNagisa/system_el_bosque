@@ -60,7 +60,7 @@ class PublicSiteController extends Controller
                 ]];
             })->all(),
             'facilityGallery' => $page === 'about'
-                ? FacilityGalleryItem::query()->orderBy('id')->get()->map(function (FacilityGalleryItem $item) use ($images) {
+                ? FacilityGalleryItem::query()->orderBy('sort_order')->orderBy('id')->get()->map(function (FacilityGalleryItem $item) use ($images) {
                     $fallback = $item->fallback_key ? $images->get($item->fallback_key) : null;
                     $path = $item->image_path ?? $fallback?->path;
                     $variants = $item->image_path ? $item->variants ?? [] : $fallback?->variants ?? [];
@@ -68,6 +68,7 @@ class PublicSiteController extends Controller
                     return [
                         'id' => $item->id,
                         'title' => $item->title,
+                        'sortOrder' => $item->sort_order,
                         'fallbackKey' => $item->fallback_key,
                         'url' => $path ? asset('storage/' . $path) : null,
                         'srcSet' => collect($variants)
