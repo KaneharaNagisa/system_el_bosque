@@ -305,17 +305,6 @@ export function About() {
                                 「El bosque（エル
                                 ボスケ）」はスペイン語で「森」を意味します。長野県南信州、阿南町新野の巣山湖畔に位置するこのログハウスは、手付かずの森と静かな湖に囲まれた、特別な一棟貸し施設です。
                             </p>
-                            <p
-                                style={{
-                                    color: "#5a4838",
-                                    fontSize: "0.88rem",
-                                    lineHeight: 2,
-                                    marginBottom: "2rem",
-                                }}
-                            >
-                                                    color: "#ffffff",
-                            </p>
-
                             {/* 周囲に住居なし メリットバナー */}
                             <div
                                 style={{
