@@ -8,6 +8,7 @@ use App\Models\Experience;
 use App\Models\FacilityGalleryItem;
 use App\Models\Faq;
 use App\Models\ImageAsset;
+use App\Models\NearbyInformationItem;
 use App\Models\News;
 use App\Models\Page;
 use App\Models\PricingSetting;
@@ -46,6 +47,8 @@ class PublicSiteController extends Controller
             'news' => $this->news($page),
             'experiences' => $this->experiences($page),
             'faqs' => $this->faqs($page),
+            'onsenFacilities' => $page === 'area' ? $this->nearbyItems('onsen') : [],
+            'nearbySpots' => $page === 'area' ? $this->nearbyItems('spot') : [],
             'availability' => $this->availability($page),
             'fixedPage' => $fixedPage,
             'pricingSetting' => $usesPricing ? PricingSetting::current()->toFrontend() : null,
@@ -169,6 +172,43 @@ class PublicSiteController extends Controller
             ->orderBy('sort_order')
             ->get()
             ->toArray();
+    }
+
+    private function nearbyItems(string $type): array
+    {
+        return NearbyInformationItem::query()
+            ->where('type', $type)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get()
+            ->map(function (NearbyInformationItem $item) {
+                $variants = $item->variants ?? [];
+                $imageUrl = $item->image_path
+                    ? asset('storage/' . $item->image_path)
+                    : null;
+
+                return [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'subtitle' => $item->subtitle,
+                    'category' => $item->category,
+                    'distance' => $item->distance,
+                    'description' => $item->description,
+                    'operatingHours' => $item->operating_hours,
+                    'price' => $item->price,
+                    'closedDays' => $item->closed_days,
+                    'websiteUrl' => $item->website_url,
+                    'icon' => $item->icon,
+                    'imageUrl' => $imageUrl,
+                    'imageSrcSet' => collect($variants)
+                        ->map(fn(string $path, string $width) => asset('storage/' . $path) . ' ' . $width . 'w')
+                        ->implode(', ') ?: null,
+                    'imageSizes' => $imageUrl
+                        ? '(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 1440px'
+                        : null,
+                ];
+            })
+            ->all();
     }
 
     private function fixedPage(string $page): ?array

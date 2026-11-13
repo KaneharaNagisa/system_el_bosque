@@ -5,18 +5,20 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\FacilityGalleryItem;
 use App\Models\ImageAsset;
+use App\Services\PublicImageStorage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ImageAssetController extends Controller
 {
+    public function __construct(private PublicImageStorage $imageStorage)
+    {
+    }
+
     private const ASSETS = [
         ['key' => 'home.hero', 'label' => 'トップ：ヒーロー背景'],
         ['key' => 'home.hero.2', 'label' => 'トップ：ヒーロー背景 2枚目'],
@@ -70,8 +72,8 @@ class ImageAssetController extends Controller
         $request->validate(['image' => ['required', 'image', 'max:10240']]);
 
         $asset = ImageAsset::firstOrNew(['key' => $key]);
-        [$path, $variants] = $this->storeVariants($request->file('image'), $key);
-        $this->deleteFiles($asset->path, $asset->variants ?? []);
+        [$path, $variants] = $this->imageStorage->storeVariants($request->file('image'), $key);
+        $this->imageStorage->deleteFiles($asset->path, $asset->variants ?? []);
         $asset->label = collect(self::ASSETS)->firstWhere('key', $key)['label'];
         $asset->path = $path;
         $asset->variants = $variants;
@@ -83,7 +85,7 @@ class ImageAssetController extends Controller
     public function destroy(string $key): RedirectResponse
     {
         $asset = ImageAsset::where('key', $key)->firstOrFail();
-        $this->deleteFiles($asset->path, $asset->variants ?? []);
+        $this->imageStorage->deleteFiles($asset->path, $asset->variants ?? []);
         $asset->delete();
 
         return back()->with('message', '画像を初期状態に戻しました');
@@ -100,7 +102,7 @@ class ImageAssetController extends Controller
             'title' => $validated['title'],
             'sort_order' => ((int) FacilityGalleryItem::max('sort_order')) + 1,
         ]);
-        [$item->image_path, $item->variants] = $this->storeVariants(
+        [$item->image_path, $item->variants] = $this->imageStorage->storeVariants(
             $request->file('image'),
             'about.gallery.' . $item->id,
         );
@@ -128,8 +130,8 @@ class ImageAssetController extends Controller
         ]);
 
         $item = FacilityGalleryItem::findOrFail($id);
-        $this->deleteFiles($item->image_path, $item->variants ?? []);
-        [$item->image_path, $item->variants] = $this->storeVariants(
+        $this->imageStorage->deleteFiles($item->image_path, $item->variants ?? []);
+        [$item->image_path, $item->variants] = $this->imageStorage->storeVariants(
             $request->file('image'),
             'about.gallery.' . $item->id,
         );
@@ -141,7 +143,7 @@ class ImageAssetController extends Controller
     public function destroyGalleryItem(int $id): JsonResponse
     {
         $item = FacilityGalleryItem::findOrFail($id);
-        $this->deleteFiles($item->image_path, $item->variants ?? []);
+        $this->imageStorage->deleteFiles($item->image_path, $item->variants ?? []);
         $item->delete();
 
         return response()->json(['success' => true]);
@@ -181,64 +183,6 @@ class ImageAssetController extends Controller
     public static function keys(): array
     {
         return collect(self::ASSETS)->pluck('key')->all();
-    }
-
-    private function storeVariants(UploadedFile $file, string $key): array
-    {
-        $directory = 'images/' . Str::slug($key) . '/' . Str::uuid();
-        $contents = file_get_contents($file->getRealPath());
-        $gdInfo = function_exists('gd_info') ? gd_info() : [];
-        $source = ($gdInfo['JPEG Support'] ?? false) && ($gdInfo['WebP Support'] ?? false)
-            ? @imagecreatefromstring($contents)
-            : false;
-
-        if ($source === false) {
-            $extension = strtolower($file->getClientOriginalExtension() ?: 'jpg');
-            $path = $directory . '/original.' . $extension;
-            Storage::disk('public')->put($path, $contents);
-
-            return [$path, []];
-        }
-
-        $sourceWidth = imagesx($source);
-        $sourceHeight = imagesy($source);
-        $variants = [];
-
-        foreach ([480, 768, 1440, 1920] as $width) {
-            $targetWidth = min($width, $sourceWidth);
-            if (isset($variants[$targetWidth])) {
-                continue;
-            }
-            $targetHeight = (int) round($sourceHeight * ($targetWidth / $sourceWidth));
-            $canvas = imagecreatetruecolor($targetWidth, $targetHeight);
-            imagealphablending($canvas, false);
-            imagesavealpha($canvas, true);
-            imagecopyresampled($canvas, $source, 0, 0, 0, 0, $targetWidth, $targetHeight, $sourceWidth, $sourceHeight);
-
-            $path = $directory . '/' . $targetWidth . '.webp';
-            ob_start();
-            imagewebp($canvas, null, 82);
-            Storage::disk('public')->put($path, ob_get_clean());
-            imagedestroy($canvas);
-            $variants[$targetWidth] = $path;
-        }
-
-        imagedestroy($source);
-        ksort($variants);
-
-        $paths = array_values($variants);
-        return [end($paths), $variants];
-    }
-
-    private function deleteFiles(?string $path, array $variants): void
-    {
-        $paths = array_values($variants);
-        if ($path) {
-            $paths[] = $path;
-        }
-        if ($paths) {
-            Storage::disk('public')->delete(array_unique($paths));
-        }
     }
 
     private function imageResponse(?string $path, ?array $variants): array

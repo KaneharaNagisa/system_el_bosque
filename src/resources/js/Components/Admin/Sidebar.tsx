@@ -15,6 +15,7 @@ import {
     BookOpen,
     BarChart3,
     Images,
+    MapPin,
 } from "lucide-react";
 import type { SharedProps } from "../../types";
 
@@ -26,6 +27,7 @@ export type AdminPage =
     | "billing"
     | "news"
     | "pages"
+    | "nearby-information"
     | "master-availability"
     | "master-experiences"
     | "master-pricing-setting"
@@ -98,6 +100,12 @@ export default function AdminSidebar({
             label: "固定ページ管理",
             icon: FileText,
             path: "/admin/pages",
+        },
+        {
+            id: "nearby-information" as const,
+            label: "周辺情報管理",
+            icon: MapPin,
+            path: "/admin/nearby-information",
         },
     ];
 

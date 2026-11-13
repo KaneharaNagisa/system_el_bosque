@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\KpiController;
 use App\Http\Controllers\Admin\ManualController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\NewsController;
+use App\Http\Controllers\Admin\NearbyInformationController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PriceAdjustmentController;
 use App\Http\Controllers\Admin\PricingSettingController;
@@ -126,6 +127,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // 固定ページ管理
         Route::get('/pages', [PageController::class, 'index'])->name('pages.index');
         Route::patch('/pages/{id}', [PageController::class, 'update'])->name('pages.update');
+
+        // 周辺情報管理
+        Route::get('/nearby-information', [NearbyInformationController::class, 'index'])->name('nearby-information.index');
+        Route::post('/nearby-information/{type}', [NearbyInformationController::class, 'store'])->name('nearby-information.store');
+        Route::patch('/nearby-information/{type}/order', [NearbyInformationController::class, 'reorder'])->name('nearby-information.order');
+        Route::patch('/nearby-information/{type}/{id}', [NearbyInformationController::class, 'update'])->name('nearby-information.update');
+        Route::delete('/nearby-information/{type}/{id}', [NearbyInformationController::class, 'destroy'])->name('nearby-information.destroy');
 
         // マスタ管理
         Route::get('/master/availability', [AvailabilityController::class, 'index'])->name('master.availability.index');

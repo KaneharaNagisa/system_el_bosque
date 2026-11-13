@@ -7,7 +7,6 @@ import {
     FaClock,
     FaExternalLinkAlt,
     FaCalendarAlt,
-    FaGift,
     FaYenSign,
 } from "react-icons/fa";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
@@ -19,74 +18,36 @@ import lakeImg from "../assets/22a4426011bdad96a789860b3ad337bbb50cb96f.png";
 const AUTUMN_IMG =
     "https://images.unsplash.com/photo-1610238115729-2d54b7aa8498?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080";
 
-const onsenFacilities = [
-    {
-        name: "南信州阿南温泉 かじかの湯",
-        type: "ナトリウム・炭酸水素塩泉",
-        description:
-            "長野最大級の露天風呂、五種浴の露天風呂、スパ、レストラン（十利そば）、物産体験施設、民芸紹介所、キャンプ場も併設した総合型温泉施設。",
-        hours: "10:00〜21:00（最終入場20:00）",
-        price: "大人¥600、子供¥300",
-        closed: "定休日：火曜",
-        url: "#",
-    },
-    {
-        name: "天龍温泉 おきよめの湯",
-        type: "pHが高くつるつるの美肌の湯",
-        description:
-            "ぬるりとした内風呂と露天風呂、コテージも併設。2024年秋に「御魂経」にて日帰りにリニューアルオープン。",
-        hours: "16:00〜21:00（最終入場20:00）",
-        price: "大人¥600、子供¥300",
-        closed: "定休日：火曜",
-        url: "#",
-    },
-    {
-        name: "売木温泉 こまどりの湯",
-        type: "ナトリウム・炭酸水素塩泉",
-        description:
-            "内風呂・泡風呂・打たせ湯・露天風呂・ロビー・和室宴会、飲食が楽しめるのんびりくつろげます。",
-        hours: "10:00〜20:00（最終入場19:30）",
-        price: "大人¥600、子供¥300",
-        closed: null,
-        url: "#",
-    },
-];
+interface NearbyItem {
+    id: number;
+    name: string;
+    subtitle: string | null;
+    category: string | null;
+    distance: string | null;
+    description: string;
+    operatingHours: string | null;
+    price: string | null;
+    closedDays: string | null;
+    websiteUrl: string | null;
+    icon: string | null;
+    imageUrl: string | null;
+    imageSrcSet: string | null;
+    imageSizes: string | null;
+}
 
-const spots = [
-    {
-        emoji: "🏔️",
-        name: "巣山湖",
-        category: "自然・景観",
-        distance: "徒歩圏内",
-        desc: "エルボスケのすぐそばにある静かな湖。早朝の霧がかかる幻想的な景色や、湖面に映る緑が美しい。カヌーや釣りも楽しめます。",
-    },
-    {
-        emoji: "⛰️",
-        name: "南アルプス遠望",
-        category: "自然・景観",
-        distance: "周辺",
-        desc: "新野は標高の高い高原地帯。晴れた日には南アルプスの山々を望め、雄大な自然のパノラマが広がります。",
-    },
-    {
-        emoji: "🎑",
-        name: "新野の雪まつり",
-        category: "文化・観光",
-        distance: "新野地区",
-        desc: "毎年1月に行われる伝統的な民俗行事（営業外）。三信遠地区の冬の風物詩で、見ごたえのある雪の祭りです。",
-    },
-    {
-        emoji: "🛣️",
-        name: "新野の道の駅",
-        category: "道の駅",
-        distance: "車で約5分",
-        desc: "道の駅 信州新野千石平。地元の新鮮野菜や特産品が並ぶ直売所があり、食堂では新野の郷土料理が楽しめます。ドライブの休憩にも最適です。",
-    },
-];
+interface AreaPageProps {
+    [key: string]: unknown;
+    images?: PublicImages;
+    onsenFacilities?: NearbyItem[];
+    nearbySpots?: NearbyItem[];
+}
 
 export function Area() {
-    const { images = {} } = usePage().props as unknown as {
-        images?: PublicImages;
-    };
+    const {
+        images = {},
+        onsenFacilities = [],
+        nearbySpots = [],
+    } = usePage<AreaPageProps>().props;
     const lakeImage = responsiveImage(images, "area.lake", lakeImg);
     const autumnImage = responsiveImage(images, "area.autumn", AUTUMN_IMG);
 
@@ -157,21 +118,6 @@ export function Area() {
                         >
                             近隣温泉施設
                         </h2>
-                        <div
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                gap: "0.5rem",
-                                marginTop: "1rem",
-                                color: "#c47a30",
-                                fontSize: "0.88rem",
-                                fontWeight: 600,
-                            }}
-                        >
-                            <FaGift size={14} />
-                            <span>宿泊者全員に入浴券プレゼント</span>
-                        </div>
                     </div>
 
                     <div
@@ -184,7 +130,7 @@ export function Area() {
                     >
                         {onsenFacilities.map((onsen) => (
                             <div
-                                key={onsen.name}
+                                key={onsen.id}
                                 style={{
                                     backgroundColor: "#fff",
                                     borderRadius: "10px",
@@ -194,6 +140,21 @@ export function Area() {
                                     flexDirection: "column",
                                 }}
                             >
+                                {onsen.imageUrl && (
+                                    <img
+                                        src={onsen.imageUrl}
+                                        srcSet={onsen.imageSrcSet ?? undefined}
+                                        sizes={onsen.imageSizes ?? undefined}
+                                        alt={onsen.name}
+                                        style={{
+                                            width: "100%",
+                                            height: "160px",
+                                            objectFit: "cover",
+                                            borderRadius: "8px",
+                                            marginBottom: "1.25rem",
+                                        }}
+                                    />
+                                )}
                                 <h3
                                     style={{
                                         fontFamily: "'Noto Serif JP', serif",
@@ -205,16 +166,18 @@ export function Area() {
                                 >
                                     {onsen.name}
                                 </h3>
-                                <p
-                                    style={{
-                                        fontSize: "0.78rem",
-                                        color: "#c47a30",
-                                        fontWeight: 600,
-                                        marginBottom: "1rem",
-                                    }}
-                                >
-                                    {onsen.type}
-                                </p>
+                                {onsen.subtitle && (
+                                    <p
+                                        style={{
+                                            fontSize: "0.78rem",
+                                            color: "#c47a30",
+                                            fontWeight: 600,
+                                            marginBottom: "1rem",
+                                        }}
+                                    >
+                                        {onsen.subtitle}
+                                    </p>
+                                )}
                                 <p
                                     style={{
                                         fontSize: "0.84rem",
@@ -235,41 +198,7 @@ export function Area() {
                                         marginBottom: "1.25rem",
                                     }}
                                 >
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "0.6rem",
-                                        }}
-                                    >
-                                        <FaClock size={13} color="#7a4020" />
-                                        <span
-                                            style={{
-                                                fontSize: "0.82rem",
-                                                color: "#4a3828",
-                                            }}
-                                        >
-                                            {onsen.hours}
-                                        </span>
-                                    </div>
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "0.6rem",
-                                        }}
-                                    >
-                                        <FaYenSign size={13} color="#7a4020" />
-                                        <span
-                                            style={{
-                                                fontSize: "0.82rem",
-                                                color: "#4a3828",
-                                            }}
-                                        >
-                                            {onsen.price}
-                                        </span>
-                                    </div>
-                                    {onsen.closed && (
+                                    {onsen.operatingHours && (
                                         <div
                                             style={{
                                                 display: "flex",
@@ -277,42 +206,79 @@ export function Area() {
                                                 gap: "0.6rem",
                                             }}
                                         >
-                                            <FaCalendarAlt
-                                                size={13}
-                                                color="#7a4020"
-                                            />
+                                            <FaClock size={13} color="#7a4020" />
                                             <span
                                                 style={{
                                                     fontSize: "0.82rem",
                                                     color: "#4a3828",
                                                 }}
                                             >
-                                                {onsen.closed}
+                                                {onsen.operatingHours}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {onsen.price && (
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "0.6rem",
+                                            }}
+                                        >
+                                            <FaYenSign size={13} color="#7a4020" />
+                                            <span
+                                                style={{
+                                                    fontSize: "0.82rem",
+                                                    color: "#4a3828",
+                                                }}
+                                            >
+                                                {onsen.price}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {onsen.closedDays && (
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "0.6rem",
+                                            }}
+                                        >
+                                            <FaCalendarAlt size={13} color="#7a4020" />
+                                            <span
+                                                style={{
+                                                    fontSize: "0.82rem",
+                                                    color: "#4a3828",
+                                                }}
+                                            >
+                                                {onsen.closedDays}
                                             </span>
                                         </div>
                                     )}
                                 </div>
 
-                                <a
-                                    href={onsen.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{
-                                        display: "inline-flex",
-                                        alignItems: "center",
-                                        gap: "0.4rem",
-                                        color: "#7a4020",
-                                        fontSize: "0.85rem",
-                                        fontWeight: 700,
-                                        textDecoration: "none",
-                                        borderBottom: "1px solid #c47a30",
-                                        alignSelf: "flex-start",
-                                        paddingBottom: "2px",
-                                    }}
-                                >
-                                    公式サイト
-                                    <FaExternalLinkAlt size={11} />
-                                </a>
+                                {onsen.websiteUrl && (
+                                    <a
+                                        href={onsen.websiteUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            display: "inline-flex",
+                                            alignItems: "center",
+                                            gap: "0.4rem",
+                                            color: "#7a4020",
+                                            fontSize: "0.85rem",
+                                            fontWeight: 700,
+                                            textDecoration: "none",
+                                            borderBottom: "1px solid #c47a30",
+                                            alignSelf: "flex-start",
+                                            paddingBottom: "2px",
+                                        }}
+                                    >
+                                        公式サイト
+                                        <FaExternalLinkAlt size={11} />
+                                    </a>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -547,9 +513,9 @@ export function Area() {
                             gap: "1rem",
                         }}
                     >
-                        {spots.map((spot) => (
+                        {nearbySpots.map((spot) => (
                             <div
-                                key={spot.name}
+                                key={spot.id}
                                 style={{
                                     backgroundColor: "rgba(242,232,208,0.05)",
                                     border: "1px solid rgba(212,176,112,0.15)",
@@ -565,9 +531,25 @@ export function Area() {
                                         marginBottom: "0.75rem",
                                     }}
                                 >
-                                    <span style={{ fontSize: "1.4rem" }}>
-                                        {spot.emoji}
-                                    </span>
+                                    {spot.imageUrl ? (
+                                        <img
+                                            src={spot.imageUrl}
+                                            srcSet={spot.imageSrcSet ?? undefined}
+                                            sizes={spot.imageSizes ?? undefined}
+                                            alt={spot.name}
+                                            style={{
+                                                width: "36px",
+                                                height: "36px",
+                                                objectFit: "cover",
+                                                borderRadius: "6px",
+                                                flexShrink: 0,
+                                            }}
+                                        />
+                                    ) : (
+                                        <span style={{ fontSize: "1.4rem" }}>
+                                            {spot.icon}
+                                        </span>
+                                    )}
                                     <div>
                                         <div
                                             style={{
@@ -587,30 +569,34 @@ export function Area() {
                                             >
                                                 {spot.name}
                                             </h3>
-                                            <span
+                                            {spot.category && (
+                                                <span
+                                                    style={{
+                                                        fontSize: "0.65rem",
+                                                        backgroundColor:
+                                                            "rgba(212,176,112,0.15)",
+                                                        color: "#d4b070",
+                                                        padding: "0.12rem 0.5rem",
+                                                        borderRadius: "2px",
+                                                        border: "1px solid rgba(212,176,112,0.25)",
+                                                    }}
+                                                >
+                                                    {spot.category}
+                                                </span>
+                                            )}
+                                        </div>
+                                        {spot.distance && (
+                                            <div
                                                 style={{
-                                                    fontSize: "0.65rem",
-                                                    backgroundColor:
-                                                        "rgba(212,176,112,0.15)",
+                                                    fontSize: "0.72rem",
                                                     color: "#d4b070",
-                                                    padding: "0.12rem 0.5rem",
-                                                    borderRadius: "2px",
-                                                    border: "1px solid rgba(212,176,112,0.25)",
+                                                    fontWeight: 600,
+                                                    marginTop: "0.2rem",
                                                 }}
                                             >
-                                                {spot.category}
-                                            </span>
-                                        </div>
-                                        <div
-                                            style={{
-                                                fontSize: "0.72rem",
-                                                color: "#d4b070",
-                                                fontWeight: 600,
-                                                marginTop: "0.2rem",
-                                            }}
-                                        >
-                                            {spot.distance}
-                                        </div>
+                                                {spot.distance}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                                 <p
@@ -621,7 +607,7 @@ export function Area() {
                                         margin: 0,
                                     }}
                                 >
-                                    {spot.desc}
+                                    {spot.description}
                                 </p>
                             </div>
                         ))}
