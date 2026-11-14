@@ -92,6 +92,8 @@ class MemberPortalTest extends TestCase
     public function test_nickname_must_be_unique_during_member_registration(): void
     {
         User::factory()->create(['nickname' => 'たろう']);
+        User::factory()->create(['nickname' => 'テストＡ']);
+        User::factory()->create(['nickname' => 'ﾃｽﾄA']);
         $pendingRegistration = PendingRegistration::create([
             'email' => 'new-member@example.com',
             'token' => Hash::make('test-token'),
@@ -109,7 +111,54 @@ class MemberPortalTest extends TestCase
             ])
             ->assertSessionHasErrors('nickname');
 
+        $this->withSession(['pending_registration_id' => $pendingRegistration->id])
+            ->from('/register')
+            ->post('/register', [
+                'nickname' => 'テストA',
+                'password' => 'ValidPass1!',
+                'password_confirmation' => 'ValidPass1!',
+                'phone' => '090-1234-5678',
+                'hasPet' => 'none',
+            ])
+            ->assertSessionHasErrors('nickname');
+
+        $this->withSession(['pending_registration_id' => $pendingRegistration->id])
+            ->from('/register')
+            ->post('/register', [
+                'nickname' => 'ﾃｽﾄＡ',
+                'password' => 'ValidPass1!',
+                'password_confirmation' => 'ValidPass1!',
+                'phone' => '090-1234-5678',
+                'hasPet' => 'none',
+            ])
+            ->assertSessionHasErrors('nickname');
+
         $this->assertDatabaseMissing('users', ['email' => 'new-member@example.com']);
+    }
+
+    public function test_member_registration_converts_katakana_to_full_width_and_alphabet_to_half_width(): void
+    {
+        $pendingRegistration = PendingRegistration::create([
+            'email' => 'new-member@example.com',
+            'token' => Hash::make('test-token'),
+            'expires_at' => now()->addHour(),
+        ]);
+
+        $this->withSession(['pending_registration_id' => $pendingRegistration->id])
+            ->from('/register')
+            ->post('/register', [
+                'nickname' => 'ｶﾅＡBC',
+                'password' => 'ValidPass1!',
+                'password_confirmation' => 'ValidPass1!',
+                'phone' => '090-1234-5678',
+                'hasPet' => 'none',
+            ])
+            ->assertRedirect('/register')
+            ->assertSessionHasNoErrors();
+
+        $member = User::where('email', 'new-member@example.com')->firstOrFail();
+        $this->assertSame('カナABC', $member->nickname);
+        $this->assertSame('カナABC', $member->name);
     }
 
     public function test_member_registration_requires_password_with_mixed_case_number_symbol_and_minimum_length(): void

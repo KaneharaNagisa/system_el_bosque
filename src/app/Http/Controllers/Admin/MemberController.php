@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Rules\UniqueNickname;
+use App\Support\NicknameNormalizer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -68,8 +70,12 @@ class MemberController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $request->merge([
+            'nickname' => NicknameNormalizer::normalizeInput($request->input('nickname')),
+        ]);
+
         $validated = $request->validate([
-            'nickname'       => ['required', 'string', 'max:100', Rule::unique('users', 'nickname')],
+            'nickname'       => ['required', 'string', 'max:100', new UniqueNickname],
             'email'          => ['required', 'email', Rule::unique('users', 'email')],
             'password'       => [
                 'required',
@@ -113,8 +119,12 @@ class MemberController extends Controller
 
     public function update(Request $request, int $id): RedirectResponse
     {
+        $request->merge([
+            'nickname' => NicknameNormalizer::normalizeInput($request->input('nickname')),
+        ]);
+
         $validated = $request->validate([
-            'nickname'       => ['required', 'string', 'max:100', Rule::unique('users', 'nickname')->ignore($id)],
+            'nickname'       => ['required', 'string', 'max:100', new UniqueNickname($id)],
             'email'          => ['required', 'email', Rule::unique('users', 'email')->ignore($id)],
             'phone'          => ['required', 'string', 'max:20'],
             'prefecture'     => ['nullable', 'string', 'max:20'],

@@ -124,6 +124,75 @@ class AdminMemberManagementTest extends TestCase
         $this->assertDatabaseCount('users', 1);
     }
 
+    public function test_admin_nickname_uniqueness_normalizes_width_on_creation_and_editing(): void
+    {
+        $admin = Admin::create([
+            'name' => '管理者',
+            'email' => 'admin@example.com',
+            'password' => 'password',
+        ]);
+        $member = User::factory()->create(['nickname' => '編集対象']);
+        User::factory()->create(['nickname' => 'テストＡ']);
+
+        $this->withSession(['admin_user' => $admin->id])
+            ->from('/admin/members')
+            ->post('/admin/members', [
+                'nickname' => 'テストA',
+                'email' => 'new@example.com',
+                'password' => 'Abcdef1!',
+                'password_confirmation' => 'Abcdef1!',
+                'phone' => '090-1234-5678',
+            ])
+            ->assertSessionHasErrors('nickname');
+
+        $this->withSession(['admin_user' => $admin->id])
+            ->from('/admin/members')
+            ->patch("/admin/members/{$member->id}", [
+                'nickname' => 'テストA',
+                'email' => $member->email,
+                'phone' => '090-1234-5678',
+                'has_pet' => 'none',
+                'status' => 'active',
+            ])
+            ->assertSessionHasErrors('nickname');
+
+        $this->assertSame('編集対象', $member->fresh()->nickname);
+    }
+
+    public function test_admin_member_creation_and_editing_normalize_nickname_width(): void
+    {
+        $admin = Admin::create([
+            'name' => '管理者',
+            'email' => 'admin@example.com',
+            'password' => 'password',
+        ]);
+
+        $this->withSession(['admin_user' => $admin->id])
+            ->post('/admin/members', [
+                'nickname' => 'ﾃｽﾄＡ',
+                'email' => 'new@example.com',
+                'password' => 'Abcdef1!',
+                'password_confirmation' => 'Abcdef1!',
+                'phone' => '090-1234-5678',
+            ])
+            ->assertSessionHasNoErrors();
+
+        $member = User::where('email', 'new@example.com')->firstOrFail();
+        $this->assertSame('テストA', $member->nickname);
+
+        $this->withSession(['admin_user' => $admin->id])
+            ->patch("/admin/members/{$member->id}", [
+                'nickname' => 'ﾍﾝｺｳＢ',
+                'email' => $member->email,
+                'phone' => '090-1234-5678',
+                'has_pet' => 'none',
+                'status' => 'active',
+            ])
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame('ヘンコウB', $member->fresh()->nickname);
+    }
+
     public function test_admin_member_creation_and_password_change_require_the_new_password_format(): void
     {
         $admin = Admin::create([

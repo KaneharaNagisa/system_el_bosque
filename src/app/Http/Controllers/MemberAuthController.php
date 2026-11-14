@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Mail\RegistrationConfirmationMail;
 use App\Models\PendingRegistration;
 use App\Models\User;
+use App\Rules\UniqueNickname;
+use App\Support\NicknameNormalizer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -58,8 +60,12 @@ class MemberAuthController extends Controller
 
     public function register(Request $request): RedirectResponse
     {
+        $request->merge([
+            'nickname' => NicknameNormalizer::normalizeInput($request->input('nickname')),
+        ]);
+
         $validated = $request->validate([
-            'nickname' => ['required', 'string', 'max:100', Rule::unique('users', 'nickname')],
+            'nickname' => ['required', 'string', 'max:100', new UniqueNickname],
             'password' => [
                 'required',
                 'confirmed',
