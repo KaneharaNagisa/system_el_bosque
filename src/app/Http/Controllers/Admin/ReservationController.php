@@ -186,7 +186,7 @@ class ReservationController extends Controller
             $breakdown['adjustmentRuleId'] = $request->adjustment_rule_id ?? null;
         }
 
-        Billing::create([
+        $billing = Billing::create([
             'billing_code'   => 'BIL-' . strtoupper(Str::random(8)),
             'reservation_id' => $reservation->id,
             'amount'         => max(0, $pricingSetting->totalForBreakdown($breakdown)),
@@ -194,6 +194,10 @@ class ReservationController extends Controller
             'status'         => $request->payment,
             'due_date'       => $request->check_in,
         ]);
+
+        if ($request->payment === 'paid') {
+            $billing->applyPaymentStatus('paid');
+        }
 
         app(GoogleCalendarSyncService::class)->createReservationEvent($reservation);
 
