@@ -256,7 +256,6 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 }
 
 // ── 管理者用カレンダー ──
-const CAL_YEAR = 2026;
 const CAL_SEASON_START = 2;
 const CAL_SEASON_END = 11;
 const CAL_DOW_NAMES = ["日", "月", "火", "水", "木", "金", "土"];
@@ -278,14 +277,14 @@ const CAL_MONTH_NAMES = [
 type CalStatus = "available" | "booked" | "unavailable" | "off";
 
 function getAdminDayStatus(
+    year: number,
     month: number,
     day: number,
     availabilities: Record<string, string>,
     bookedDatesSet: Set<string>,
 ): CalStatus {
     if (month < CAL_SEASON_START || month > CAL_SEASON_END) return "off";
-    const dateStr = `${CAL_YEAR}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-    const dow = new Date(CAL_YEAR, month, day).getDay();
+    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
     if (bookedDatesSet.has(dateStr)) return "booked";
 
@@ -301,8 +300,8 @@ function getAdminDayStatus(
     return "available";
 }
 
-function adminFmtDate(month: number, day: number): string {
-    return `${CAL_YEAR}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+function adminFmtDate(year: number, month: number, day: number): string {
+    return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
 interface AdminDateRangePickerProps {
@@ -320,25 +319,35 @@ function AdminDateRangePicker({
     availabilities,
     bookedDates,
 }: AdminDateRangePickerProps) {
-    const [viewMonth, setViewMonth] = useState(() => {
+    const [viewDate, setViewDate] = useState(() => {
         const now = new Date();
         const m = now.getMonth();
         return m >= CAL_SEASON_START && m <= CAL_SEASON_END
-            ? m
-            : CAL_SEASON_START;
+            ? new Date(now.getFullYear(), m, 1)
+            : new Date(now.getFullYear(), CAL_SEASON_START, 1);
     });
+    const viewYear = viewDate.getFullYear();
+    const viewMonth = viewDate.getMonth();
+    const minCalendarDate = new Date(
+        new Date().getFullYear(),
+        CAL_SEASON_START,
+        1,
+    );
 
     useEffect(() => {
         if (!checkIn) return;
-        const m = Number(checkIn.split("-")[1]) - 1;
-        if (m >= CAL_SEASON_START && m <= CAL_SEASON_END) setViewMonth(m);
+        const [year, month] = checkIn.split("-").map(Number);
+        const monthIndex = month - 1;
+        if (monthIndex >= CAL_SEASON_START && monthIndex <= CAL_SEASON_END) {
+            setViewDate(new Date(year, monthIndex, 1));
+        }
     }, [checkIn]);
 
     const bookedDatesSet = useMemo(() => new Set(bookedDates), [bookedDates]);
 
     const cells = useMemo(() => {
-        const daysInMonth = new Date(CAL_YEAR, viewMonth + 1, 0).getDate();
-        const firstDow = new Date(CAL_YEAR, viewMonth, 1).getDay();
+        const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+        const firstDow = new Date(viewYear, viewMonth, 1).getDay();
         type Cell = {
             day: number;
             dateStr: string;
@@ -349,11 +358,12 @@ function AdminDateRangePicker({
         for (let i = 0; i < firstDow; i++)
             items.push({ day: 0, dateStr: "", status: "off", dow: i });
         for (let d = 1; d <= daysInMonth; d++) {
-            const dow = new Date(CAL_YEAR, viewMonth, d).getDay();
+            const dow = new Date(viewYear, viewMonth, d).getDay();
             items.push({
                 day: d,
-                dateStr: adminFmtDate(viewMonth, d),
+                dateStr: adminFmtDate(viewYear, viewMonth, d),
                 status: getAdminDayStatus(
+                    viewYear,
                     viewMonth,
                     d,
                     availabilities,
@@ -365,7 +375,7 @@ function AdminDateRangePicker({
         while (items.length % 7 !== 0)
             items.push({ day: 0, dateStr: "", status: "off", dow: 0 });
         return items;
-    }, [viewMonth, availabilities, bookedDatesSet]);
+    }, [viewYear, viewMonth, availabilities, bookedDatesSet]);
 
     const isSelectingCO = !!checkIn && !checkOut;
 
@@ -394,21 +404,37 @@ function AdminDateRangePicker({
             <div className="flex items-center justify-between px-4 py-2.5 bg-[#0a2105]">
                 <button
                     onClick={() =>
-                        setViewMonth((m) => Math.max(CAL_SEASON_START, m - 1))
+                        setViewDate(
+                            (date) =>
+                                new Date(
+                                    date.getFullYear(),
+                                    date.getMonth() - 1,
+                                    1,
+                                ),
+                        )
                     }
-                    disabled={viewMonth <= CAL_SEASON_START}
+                    disabled={
+                        viewYear === minCalendarDate.getFullYear() &&
+                        viewMonth <= minCalendarDate.getMonth()
+                    }
                     className="p-1.5 rounded text-white/60 hover:text-white disabled:opacity-25 transition-opacity"
                 >
                     <FaChevronLeft className="w-3 h-3" />
                 </button>
                 <span className="text-white text-sm font-semibold tracking-wide">
-                    {CAL_YEAR}年 {CAL_MONTH_NAMES[viewMonth]}
+                    {viewYear}年 {CAL_MONTH_NAMES[viewMonth]}
                 </span>
                 <button
                     onClick={() =>
-                        setViewMonth((m) => Math.min(CAL_SEASON_END, m + 1))
+                        setViewDate(
+                            (date) =>
+                                new Date(
+                                    date.getFullYear(),
+                                    date.getMonth() + 1,
+                                    1,
+                                ),
+                        )
                     }
-                    disabled={viewMonth >= CAL_SEASON_END}
                     className="p-1.5 rounded text-white/60 hover:text-white disabled:opacity-25 transition-opacity"
                 >
                     <FaChevronRight className="w-3 h-3" />
