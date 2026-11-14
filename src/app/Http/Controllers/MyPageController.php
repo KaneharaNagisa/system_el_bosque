@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -118,7 +119,16 @@ class MyPageController extends Controller
     {
         $validated = $request->validate([
             'currentPassword' => ['required', 'current_password'],
-            'newPassword' => ['required', 'string', 'min:8', 'confirmed'],
+            'newPassword' => [
+                'required',
+                'confirmed',
+                Password::min(8)->mixedCase()->numbers()->symbols()->rules([
+                    'regex:/[A-Z]/',
+                    'regex:/[a-z]/',
+                    'regex:/[0-9]/',
+                    'regex:/[\p{P}\p{S}]/u',
+                ]),
+            ],
         ]);
 
         $request->user()->update(['password' => Hash::make($validated['newPassword'])]);

@@ -36,7 +36,15 @@ class AccountController extends Controller
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'email', 'unique:admins,email'],
             'role'     => ['required', 'in:system_admin,facility_admin'],
-            'password' => ['required', Password::min(8)],
+            'password' => [
+                'required',
+                Password::min(8)->mixedCase()->numbers()->symbols()->rules([
+                    'regex:/[A-Z]/',
+                    'regex:/[a-z]/',
+                    'regex:/[0-9]/',
+                    'regex:/[\p{P}\p{S}]/u',
+                ]),
+            ],
         ]);
 
         Admin::create([
@@ -55,7 +63,15 @@ class AccountController extends Controller
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'email', "unique:admins,email,{$id}"],
             'role'     => ['required', 'in:system_admin,facility_admin'],
-            'password' => ['nullable', Password::min(8)],
+            'password' => [
+                'nullable',
+                Password::min(8)->mixedCase()->numbers()->symbols()->rules([
+                    'regex:/[A-Z]/',
+                    'regex:/[a-z]/',
+                    'regex:/[0-9]/',
+                    'regex:/[\p{P}\p{S}]/u',
+                ]),
+            ],
         ]);
 
         $data = $request->only('name', 'email', 'role');

@@ -6,6 +6,7 @@ use App\Models\Admin;
 use App\Models\Reservation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
@@ -101,8 +102,8 @@ class AdminMemberManagementTest extends TestCase
             ->post('/admin/members', [
                 'nickname' => '既存ニックネーム',
                 'email' => 'new@example.com',
-                'password' => 'password123',
-                'password_confirmation' => 'password123',
+                'password' => 'Abcdef1!',
+                'password_confirmation' => 'Abcdef1!',
                 'phone' => '090-1234-5678',
             ])
             ->assertRedirect('/admin/members')
@@ -113,14 +114,65 @@ class AdminMemberManagementTest extends TestCase
             ->post('/admin/members', [
                 'nickname' => '別のニックネーム',
                 'email' => 'existing@example.com',
-                'password' => 'password123',
-                'password_confirmation' => 'password123',
+                'password' => 'Abcdef1!',
+                'password_confirmation' => 'Abcdef1!',
                 'phone' => '090-1234-5678',
             ])
             ->assertRedirect('/admin/members')
             ->assertSessionHasErrors(['email']);
 
         $this->assertDatabaseCount('users', 1);
+    }
+
+    public function test_admin_member_creation_and_password_change_require_the_new_password_format(): void
+    {
+        $admin = Admin::create([
+            'name' => '管理者',
+            'email' => 'admin@example.com',
+            'password' => 'AdminPass1!',
+        ]);
+
+        $this->withSession(['admin_user' => $admin->id])
+            ->from('/admin/members')
+            ->post('/admin/members', [
+                'nickname' => '新規会員',
+                'email' => 'new-member@example.com',
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+                'phone' => '090-1234-5678',
+            ])
+            ->assertSessionHasErrors('password');
+
+        $this->withSession(['admin_user' => $admin->id])
+            ->from('/admin/members')
+            ->post('/admin/members', [
+                'nickname' => '新規会員',
+                'email' => 'new-member@example.com',
+                'password' => 'ValidPass1!',
+                'password_confirmation' => 'ValidPass1!',
+                'phone' => '090-1234-5678',
+            ])
+            ->assertSessionHasNoErrors();
+
+        $member = User::where('email', 'new-member@example.com')->firstOrFail();
+
+        $this->withSession(['admin_user' => $admin->id])
+            ->from('/admin/members')
+            ->patch("/admin/members/{$member->id}/password", [
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+            ])
+            ->assertSessionHasErrors('password');
+
+        $this->withSession(['admin_user' => $admin->id])
+            ->from('/admin/members')
+            ->patch("/admin/members/{$member->id}/password", [
+                'password' => 'UpdatedPass1!',
+                'password_confirmation' => 'UpdatedPass1!',
+            ])
+            ->assertSessionHasNoErrors();
+
+        $this->assertTrue(Hash::check('UpdatedPass1!', $member->fresh()->password));
     }
 
     public function test_admin_cannot_edit_member_to_duplicate_nickname_or_email(): void

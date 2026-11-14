@@ -55,8 +55,8 @@ class MemberPortalTest extends TestCase
         $this->withSession(['pending_registration_id' => $pendingRegistration->id])->from('/register')->post('/register', [
             'nickname' => 'たろう',
             'email' => 'new-member@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'password' => 'Abcdef1!',
+            'password_confirmation' => 'Abcdef1!',
             'phone' => '090-1234-5678',
             'prefecture' => '長野県',
             'city' => '阿南町',
@@ -102,14 +102,57 @@ class MemberPortalTest extends TestCase
             ->from('/register')
             ->post('/register', [
                 'nickname' => 'たろう',
-                'password' => 'password123',
-                'password_confirmation' => 'password123',
+                'password' => 'ValidPass1!',
+                'password_confirmation' => 'ValidPass1!',
                 'phone' => '090-1234-5678',
                 'hasPet' => 'none',
             ])
             ->assertSessionHasErrors('nickname');
 
         $this->assertDatabaseMissing('users', ['email' => 'new-member@example.com']);
+    }
+
+    public function test_member_registration_requires_password_with_mixed_case_number_symbol_and_minimum_length(): void
+    {
+        $pendingRegistration = PendingRegistration::create([
+            'email' => 'new-member@example.com',
+            'token' => Hash::make('test-token'),
+            'expires_at' => now()->addHour(),
+        ]);
+
+        foreach (['password1!', 'PASSWORD1!', 'Password!', 'Password1', 'Pass1!'] as $weakPassword) {
+            $this->withSession(['pending_registration_id' => $pendingRegistration->id])
+                ->from('/register')
+                ->post('/register', [
+                    'nickname' => 'たろう',
+                    'password' => $weakPassword,
+                    'password_confirmation' => $weakPassword,
+                    'phone' => '090-1234-5678',
+                    'hasPet' => 'none',
+                ])
+                ->assertSessionHasErrors('password');
+        }
+
+        $this->assertDatabaseMissing('users', ['email' => 'new-member@example.com']);
+    }
+
+    public function test_member_password_change_requires_the_new_password_format(): void
+    {
+        $user = User::factory()->create(['password' => 'CurrentPass1!']);
+
+        $this->actingAs($user)->patch('/mypage/password', [
+            'currentPassword' => 'CurrentPass1!',
+            'newPassword' => 'password123',
+            'newPassword_confirmation' => 'password123',
+        ])->assertSessionHasErrors('newPassword');
+
+        $this->actingAs($user)->patch('/mypage/password', [
+            'currentPassword' => 'CurrentPass1!',
+            'newPassword' => 'Abcdef1!',
+            'newPassword_confirmation' => 'Abcdef1!',
+        ])->assertSessionHasNoErrors();
+
+        $this->assertTrue(Hash::check('Abcdef1!', $user->fresh()->password));
     }
 
     public function test_guest_can_receive_a_registration_confirmation_email(): void

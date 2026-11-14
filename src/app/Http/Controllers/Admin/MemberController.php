@@ -71,7 +71,16 @@ class MemberController extends Controller
         $validated = $request->validate([
             'nickname'       => ['required', 'string', 'max:100', Rule::unique('users', 'nickname')],
             'email'          => ['required', 'email', Rule::unique('users', 'email')],
-            'password'       => ['required', 'confirmed', Password::min(8)],
+            'password'       => [
+                'required',
+                'confirmed',
+                Password::min(8)->mixedCase()->numbers()->symbols()->rules([
+                    'regex:/[A-Z]/',
+                    'regex:/[a-z]/',
+                    'regex:/[0-9]/',
+                    'regex:/[\p{P}\p{S}]/u',
+                ]),
+            ],
             'phone'          => ['required', 'string', 'max:20'],
             'address'        => ['nullable', 'string', 'max:255'],
             'prefecture'     => ['nullable', 'string', 'max:20'],
@@ -136,7 +145,16 @@ class MemberController extends Controller
     public function updatePassword(Request $request, int $id): RedirectResponse
     {
         $validated = $request->validate([
-            'password' => ['required', 'confirmed', Password::min(8)],
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(8)->mixedCase()->numbers()->symbols()->rules([
+                    'regex:/[A-Z]/',
+                    'regex:/[a-z]/',
+                    'regex:/[0-9]/',
+                    'regex:/[\p{P}\p{S}]/u',
+                ]),
+            ],
         ]);
 
         User::findOrFail($id)->update([

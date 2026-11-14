@@ -60,7 +60,16 @@ class MemberAuthController extends Controller
     {
         $validated = $request->validate([
             'nickname' => ['required', 'string', 'max:100', Rule::unique('users', 'nickname')],
-            'password' => ['required', 'confirmed', Password::min(8)],
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(8)->mixedCase()->numbers()->symbols()->rules([
+                    'regex:/[A-Z]/',
+                    'regex:/[a-z]/',
+                    'regex:/[0-9]/',
+                    'regex:/[\p{P}\p{S}]/u',
+                ]),
+            ],
             'phone' => ['required', 'string', 'max:20'],
             'prefecture' => ['nullable', 'string', 'max:20'],
             'city' => ['nullable', 'string', 'max:50'],

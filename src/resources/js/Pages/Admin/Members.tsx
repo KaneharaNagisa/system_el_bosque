@@ -83,6 +83,12 @@ const familyLabels: Record<string, string> = {
     married: "ご夫婦",
     family: "ご家族（お子さんあり）",
 };
+const hasRequiredPasswordFormat = (password: string) =>
+    Array.from(password).length >= 8 &&
+    /[A-Z]/.test(password) &&
+    /[a-z]/.test(password) &&
+    /[0-9]/.test(password) &&
+    /[\p{S}\p{P}]/u.test(password);
 const emptyNewForm = {
     nickname: "",
     email: "",
@@ -322,8 +328,9 @@ export default function Members({
             errs.email = "正しいメールアドレスを入力してください";
         if (!newForm.phone.trim()) errs.phone = "電話番号は必須です";
         if (!newForm.password) errs.password = "パスワードは必須です";
-        else if (newForm.password.length < 8)
-            errs.password = "パスワードは8文字以上で入力してください";
+        else if (!hasRequiredPasswordFormat(newForm.password))
+            errs.password =
+                "大文字・小文字の英字、数字、記号を含む8文字以上で入力してください";
         else if (newForm.password !== newForm.passwordConfirmation)
             errs.passwordConfirmation = "パスワードが一致しません";
         setNewErrors(errs);
@@ -997,11 +1004,12 @@ export default function Members({
                                             type="button"
                                             onClick={() => {
                                                 if (
-                                                    passwordForm.password
-                                                        .length < 8
+                                                    !hasRequiredPasswordFormat(
+                                                        passwordForm.password,
+                                                    )
                                                 ) {
                                                     setPasswordError(
-                                                        "パスワードは8文字以上で入力してください",
+                                                        "大文字・小文字の英字、数字、記号を含む8文字以上で入力してください",
                                                     );
                                                     return;
                                                 }
@@ -1191,6 +1199,9 @@ export default function Members({
                                                     autoComplete="new-password"
                                                     className={`w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105] ${newErrors.password ? "border-red-400 bg-red-50" : "border-gray-300"}`}
                                                 />
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    大文字・小文字の英字、数字、記号を含む8文字以上
+                                                </p>
                                                 {newErrors.password && (
                                                     <p className="text-xs text-red-500 mt-1">
                                                         {newErrors.password}

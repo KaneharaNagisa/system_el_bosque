@@ -109,8 +109,16 @@ export function PasswordReset() {
         e.preventDefault();
         setError("");
 
-        if (newPassword.length < 8) {
-            setError("新しいパスワードは8文字以上で入力してください。");
+        if (
+            Array.from(newPassword).length < 8 ||
+            !/[A-Z]/.test(newPassword) ||
+            !/[a-z]/.test(newPassword) ||
+            !/[0-9]/.test(newPassword) ||
+            !/[\p{S}\p{P}]/u.test(newPassword)
+        ) {
+            setError(
+                "新しいパスワードは大文字・小文字の英字、数字、記号を含む8文字以上で入力してください。",
+            );
             return;
         }
         if (newPassword !== confirmPassword) {
@@ -451,7 +459,7 @@ export function PasswordReset() {
                                         marginTop: "0.3rem",
                                     }}
                                 >
-                                    ※ 8文字以上で入力してください
+                                    ※ 大文字・小文字の英字、数字、記号を含む8文字以上で入力してください
                                 </p>
                             </div>
 

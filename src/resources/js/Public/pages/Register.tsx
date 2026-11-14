@@ -236,6 +236,18 @@ export function Register() {
     // Step 3: Main registration form submit → confirm
     const handleProfileSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        if (
+            Array.from(profile.password).length < 8 ||
+            !/[A-Z]/.test(profile.password) ||
+            !/[a-z]/.test(profile.password) ||
+            !/[0-9]/.test(profile.password) ||
+            !/[\p{S}\p{P}]/u.test(profile.password)
+        ) {
+            alert(
+                "パスワードは大文字・小文字の英字、数字、記号を含む8文字以上で入力してください。",
+            );
+            return;
+        }
         if (profile.password !== profile.passwordConfirm) {
             alert("パスワードが一致しません。");
             return;
@@ -758,7 +770,7 @@ export function Register() {
                                                 onBlur={() =>
                                                     setFocusedField("")
                                                 }
-                                                placeholder="8文字以上"
+                                                placeholder="大文字・小文字・数字・記号を含む8文字以上"
                                                 required
                                                 minLength={8}
                                                 style={focusedInputStyle(

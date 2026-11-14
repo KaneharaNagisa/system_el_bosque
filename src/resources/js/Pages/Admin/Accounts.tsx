@@ -27,6 +27,12 @@ const roleLabels: Record<string, { label: string; cls: string }> = {
     },
     facility_admin: { label: "運営担当", cls: "bg-blue-100 text-blue-800" },
 };
+const hasRequiredPasswordFormat = (password: string) =>
+    Array.from(password).length >= 8 &&
+    /[A-Z]/.test(password) &&
+    /[a-z]/.test(password) &&
+    /[0-9]/.test(password) &&
+    /[\p{S}\p{P}]/u.test(password);
 
 export default function Accounts({ accounts }: { accounts: AdminAccount[] }) {
     const { auth = { admin: null } } = usePage<SharedProps>().props;
@@ -66,13 +72,25 @@ export default function Accounts({ accounts }: { accounts: AdminAccount[] }) {
 
     const handleSave = () => {
         if (!formData.name.trim() || !formData.email.trim()) return;
+        if (
+            (!editingItem && !formData.password) ||
+            (formData.password && !hasRequiredPasswordFormat(formData.password))
+        ) {
+            setErrors({
+                password:
+                    "大文字・小文字の英字、数字、記号を含む8文字以上で入力してください",
+            });
+            return;
+        }
         if (editingItem) {
             router.patch(`/admin/accounts/${editingItem.dbId}`, formData, {
                 onSuccess: () => setIsEditOpen(false),
+                onError: (validationErrors) => setErrors(validationErrors),
             });
         } else {
             router.post("/admin/accounts", formData, {
                 onSuccess: () => setIsEditOpen(false),
+                onError: (validationErrors) => setErrors(validationErrors),
             });
         }
     };
@@ -293,14 +311,25 @@ export default function Accounts({ accounts }: { accounts: AdminAccount[] }) {
                                         type="password"
                                         value={formData.password}
                                         onChange={(e) =>
-                                            setFormData((p) => ({
-                                                ...p,
-                                                password: e.target.value,
-                                            }))
+                                            {
+                                                setFormData((p) => ({
+                                                    ...p,
+                                                    password: e.target.value,
+                                                }));
+                                                setErrors((previous) => ({
+                                                    ...previous,
+                                                    password: "",
+                                                }));
+                                            }
                                         }
                                         className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0a2105]"
-                                        placeholder="8文字以上"
+                                        placeholder="大文字・小文字・数字・記号を含む8文字以上"
                                     />
+                                    {errors.password && (
+                                        <p className="text-xs text-red-500 mt-1">
+                                            {errors.password}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                             <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
