@@ -146,6 +146,63 @@ class GoogleCalendarSyncTest extends TestCase
         });
     }
 
+    public function test_it_ignores_el_bosque_reservation_events_for_conflict_alerts(): void
+    {
+        Mail::fake();
+
+        Admin::create([
+            'name' => '管理者',
+            'email' => 'admin@elbosque.jp',
+            'password' => 'secret',
+            'role' => 'system_admin',
+        ]);
+
+        config()->set('services.google_calendar', [
+            'client_id' => 'client-id',
+            'client_secret' => 'client-secret',
+            'refresh_token' => 'refresh-token',
+            'calendar_id' => 'primary',
+        ]);
+
+        $user = User::factory()->create();
+        Reservation::create([
+            'reservation_code' => 'RSV-ELBOSQUE',
+            'user_id' => $user->id,
+            'check_in' => '2026-09-20',
+            'check_out' => '2026-09-23',
+            'guests' => 2,
+            'status' => 'confirmed',
+            'google_calendar_event_id' => 'el-bosque-reservation-event',
+        ]);
+
+        Http::fake([
+            'oauth2.googleapis.com/token' => Http::response(['access_token' => 'access-token']),
+            'www.googleapis.com/calendar/v3/*' => Http::response([
+                'items' => [
+                    [
+                        'id' => 'el-bosque-reservation-event',
+                        'status' => 'confirmed',
+                        'start' => ['date' => '2026-09-21'],
+                        'end' => ['date' => '2026-09-22'],
+                    ],
+                ],
+            ]),
+        ]);
+
+        $calendar = app(GoogleCalendarSyncService::class);
+        $calendar->sync(
+            CarbonImmutable::parse('2026-09-01'),
+            CarbonImmutable::parse('2026-09-30'),
+        );
+
+        $this->assertSame([], $calendar->lastConflictDates());
+        Mail::assertNothingSent();
+        $this->assertSame(
+            'manual_blocked',
+            Availability::query()->whereDate('date', '2026-09-21')->firstOrFail()->status,
+        );
+    }
+
     public function test_it_creates_a_reservation_event_and_stores_its_id(): void
     {
         config()->set('services.google_calendar', [

@@ -26,8 +26,8 @@ class GoogleCalendarSyncService
             throw new RuntimeException('同期終了日は開始日以降にしてください。');
         }
 
-        $blockedDates = $this->blockedDates($start, $end);
-        $this->lastConflictDates = $this->conflictedReservationDates($blockedDates);
+        [$blockedDates, $conflictCandidateDates] = $this->calendarDates($start, $end);
+        $this->lastConflictDates = $this->conflictedReservationDates($conflictCandidateDates);
         $conflictedDates = $this->lastConflictDates;
 
         DB::transaction(function () use ($start, $end, $blockedDates) {
@@ -163,7 +163,10 @@ class GoogleCalendarSyncService
         return $conflicts;
     }
 
-    private function blockedDates(CarbonImmutable $start, CarbonImmutable $end): array
+    /**
+     * @return array{0: array<int, string>, 1: array<int, string>}
+     */
+    private function calendarDates(CarbonImmutable $start, CarbonImmutable $end): array
     {
         $events = [];
         $pageToken = null;
@@ -184,13 +187,27 @@ class GoogleCalendarSyncService
             $pageToken = $response['nextPageToken'] ?? null;
         } while ($pageToken);
 
-        return collect($events)
-            ->reject(fn(array $event) => ($event['status'] ?? null) === 'cancelled')
+        $reservationEventIds = Reservation::query()
+            ->whereNotNull('google_calendar_event_id')
+            ->pluck('google_calendar_event_id')
+            ->all();
+        $activeEvents = collect($events)
+            ->reject(fn(array $event) => ($event['status'] ?? null) === 'cancelled');
+        $conflictEvents = $activeEvents
+            ->reject(fn(array $event) => isset($event['id'])
+                && in_array($event['id'], $reservationEventIds, true));
+
+        $datesForEvents = fn($calendarEvents) => $calendarEvents
             ->flatMap(fn(array $event) => $this->eventDates($event, $start, $end))
             ->unique()
             ->sort()
             ->values()
             ->all();
+
+        return [
+            $datesForEvents($activeEvents),
+            $datesForEvents($conflictEvents),
+        ];
     }
 
     private function eventDates(array $event, CarbonImmutable $rangeStart, CarbonImmutable $rangeEnd): array
