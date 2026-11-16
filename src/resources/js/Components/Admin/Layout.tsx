@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { router, usePage } from "@inertiajs/react";
 import AdminSidebar, { type AdminPage } from "./Sidebar";
-import { LogOut } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
 import type { SharedProps } from "../../types";
 
 function cn(...classes: (string | boolean | undefined | null)[]): string {
@@ -17,12 +17,26 @@ interface Props {
 export default function AdminLayout({ currentPage, title, children }: Props) {
     const { auth = { admin: null } } = usePage<SharedProps>().props;
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
     useEffect(() => {
         document.body.setAttribute("data-admin", "true");
         return () => {
             document.body.removeAttribute("data-admin");
         };
+    }, []);
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia("(max-width: 767px)");
+        const updateIsMobile = (event: MediaQueryList | MediaQueryListEvent) => {
+            setIsMobile(event.matches);
+            if (!event.matches) setIsMobileSidebarOpen(false);
+        };
+
+        updateIsMobile(mediaQuery);
+        mediaQuery.addEventListener("change", updateIsMobile);
+        return () => mediaQuery.removeEventListener("change", updateIsMobile);
     }, []);
 
     const handleLogout = () => {
@@ -37,16 +51,26 @@ export default function AdminLayout({ currentPage, title, children }: Props) {
                 backgroundColor: "#f4f7f5",
             }}
         >
+            {isMobileSidebarOpen && (
+                <button
+                    type="button"
+                    aria-label="メニューを閉じる"
+                    onClick={() => setIsMobileSidebarOpen(false)}
+                    className="fixed inset-0 z-40 bg-black/50 md:hidden"
+                />
+            )}
             <AdminSidebar
                 currentPage={currentPage}
                 isCollapsed={isSidebarCollapsed}
                 onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                isMobileOpen={isMobileSidebarOpen}
+                onClose={() => setIsMobileSidebarOpen(false)}
             />
 
             <div
                 className={cn(
-                    "transition-all duration-300",
-                    isSidebarCollapsed ? "ml-16" : "ml-64",
+                    "min-w-0 transition-all duration-300",
+                    isSidebarCollapsed ? "md:ml-16" : "md:ml-64",
                 )}
             >
                 <header
@@ -54,12 +78,31 @@ export default function AdminLayout({ currentPage, title, children }: Props) {
                     style={{ borderBottom: "1px solid rgba(10,33,5,0.1)" }}
                 >
                     <div className="px-6 py-4">
-                        <div className="flex items-center justify-between">
-                            <h1 className="text-xl text-gray-900">{title}</h1>
+                        <div className="flex items-center justify-between gap-3">
+                            <div className="flex min-w-0 flex-1 items-center gap-3">
+                                {isMobile && (
+                                    <button
+                                        type="button"
+                                        aria-label="メニューを開く"
+                                        aria-expanded={isMobileSidebarOpen}
+                                        onClick={() =>
+                                            setIsMobileSidebarOpen(
+                                                !isMobileSidebarOpen,
+                                            )
+                                        }
+                                        className="shrink-0 rounded p-2 text-[#1b3a14] hover:bg-[#e8f5e9]"
+                                    >
+                                        <Menu className="h-5 w-5" />
+                                    </button>
+                                )}
+                                <h1 className="truncate text-xl text-gray-900">
+                                    {title}
+                                </h1>
+                            </div>
                             <div className="flex items-center gap-4">
                                 {auth.admin && (
                                     <span
-                                        className="text-sm"
+                                        className="hidden text-sm sm:inline"
                                         style={{ color: "#1b3a14" }}
                                     >
                                         {auth.admin.name}
@@ -81,7 +124,9 @@ export default function AdminLayout({ currentPage, title, children }: Props) {
                                     }}
                                 >
                                     <LogOut className="w-4 h-4" />
-                                    ログアウト
+                                    <span className="hidden sm:inline">
+                                        ログアウト
+                                    </span>
                                 </button>
                             </div>
                         </div>

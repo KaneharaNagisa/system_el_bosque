@@ -8,6 +8,7 @@ import {
     ChevronRight,
     Database,
     ChevronDown,
+    X,
     Bell,
     FileText,
     CalendarDays,
@@ -42,6 +43,8 @@ interface Props {
     currentPage: AdminPage;
     isCollapsed: boolean;
     onToggle: () => void;
+    isMobileOpen: boolean;
+    onClose: () => void;
 }
 
 function cn(...classes: (string | boolean | undefined | null)[]): string {
@@ -52,6 +55,8 @@ export default function AdminSidebar({
     currentPage,
     isCollapsed,
     onToggle,
+    isMobileOpen,
+    onClose,
 }: Props) {
     const { kpiEnabled } = usePage<SharedProps>().props;
     const menuItems = [
@@ -147,6 +152,7 @@ export default function AdminSidebar({
     );
     const [isMasterMenuOpen, setIsMasterMenuOpen] =
         useState(isMasterPageActive);
+    const isMenuCollapsed = isCollapsed && !isMobileOpen;
 
     useEffect(() => {
         if (isMasterPageActive) setIsMasterMenuOpen(true);
@@ -163,7 +169,10 @@ export default function AdminSidebar({
         return (
             <button
                 key={item.id}
-                onClick={() => router.visit(item.path)}
+                onClick={() => {
+                    router.visit(item.path);
+                    onClose();
+                }}
                 className="w-full flex items-center gap-3 px-4 py-3 transition-colors relative"
                 style={{
                     backgroundColor: isActive ? "#2c976c" : "transparent",
@@ -191,10 +200,12 @@ export default function AdminSidebar({
                 <Icon
                     className={cn(
                         "w-5 h-5 shrink-0",
-                        isCollapsed ? "mx-auto" : "",
+                        isMenuCollapsed ? "mx-auto" : "",
                     )}
                 />
-                {!isCollapsed && <span className="text-sm">{item.label}</span>}
+                {!isMenuCollapsed && (
+                    <span className="text-sm">{item.label}</span>
+                )}
             </button>
         );
     };
@@ -202,8 +213,9 @@ export default function AdminSidebar({
     return (
         <aside
             className={cn(
-                "fixed left-0 top-0 h-screen text-white transition-all duration-300 z-40 flex flex-col",
-                isCollapsed ? "w-16" : "w-64",
+                "fixed left-0 top-0 z-50 flex h-screen w-64 flex-col text-white transition-all duration-300 md:z-40 md:translate-x-0",
+                isMobileOpen ? "translate-x-0" : "-translate-x-full",
+                isCollapsed ? "md:w-16" : "md:w-64",
             )}
             style={{ backgroundColor: "#0a2105" }}
         >
@@ -211,7 +223,7 @@ export default function AdminSidebar({
                 className="h-16 flex items-center justify-between px-4"
                 style={{ borderBottom: "1px solid rgba(44,151,108,0.3)" }}
             >
-                {!isCollapsed && (
+                {!isMenuCollapsed && (
                     <div>
                         <h2 className="text-sm" style={{ color: "#e8f5e9" }}>
                             貸別荘エルボスケ
@@ -222,8 +234,21 @@ export default function AdminSidebar({
                     </div>
                 )}
                 <button
+                    type="button"
+                    onClick={onClose}
+                    aria-label="メニューを閉じる"
+                    className="ml-auto rounded p-1 md:hidden"
+                    style={{ color: "#c8ddd0" }}
+                >
+                    <X className="h-5 w-5" />
+                </button>
+                <button
+                    type="button"
                     onClick={onToggle}
-                    className="rounded p-1 ml-auto"
+                    aria-label={
+                        isCollapsed ? "メニューを展開" : "メニューを折りたたむ"
+                    }
+                    className="ml-auto hidden rounded p-1 md:block"
                     style={{ color: "#c8ddd0" }}
                     onMouseEnter={(e) =>
                         (e.currentTarget.style.backgroundColor = "#122e0e")
@@ -244,7 +269,7 @@ export default function AdminSidebar({
                 {menuItems.map(renderMenuItem)}
 
                 {/* マスタ管理 */}
-                {!isCollapsed ? (
+                {!isMenuCollapsed ? (
                     <>
                         <button
                             onClick={() =>
@@ -298,9 +323,10 @@ export default function AdminSidebar({
                                     return (
                                         <button
                                             key={item.id}
-                                            onClick={() =>
+                                            onClick={() => {
                                                 router.visit(item.path)
-                                            }
+                                                onClose();
+                                            }}
                                             className="w-full flex items-center gap-3 pl-12 pr-4 py-2.5 transition-colors relative text-sm"
                                             style={{
                                                 backgroundColor: isActive
@@ -345,9 +371,10 @@ export default function AdminSidebar({
                     </>
                 ) : (
                     <button
-                        onClick={() =>
+                        onClick={() => {
                             router.visit("/admin/master/availability")
-                        }
+                            onClose();
+                        }}
                         className="w-full flex items-center gap-3 px-4 py-3 transition-colors relative"
                         style={{
                             backgroundColor: isMasterPageActive
@@ -401,10 +428,10 @@ export default function AdminSidebar({
             </nav>
 
             <div
-                className="p-4"
+                className="hidden p-4 md:block"
                 style={{ borderTop: "1px solid rgba(44,151,108,0.3)" }}
             >
-                {!isCollapsed && (
+                {!isMenuCollapsed && (
                     <div className="text-xs" style={{ color: "#6ee7a8" }}>
                         <p>El bosque Admin</p>
                         <p className="mt-1">v1.0.0</p>

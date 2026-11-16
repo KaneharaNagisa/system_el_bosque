@@ -11,6 +11,66 @@
 body[data-admin="true"] {
     font-family: "Noto Sans JP", sans-serif;
 }
+
+@media (max-width: 767px) {
+    body[data-admin="true"] main {
+        padding: 1rem;
+    }
+
+    body[data-admin="true"] header > div {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    body[data-admin="true"] header h1 {
+        font-size: 1rem;
+    }
+
+    body[data-admin="true"] header .gap-4 {
+        gap: 0.5rem;
+    }
+
+    body[data-admin="true"] main .grid-cols-2 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    body[data-admin="true"] main .grid-cols-3,
+    body[data-admin="true"] main .grid-cols-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    body[data-admin="true"] main .flex.items-center.justify-between {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    body[data-admin="true"] main table {
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    body[data-admin="true"] main input,
+    body[data-admin="true"] main select,
+    body[data-admin="true"] main textarea {
+        max-width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 479px) {
+    body[data-admin="true"] main .grid-cols-3,
+    body[data-admin="true"] main .grid-cols-4 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    body[data-admin="true"] main [class~="px-6"] {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
 @source '../**/*.js';
 
 @theme {
