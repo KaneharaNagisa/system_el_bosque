@@ -2,6 +2,10 @@ import { useState, type FormEvent } from "react";
 import axios from "axios";
 import { router } from "@inertiajs/react";
 import AdminLayout from "../../Components/Admin/Layout";
+import AdminPagination, {
+    ADMIN_PAGE_SIZE,
+    useAdminPagination,
+} from "../../Components/Admin/Pagination";
 
 type NearbyType = "onsen" | "spot";
 
@@ -56,6 +60,8 @@ const inputClass =
     "w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-green-700 focus:outline-none";
 
 export default function NearbyInformation({ onsenFacilities, spots }: Props) {
+    const onsenPagination = useAdminPagination(onsenFacilities);
+    const spotPagination = useAdminPagination(spots);
     const [editing, setEditing] = useState<{
         type: NearbyType;
         id: number | null;
@@ -287,6 +293,11 @@ export default function NearbyInformation({ onsenFacilities, spots }: Props) {
         type: NearbyType,
         title: string,
         items: NearbyItem[],
+        pagination: {
+            currentPage: number;
+            pageItems: readonly NearbyItem[];
+            setCurrentPage: (page: number) => void;
+        },
     ) => (
         <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
             <div className="mb-4 flex items-center justify-between">
@@ -300,7 +311,10 @@ export default function NearbyInformation({ onsenFacilities, spots }: Props) {
                 </button>
             </div>
             <div className="divide-y divide-gray-200">
-                {items.map((item, index) => (
+                {pagination.pageItems.map((item, index) => {
+                    const itemIndex =
+                        (pagination.currentPage - 1) * ADMIN_PAGE_SIZE + index;
+                    return (
                     <div
                         key={item.id}
                         className="flex items-center gap-4 py-4 first:pt-0 last:pb-0"
@@ -328,8 +342,8 @@ export default function NearbyInformation({ onsenFacilities, spots }: Props) {
                         <div className="flex shrink-0 items-center gap-2">
                             <button
                                 type="button"
-                                disabled={isReordering || index === 0}
-                                onClick={() => void move(type, index, -1)}
+                                disabled={isReordering || itemIndex === 0}
+                                onClick={() => void move(type, itemIndex, -1)}
                                 className="rounded border border-gray-300 px-2 py-1 text-sm disabled:opacity-40"
                                 aria-label={`${item.name}を上へ移動`}
                             >
@@ -338,9 +352,10 @@ export default function NearbyInformation({ onsenFacilities, spots }: Props) {
                             <button
                                 type="button"
                                 disabled={
-                                    isReordering || index === items.length - 1
+                                    isReordering ||
+                                    itemIndex === items.length - 1
                                 }
-                                onClick={() => void move(type, index, 1)}
+                                onClick={() => void move(type, itemIndex, 1)}
                                 className="rounded border border-gray-300 px-2 py-1 text-sm disabled:opacity-40"
                                 aria-label={`${item.name}を下へ移動`}
                             >
@@ -362,13 +377,19 @@ export default function NearbyInformation({ onsenFacilities, spots }: Props) {
                             </button>
                         </div>
                     </div>
-                ))}
+                    );
+                })}
                 {items.length === 0 && (
                     <p className="py-5 text-sm text-gray-500">
                         登録された情報はありません。
                     </p>
                 )}
             </div>
+            <AdminPagination
+                currentPage={pagination.currentPage}
+                totalItems={items.length}
+                onPageChange={pagination.setCurrentPage}
+            />
             {renderForm(type)}
         </section>
     );
@@ -379,8 +400,18 @@ export default function NearbyInformation({ onsenFacilities, spots }: Props) {
             title="周辺情報管理"
         >
             <div className="space-y-6">
-                {renderSection("onsen", "近隣温泉施設", onsenFacilities)}
-                {renderSection("spot", "周辺観光スポット", spots)}
+                {renderSection(
+                    "onsen",
+                    "近隣温泉施設",
+                    onsenFacilities,
+                    onsenPagination,
+                )}
+                {renderSection(
+                    "spot",
+                    "周辺観光スポット",
+                    spots,
+                    spotPagination,
+                )}
             </div>
         </AdminLayout>
     );

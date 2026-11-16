@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { router } from "@inertiajs/react";
 import AdminLayout from "../../Components/Admin/Layout";
+import AdminPagination, {
+    useAdminPagination,
+} from "../../Components/Admin/Pagination";
 import {
     FaExclamationCircle,
     FaEdit,
@@ -19,6 +22,10 @@ interface Policy {
 }
 
 export default function CancelPolicy({ policies }: { policies: Policy[] }) {
+    const sortedPolicies = [...policies].sort(
+        (a, b) => b.daysBefore - a.daysBefore,
+    );
+    const pagination = useAdminPagination(sortedPolicies);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<Policy | null>(null);
     const [formData, setFormData] = useState({
@@ -123,9 +130,7 @@ export default function CancelPolicy({ policies }: { policies: Policy[] }) {
                     </div>
 
                     <div className="p-6 space-y-4">
-                        {[...policies]
-                            .sort((a, b) => b.daysBefore - a.daysBefore)
-                            .map((p) => {
+                        {pagination.pageItems.map((p) => {
                                 const colors = getColor(p.chargeRate);
                                 return (
                                     <div
@@ -176,6 +181,11 @@ export default function CancelPolicy({ policies }: { policies: Policy[] }) {
                                     </div>
                                 );
                             })}
+                        <AdminPagination
+                            currentPage={pagination.currentPage}
+                            totalItems={sortedPolicies.length}
+                            onPageChange={pagination.setCurrentPage}
+                        />
                     </div>
                 </div>
 

@@ -9,6 +9,10 @@ import {
     WalletCards,
 } from "lucide-react";
 import AdminLayout from "../../Components/Admin/Layout";
+import AdminPagination, {
+    ADMIN_PAGE_SIZE,
+    useAdminPagination,
+} from "../../Components/Admin/Pagination";
 
 interface PeriodRate {
     name: string;
@@ -92,6 +96,7 @@ export default function PricingSetting({
     });
     const [saving, setSaving] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const periodPagination = useAdminPagination(form.period_rates);
 
     const updatePeriod = <K extends keyof PeriodRate>(
         index: number,
@@ -310,7 +315,13 @@ export default function PricingSetting({
                         </div>
                     ) : (
                         <div className="space-y-3">
-                            {form.period_rates.map((period, index) => (
+                            {periodPagination.pageItems.map(
+                                (period, pageIndex) => {
+                                    const index =
+                                        (periodPagination.currentPage - 1) *
+                                            ADMIN_PAGE_SIZE +
+                                        pageIndex;
+                                    return (
                                 <div
                                     key={index}
                                     className="grid items-end gap-3 border-b border-gray-200 pb-4 md:grid-cols-[1.5fr_1fr_1fr_1fr_auto]"
@@ -397,7 +408,16 @@ export default function PricingSetting({
                                         <Trash2 className="h-4 w-4" />
                                     </button>
                                 </div>
-                            ))}
+                                    );
+                                },
+                            )}
+                            <AdminPagination
+                                currentPage={periodPagination.currentPage}
+                                totalItems={form.period_rates.length}
+                                onPageChange={
+                                    periodPagination.setCurrentPage
+                                }
+                            />
                         </div>
                     )}
                 </section>

@@ -1,6 +1,9 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { router } from "@inertiajs/react";
 import AdminLayout from "../../Components/Admin/Layout";
+import AdminPagination, {
+    useAdminPagination,
+} from "../../Components/Admin/Pagination";
 import {
     FaCalendarAlt,
     FaSearch,
@@ -754,6 +757,11 @@ export default function Reservations({
         () => Object.fromEntries(experienceOptions.map((e) => [e.label, e])),
         [experienceOptions],
     );
+    const selectedExpDetails = selectedRes
+        ? getExpDetails(selectedRes, expPeriodMap)
+        : [];
+    const detailExperiencePagination =
+        useAdminPagination(selectedExpDetails);
 
     const getAvailableExps = (checkInDate: string) =>
         experienceOptions.filter((exp) => {
@@ -782,10 +790,12 @@ export default function Reservations({
             }),
         [reservations, searchQuery, filterStatus, filterPayment],
     );
+    const pagination = useAdminPagination(filtered);
 
     // 詳細モーダルを開く
     const openDetail = (r: Reservation) => {
         setSelectedRes(r);
+        detailExperiencePagination.setCurrentPage(1);
         setEditPayment(
             (r.payment as "paid" | "unpaid" | "refunded") || "unpaid",
         );
@@ -1073,9 +1083,10 @@ export default function Reservations({
                                     type="text"
                                     placeholder="会員名、予約ID、メールで検索"
                                     value={searchQuery}
-                                    onChange={(e) =>
-                                        setSearchQuery(e.target.value)
-                                    }
+                                    onChange={(e) => {
+                                        setSearchQuery(e.target.value);
+                                        pagination.setCurrentPage(1);
+                                    }}
                                     className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                                 />
                             </div>
@@ -1093,9 +1104,10 @@ export default function Reservations({
                                         </label>
                                         <select
                                             value={filterStatus}
-                                            onChange={(e) =>
-                                                setFilterStatus(e.target.value)
-                                            }
+                                            onChange={(e) => {
+                                                setFilterStatus(e.target.value);
+                                                pagination.setCurrentPage(1);
+                                            }}
                                             className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded bg-white"
                                         >
                                             <option value="all">すべて</option>
@@ -1116,9 +1128,10 @@ export default function Reservations({
                                         </label>
                                         <select
                                             value={filterPayment}
-                                            onChange={(e) =>
-                                                setFilterPayment(e.target.value)
-                                            }
+                                            onChange={(e) => {
+                                                setFilterPayment(e.target.value);
+                                                pagination.setCurrentPage(1);
+                                            }}
                                             className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded bg-white"
                                         >
                                             <option value="all">すべて</option>
@@ -1179,7 +1192,7 @@ export default function Reservations({
                                 </tr>
                             </thead>
                             <tbody>
-                                {filtered.map((r) => (
+                                {pagination.pageItems.map((r) => (
                                     <tr
                                         key={r.id}
                                         className="border-b border-gray-50 hover:bg-gray-50"
@@ -1311,6 +1324,11 @@ export default function Reservations({
                             </tbody>
                         </table>
                     </div>
+                    <AdminPagination
+                        currentPage={pagination.currentPage}
+                        totalItems={filtered.length}
+                        onPageChange={pagination.setCurrentPage}
+                    />
                 </div>
 
                 {/* ════════════════════════════════════════
@@ -1422,8 +1440,7 @@ export default function Reservations({
                                     icon={<FaStar className="w-3 h-3" />}
                                     title="体験オプション"
                                 >
-                                    {getExpDetails(selectedRes, expPeriodMap)
-                                        .length > 0 ? (
+                                    {selectedExpDetails.length > 0 ? (
                                         <div className="border border-gray-200 rounded-lg overflow-hidden">
                                             <table className="w-full text-sm">
                                                 <thead>
@@ -1437,10 +1454,8 @@ export default function Reservations({
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {getExpDetails(
-                                                        selectedRes,
-                                                        expPeriodMap,
-                                                    ).map((exp, i) => (
+                                                    {detailExperiencePagination.pageItems.map(
+                                                        (exp, i) => (
                                                         <tr
                                                             key={i}
                                                             className="border-b border-gray-100 last:border-0"
@@ -1466,7 +1481,8 @@ export default function Reservations({
                                                                 </span>
                                                             </td>
                                                         </tr>
-                                                    ))}
+                                                        ),
+                                                    )}
                                                 </tbody>
                                             </table>
                                         </div>
@@ -1475,6 +1491,15 @@ export default function Reservations({
                                             体験オプションなし
                                         </p>
                                     )}
+                                    <AdminPagination
+                                        currentPage={
+                                            detailExperiencePagination.currentPage
+                                        }
+                                        totalItems={selectedExpDetails.length}
+                                        onPageChange={
+                                            detailExperiencePagination.setCurrentPage
+                                        }
+                                    />
                                 </Section>
 
                                 <Section

@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { router, usePage } from "@inertiajs/react";
 import AdminLayout from "../../Components/Admin/Layout";
+import AdminPagination, {
+    useAdminPagination,
+} from "../../Components/Admin/Pagination";
 import {
     FaShieldAlt,
     FaUserPlus,
@@ -36,6 +39,7 @@ const hasRequiredPasswordFormat = (password: string) =>
 
 export default function Accounts({ accounts }: { accounts: AdminAccount[] }) {
     const { auth = { admin: null } } = usePage<SharedProps>().props;
+    const pagination = useAdminPagination(accounts);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<AdminAccount | null>(null);
     const [formData, setFormData] = useState({
@@ -159,7 +163,7 @@ export default function Accounts({ accounts }: { accounts: AdminAccount[] }) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {accounts.map((a) => (
+                                {pagination.pageItems.map((a) => (
                                     <tr
                                         key={a.id}
                                         className="border-b border-gray-50 hover:bg-gray-50"
@@ -219,6 +223,11 @@ export default function Accounts({ accounts }: { accounts: AdminAccount[] }) {
                             </tbody>
                         </table>
                     </div>
+                    <AdminPagination
+                        currentPage={pagination.currentPage}
+                        totalItems={accounts.length}
+                        onPageChange={pagination.setCurrentPage}
+                    />
                 </div>
 
                 {/* 編集モーダル */}

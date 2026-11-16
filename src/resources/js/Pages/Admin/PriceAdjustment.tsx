@@ -1,6 +1,9 @@
 import { useState, useMemo } from "react";
 import { router } from "@inertiajs/react";
 import AdminLayout from "../../Components/Admin/Layout";
+import AdminPagination, {
+    useAdminPagination,
+} from "../../Components/Admin/Pagination";
 import {
     FaPercent,
     FaPlus,
@@ -60,6 +63,7 @@ const emptyForm: FormState = {
 };
 
 export default function PriceAdjustment({ rules }: { rules: PriceRule[] }) {
+    const pagination = useAdminPagination(rules);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState<number | null>(null);
     const [form, setForm] = useState<FormState>(emptyForm);
@@ -266,7 +270,7 @@ export default function PriceAdjustment({ rules }: { rules: PriceRule[] }) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {rules.map((rule) => (
+                                {pagination.pageItems.map((rule) => (
                                     <tr
                                         key={rule.id}
                                         className="border-b border-gray-50 hover:bg-gray-50 transition-colors"
@@ -401,6 +405,11 @@ export default function PriceAdjustment({ rules }: { rules: PriceRule[] }) {
                             </tbody>
                         </table>
                     )}
+                    <AdminPagination
+                        currentPage={pagination.currentPage}
+                        totalItems={rules.length}
+                        onPageChange={pagination.setCurrentPage}
+                    />
                 </div>
 
                 {/* 削除確認モーダル */}

@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { router } from "@inertiajs/react";
 import AdminLayout from "../../Components/Admin/Layout";
+import AdminPagination, {
+    useAdminPagination,
+} from "../../Components/Admin/Pagination";
 import { FaBell, FaPlus, FaEdit, FaTrashAlt, FaTimes } from "react-icons/fa";
 
 interface NewsItem {
@@ -21,6 +24,7 @@ const targetLabels: Record<string, string> = {
 };
 
 export default function News({ news }: { news: NewsItem[] }) {
+    const pagination = useAdminPagination(news);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<NewsItem | null>(null);
     const [formData, setFormData] = useState({
@@ -126,7 +130,7 @@ export default function News({ news }: { news: NewsItem[] }) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {news.map((n) => (
+                                {pagination.pageItems.map((n) => (
                                     <tr
                                         key={n.id}
                                         className="border-b border-gray-50 hover:bg-gray-50"
@@ -185,6 +189,11 @@ export default function News({ news }: { news: NewsItem[] }) {
                             </tbody>
                         </table>
                     </div>
+                    <AdminPagination
+                        currentPage={pagination.currentPage}
+                        totalItems={news.length}
+                        onPageChange={pagination.setCurrentPage}
+                    />
                 </div>
 
                 {/* 編集モーダル */}

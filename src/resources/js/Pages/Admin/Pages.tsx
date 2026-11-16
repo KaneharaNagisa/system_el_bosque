@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { router } from "@inertiajs/react";
 import AdminLayout from "../../Components/Admin/Layout";
+import AdminPagination, {
+    useAdminPagination,
+} from "../../Components/Admin/Pagination";
 import { FaFileAlt, FaEdit, FaTimes } from "react-icons/fa";
 
 interface PageItem {
@@ -14,6 +17,7 @@ interface PageItem {
 }
 
 export default function Pages({ pages }: { pages: PageItem[] }) {
+    const pagination = useAdminPagination(pages);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [editingPage, setEditingPage] = useState<PageItem | null>(null);
     const [formData, setFormData] = useState({
@@ -84,7 +88,7 @@ export default function Pages({ pages }: { pages: PageItem[] }) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {pages.map((p) => (
+                                {pagination.pageItems.map((p) => (
                                     <tr
                                         key={p.id}
                                         className="border-b border-gray-50 hover:bg-gray-50"
@@ -123,6 +127,11 @@ export default function Pages({ pages }: { pages: PageItem[] }) {
                             </tbody>
                         </table>
                     </div>
+                    <AdminPagination
+                        currentPage={pagination.currentPage}
+                        totalItems={pages.length}
+                        onPageChange={pagination.setCurrentPage}
+                    />
                 </div>
 
                 {/* 編集モーダル */}

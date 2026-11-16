@@ -2,6 +2,10 @@ import { useState, useRef } from "react";
 import axios from "axios";
 import { router } from "@inertiajs/react";
 import AdminLayout from "../../Components/Admin/Layout";
+import AdminPagination, {
+    ADMIN_PAGE_SIZE,
+    useAdminPagination,
+} from "../../Components/Admin/Pagination";
 import {
     FaStar,
     FaPlus,
@@ -227,6 +231,7 @@ export default function Experiences({
     };
 
     const sorted = [...experiences].sort((a, b) => b.popularity - a.popularity);
+    const pagination = useAdminPagination(sorted);
 
     return (
         <AdminLayout
@@ -288,109 +293,122 @@ export default function Experiences({
                                 </tr>
                             </thead>
                             <tbody>
-                                {sorted.map((e, i) => (
-                                    <tr
-                                        key={e.id}
-                                        className={`border-b border-gray-50 hover:bg-gray-50 ${!e.isActive ? "opacity-50" : ""}`}
-                                    >
-                                        <td className="px-4 py-3 text-center">
-                                            <span
-                                                className={`w-6 h-6 inline-flex items-center justify-center rounded-full text-xs ${i === 0 ? "bg-yellow-400 text-yellow-900" : i === 1 ? "bg-gray-300 text-gray-700" : i === 2 ? "bg-orange-300 text-orange-900" : "bg-gray-100 text-gray-600"}`}
-                                            >
-                                                {i + 1}
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center gap-2">
-                                                {e.image && (
-                                                    <img
-                                                        src={e.image}
-                                                        alt=""
-                                                        className="w-8 h-8 rounded object-cover flex-shrink-0"
-                                                    />
-                                                )}
-                                                <div>
-                                                    <div className="flex items-center gap-1.5">
-                                                        <span className="text-sm text-gray-900">
-                                                            {e.name}
-                                                        </span>
-                                                        {e.requiresReservation && (
-                                                            <span className="px-1.5 py-0.5 bg-[#1b2f0e] text-[#d4b070] text-[10px] rounded">
-                                                                要予約
-                                                            </span>
-                                                        )}
-                                                        {e.seasonTag && (
-                                                            <span className="px-1.5 py-0.5 bg-amber-100 text-amber-800 text-[10px] rounded">
-                                                                {e.seasonTag}
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                    <div className="text-xs text-gray-500 mt-0.5 max-w-xs truncate">
-                                                        {e.description}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 py-3 text-sm text-gray-600">
-                                            {e.priceNote}
-                                        </td>
-                                        <td className="px-4 py-3 text-sm text-gray-600">
-                                            {e.period}
-                                        </td>
-                                        <td className="px-4 py-3 text-center">
-                                            <span
-                                                className={`px-2 py-0.5 rounded text-xs ${e.requiresReservation ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-500"}`}
-                                            >
-                                                {e.requiresReservation
-                                                    ? "要予約"
-                                                    : "不要"}
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-3 text-center">
-                                            <div className="flex items-center gap-2 justify-center">
-                                                <div className="w-16 bg-gray-200 rounded-full h-1.5">
-                                                    <div
-                                                        className="bg-amber-500 h-1.5 rounded-full"
-                                                        style={{
-                                                            width: `${e.popularity}%`,
-                                                        }}
-                                                    />
-                                                </div>
-                                                <span className="text-xs text-gray-600">
-                                                    {e.popularity}
+                                {pagination.pageItems.map((e, pageIndex) => {
+                                    const i =
+                                        (pagination.currentPage - 1) *
+                                            ADMIN_PAGE_SIZE +
+                                        pageIndex;
+                                    return (
+                                        <tr
+                                            key={e.id}
+                                            className={`border-b border-gray-50 hover:bg-gray-50 ${!e.isActive ? "opacity-50" : ""}`}
+                                        >
+                                            <td className="px-4 py-3 text-center">
+                                                <span
+                                                    className={`w-6 h-6 inline-flex items-center justify-center rounded-full text-xs ${i === 0 ? "bg-yellow-400 text-yellow-900" : i === 1 ? "bg-gray-300 text-gray-700" : i === 2 ? "bg-orange-300 text-orange-900" : "bg-gray-100 text-gray-600"}`}
+                                                >
+                                                    {i + 1}
                                                 </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 py-3 text-center">
-                                            <span
-                                                className={`px-2 py-0.5 rounded text-xs ${e.isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600"}`}
-                                            >
-                                                {e.isActive ? "有効" : "無効"}
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-3 text-right">
-                                            <div className="flex items-center justify-end gap-1">
-                                                <button
-                                                    onClick={() => openEdit(e)}
-                                                    className="p-1.5 text-gray-500 hover:text-[#0a2105] hover:bg-[#e8f5e9] rounded"
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-center gap-2">
+                                                    {e.image && (
+                                                        <img
+                                                            src={e.image}
+                                                            alt=""
+                                                            className="w-8 h-8 rounded object-cover flex-shrink-0"
+                                                        />
+                                                    )}
+                                                    <div>
+                                                        <div className="flex items-center gap-1.5">
+                                                            <span className="text-sm text-gray-900">
+                                                                {e.name}
+                                                            </span>
+                                                            {e.requiresReservation && (
+                                                                <span className="px-1.5 py-0.5 bg-[#1b2f0e] text-[#d4b070] text-[10px] rounded">
+                                                                    要予約
+                                                                </span>
+                                                            )}
+                                                            {e.seasonTag && (
+                                                                <span className="px-1.5 py-0.5 bg-amber-100 text-amber-800 text-[10px] rounded">
+                                                                    {e.seasonTag}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <div className="text-xs text-gray-500 mt-0.5 max-w-xs truncate">
+                                                            {e.description}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">
+                                                {e.priceNote}
+                                            </td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">
+                                                {e.period}
+                                            </td>
+                                            <td className="px-4 py-3 text-center">
+                                                <span
+                                                    className={`px-2 py-0.5 rounded text-xs ${e.requiresReservation ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-500"}`}
                                                 >
-                                                    <FaEdit className="w-3.5 h-3.5" />
-                                                </button>
-                                                <button
-                                                    onClick={() =>
-                                                        handleDelete(e.dbId)
-                                                    }
-                                                    className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded"
+                                                    {e.requiresReservation
+                                                        ? "要予約"
+                                                        : "不要"}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3 text-center">
+                                                <div className="flex items-center gap-2 justify-center">
+                                                    <div className="w-16 bg-gray-200 rounded-full h-1.5">
+                                                        <div
+                                                            className="bg-amber-500 h-1.5 rounded-full"
+                                                            style={{
+                                                                width: `${e.popularity}%`,
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    <span className="text-xs text-gray-600">
+                                                        {e.popularity}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-3 text-center">
+                                                <span
+                                                    className={`px-2 py-0.5 rounded text-xs ${e.isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600"}`}
                                                 >
-                                                    <FaTrashAlt className="w-3.5 h-3.5" />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
+                                                    {e.isActive ? "有効" : "無効"}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3 text-right">
+                                                <div className="flex items-center justify-end gap-1">
+                                                    <button
+                                                        onClick={() =>
+                                                            openEdit(e)
+                                                        }
+                                                        className="p-1.5 text-gray-500 hover:text-[#0a2105] hover:bg-[#e8f5e9] rounded"
+                                                    >
+                                                        <FaEdit className="w-3.5 h-3.5" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() =>
+                                                            handleDelete(e.dbId)
+                                                        }
+                                                        className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded"
+                                                    >
+                                                        <FaTrashAlt className="w-3.5 h-3.5" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>
+                    <AdminPagination
+                        currentPage={pagination.currentPage}
+                        totalItems={sorted.length}
+                        onPageChange={pagination.setCurrentPage}
+                    />
                 </div>
 
                 {/* 新規登録 / 編集モーダル */}

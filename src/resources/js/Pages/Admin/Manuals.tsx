@@ -9,6 +9,9 @@ import {
     FaTimes,
     FaTrashAlt,
 } from "react-icons/fa";
+import AdminPagination, {
+    useAdminPagination,
+} from "../../Components/Admin/Pagination";
 
 interface Manual {
     id: string;
@@ -26,6 +29,7 @@ const targetLabels: Record<string, string> = {
 };
 
 export default function Manuals({ manuals }: { manuals: Manual[] }) {
+    const pagination = useAdminPagination(manuals);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isViewOpen, setIsViewOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<Manual | null>(null);
@@ -129,7 +133,7 @@ export default function Manuals({ manuals }: { manuals: Manual[] }) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {manuals.map((m) => (
+                                {pagination.pageItems.map((m) => (
                                     <tr
                                         key={m.id}
                                         className="border-b border-gray-50 hover:bg-gray-50"
@@ -202,6 +206,11 @@ export default function Manuals({ manuals }: { manuals: Manual[] }) {
                             </tbody>
                         </table>
                     </div>
+                    <AdminPagination
+                        currentPage={pagination.currentPage}
+                        totalItems={manuals.length}
+                        onPageChange={pagination.setCurrentPage}
+                    />
                 </div>
 
                 {/* 閲覧モーダル */}

@@ -324,7 +324,7 @@ export default function AdminSidebar({
                                         <button
                                             key={item.id}
                                             onClick={() => {
-                                                router.visit(item.path)
+                                                router.visit(item.path);
                                                 onClose();
                                             }}
                                             className="w-full flex items-center gap-3 pl-12 pr-4 py-2.5 transition-colors relative text-sm"
@@ -372,7 +372,7 @@ export default function AdminSidebar({
                 ) : (
                     <button
                         onClick={() => {
-                            router.visit("/admin/master/availability")
+                            router.visit("/admin/master/availability");
                             onClose();
                         }}
                         className="w-full flex items-center gap-3 px-4 py-3 transition-colors relative"

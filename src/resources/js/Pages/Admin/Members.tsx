@@ -10,8 +10,6 @@ import {
     FaSortAmountDown,
     FaSortAmountUp,
     FaSort,
-    FaChevronLeft,
-    FaChevronRight,
     FaTimes,
     FaEdit,
     FaUser,
@@ -22,6 +20,9 @@ import {
     FaPlus,
 } from "react-icons/fa";
 import { PREFECTURES, getCities } from "../../Public/data/japanLocations";
+import AdminPagination, {
+    useAdminPagination,
+} from "../../Components/Admin/Pagination";
 import {
     FAMILY_BIRTH_YEAR_OPTIONS,
     getApproximateAge,
@@ -142,9 +143,6 @@ export default function Members({
     const [editErrors, setEditErrors] = useState<Record<string, string>>({});
     const [sortField, setSortField] = useState<keyof Member | null>(null);
     const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
-    const [currentPage, setCurrentPage] = useState(1);
-    const perPage = 20;
-
     const [isNewOpen, setIsNewOpen] = useState(false);
     const [newForm, setNewForm] = useState(emptyNewForm);
     const [newErrors, setNewErrors] = useState<
@@ -283,11 +281,7 @@ export default function Members({
         });
     }, [filtered, sortField, sortDir]);
 
-    const totalPages = Math.ceil(sorted.length / perPage);
-    const paginated = sorted.slice(
-        (currentPage - 1) * perPage,
-        currentPage * perPage,
-    );
+    const pagination = useAdminPagination(sorted);
 
     const handleSort = (field: keyof Member) => {
         if (sortField === field) {
@@ -300,7 +294,7 @@ export default function Members({
             setSortField(field);
             setSortDir("asc");
         }
-        setCurrentPage(1);
+        pagination.setCurrentPage(1);
     };
 
     const SortIcon = ({ field }: { field: keyof Member }) => {
@@ -412,7 +406,7 @@ export default function Members({
                                     value={searchQuery}
                                     onChange={(e) => {
                                         setSearchQuery(e.target.value);
-                                        setCurrentPage(1);
+                                        pagination.setCurrentPage(1);
                                     }}
                                     className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0a2105] focus:border-[#0a2105] outline-none"
                                 />
@@ -430,6 +424,7 @@ export default function Members({
                                         onClick={() => {
                                             setFilterStatus("all");
                                             setFilterPet("all");
+                                            pagination.setCurrentPage(1);
                                         }}
                                         className="flex items-center gap-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded"
                                     >
@@ -448,7 +443,7 @@ export default function Members({
                                             value={filterStatus}
                                             onChange={(e) => {
                                                 setFilterStatus(e.target.value);
-                                                setCurrentPage(1);
+                                                pagination.setCurrentPage(1);
                                             }}
                                             className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded bg-white"
                                         >
@@ -469,7 +464,7 @@ export default function Members({
                                             value={filterPet}
                                             onChange={(e) => {
                                                 setFilterPet(e.target.value);
-                                                setCurrentPage(1);
+                                                pagination.setCurrentPage(1);
                                             }}
                                             className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded bg-white"
                                         >
@@ -530,7 +525,7 @@ export default function Members({
                                 </tr>
                             </thead>
                             <tbody>
-                                {paginated.map((m) => (
+                                {pagination.pageItems.map((m) => (
                                     <tr
                                         key={m.id}
                                         className="border-b border-gray-50 hover:bg-gray-50"
@@ -588,7 +583,7 @@ export default function Members({
                                         </td>
                                     </tr>
                                 ))}
-                                {paginated.length === 0 && (
+                                {pagination.pageItems.length === 0 && (
                                     <tr>
                                         <td
                                             colSpan={8}
@@ -602,41 +597,11 @@ export default function Members({
                         </table>
                     </div>
 
-                    {totalPages > 1 && (
-                        <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                            <p className="text-xs text-gray-500">
-                                {sorted.length}件中{" "}
-                                {(currentPage - 1) * perPage + 1}〜
-                                {Math.min(currentPage * perPage, sorted.length)}
-                                件を表示
-                            </p>
-                            <div className="flex items-center gap-1">
-                                <button
-                                    disabled={currentPage === 1}
-                                    onClick={() => setCurrentPage((p) => p - 1)}
-                                    className="p-2 rounded hover:bg-gray-100 disabled:opacity-30"
-                                >
-                                    <FaChevronLeft className="w-3 h-3" />
-                                </button>
-                                {Array.from({ length: totalPages }, (_, i) => (
-                                    <button
-                                        key={i}
-                                        onClick={() => setCurrentPage(i + 1)}
-                                        className={`w-8 h-8 rounded text-sm ${currentPage === i + 1 ? "bg-[#0a2105] text-white" : "hover:bg-gray-100 text-gray-700"}`}
-                                    >
-                                        {i + 1}
-                                    </button>
-                                ))}
-                                <button
-                                    disabled={currentPage === totalPages}
-                                    onClick={() => setCurrentPage((p) => p + 1)}
-                                    className="p-2 rounded hover:bg-gray-100 disabled:opacity-30"
-                                >
-                                    <FaChevronRight className="w-3 h-3" />
-                                </button>
-                            </div>
-                        </div>
-                    )}
+                    <AdminPagination
+                        currentPage={pagination.currentPage}
+                        totalItems={sorted.length}
+                        onPageChange={pagination.setCurrentPage}
+                    />
                 </div>
 
                 {/* 会員編集モーダル */}

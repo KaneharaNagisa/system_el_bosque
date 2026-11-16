@@ -1,4 +1,8 @@
 import AdminLayout from "../../Components/Admin/Layout";
+import AdminPagination, {
+    ADMIN_PAGE_SIZE,
+    useAdminPagination,
+} from "../../Components/Admin/Pagination";
 import { FaChartBar } from "react-icons/fa";
 import {
     BarChart,
@@ -178,6 +182,7 @@ export default function KPI({ monthlySales, memberStatusData }: Props) {
     const sortedExperiences = [...experiencePopularity].sort(
         (first, second) => second.count - first.count,
     );
+    const pagination = useAdminPagination(sortedExperiences);
     const maxCount = sortedExperiences[0]?.count ?? 1;
 
     return (
@@ -318,7 +323,13 @@ export default function KPI({ monthlySales, memberStatusData }: Props) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {sortedExperiences.map((experience, index) => (
+                                {pagination.pageItems.map(
+                                    (experience, pageIndex) => {
+                                        const index =
+                                            (pagination.currentPage - 1) *
+                                                ADMIN_PAGE_SIZE +
+                                            pageIndex;
+                                        return (
                                     <tr
                                         key={experience.name}
                                         className="border-b border-gray-50"
@@ -369,10 +380,17 @@ export default function KPI({ monthlySales, memberStatusData }: Props) {
                                             </div>
                                         </td>
                                     </tr>
-                                ))}
+                                        );
+                                    },
+                                )}
                             </tbody>
                         </table>
                     </div>
+                    <AdminPagination
+                        currentPage={pagination.currentPage}
+                        totalItems={sortedExperiences.length}
+                        onPageChange={pagination.setCurrentPage}
+                    />
                 </div>
             </div>
         </AdminLayout>

@@ -1,6 +1,9 @@
 import { useState, useMemo, useEffect } from "react";
 import { router } from "@inertiajs/react";
 import AdminLayout from "../../Components/Admin/Layout";
+import AdminPagination, {
+    useAdminPagination,
+} from "../../Components/Admin/Pagination";
 import {
     FaCreditCard,
     FaSearch,
@@ -173,6 +176,9 @@ export default function Billing({
     const [filterReservationStatus, setFilterReservationStatus] =
         useState("all");
     const [selected, setSelected] = useState<Billing | null>(null);
+    const detailExperiencesPagination = useAdminPagination(
+        selected?.experiences ?? [],
+    );
 
     const [editStatus, setEditStatus] = useState<string>("unpaid");
     const [statusSaved, setStatusSaved] = useState(false);
@@ -207,6 +213,7 @@ export default function Billing({
             }),
         [billings, searchQuery, filterStatus, filterReservationStatus],
     );
+    const pagination = useAdminPagination(filtered);
 
     const totalPaid = billings
         .filter((b) => b.status === "paid")
@@ -224,6 +231,7 @@ export default function Billing({
 
     const openDetail = (b: Billing) => {
         setSelected(b);
+        detailExperiencesPagination.setCurrentPage(1);
         setEditStatus(b.status);
         setStatusSaved(false);
         setEditAdjustment(b.breakdown?.adjustment ?? 0);
@@ -344,17 +352,19 @@ export default function Billing({
                                     type="text"
                                     placeholder="会員名、請求ID、予約IDで検索"
                                     value={searchQuery}
-                                    onChange={(e) =>
-                                        setSearchQuery(e.target.value)
-                                    }
+                                    onChange={(e) => {
+                                        setSearchQuery(e.target.value);
+                                        pagination.setCurrentPage(1);
+                                    }}
                                     className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0a2105] outline-none"
                                 />
                             </div>
                             <select
                                 value={filterStatus}
-                                onChange={(e) =>
-                                    setFilterStatus(e.target.value)
-                                }
+                                onChange={(e) => {
+                                    setFilterStatus(e.target.value);
+                                    pagination.setCurrentPage(1);
+                                }}
                                 className="px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#0a2105] outline-none"
                             >
                                 <option value="all">支払状況：すべて</option>
@@ -364,9 +374,10 @@ export default function Billing({
                             </select>
                             <select
                                 value={filterReservationStatus}
-                                onChange={(e) =>
-                                    setFilterReservationStatus(e.target.value)
-                                }
+                                onChange={(e) => {
+                                    setFilterReservationStatus(e.target.value);
+                                    pagination.setCurrentPage(1);
+                                }}
                                 className="px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#0a2105] outline-none"
                             >
                                 <option value="all">予約状況：すべて</option>
@@ -421,7 +432,7 @@ export default function Billing({
                                 </tr>
                             </thead>
                             <tbody>
-                                {filtered.map((b) => (
+                                {pagination.pageItems.map((b) => (
                                     <tr
                                         key={b.id}
                                         className="border-b border-gray-50 hover:bg-gray-50"
@@ -556,6 +567,11 @@ export default function Billing({
                             </tbody>
                         </table>
                     </div>
+                    <AdminPagination
+                        currentPage={pagination.currentPage}
+                        totalItems={filtered.length}
+                        onPageChange={pagination.setCurrentPage}
+                    />
                 </div>
             </div>
 
@@ -710,7 +726,7 @@ export default function Billing({
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {selected.experiences.map(
+                                                    {detailExperiencesPagination.pageItems.map(
                                                         (exp, i) => (
                                                             <tr
                                                                 key={i}
@@ -739,6 +755,17 @@ export default function Billing({
                                                 </tbody>
                                             </table>
                                         </div>
+                                        <AdminPagination
+                                            currentPage={
+                                                detailExperiencesPagination.currentPage
+                                            }
+                                            totalItems={
+                                                selected.experiences.length
+                                            }
+                                            onPageChange={
+                                                detailExperiencesPagination.setCurrentPage
+                                            }
+                                        />
                                     </Section>
                                 )}
 

@@ -8,6 +8,9 @@ import {
     Upload,
 } from "lucide-react";
 import AdminLayout from "../../Components/Admin/Layout";
+import AdminPagination, {
+    useAdminPagination,
+} from "../../Components/Admin/Pagination";
 import homeHeroLake from "../../Public/assets/260924-0111.jpg";
 import homeHeroCabin from "../../Public/assets/260924-0015.jpg";
 import homeInterior from "../../Public/assets/260924-0074-1.jpg";
@@ -80,6 +83,7 @@ export default function Images({
     const [galleryBusy, setGalleryBusy] = useState<string | null>(null);
     const [newGalleryTitle, setNewGalleryTitle] = useState("");
     const [newGalleryImage, setNewGalleryImage] = useState<File | null>(null);
+    const galleryPagination = useAdminPagination(gallery);
     const inputs = useRef<Record<string, HTMLInputElement | null>>({});
     const galleryInputs = useRef<Record<number, HTMLInputElement | null>>({});
     const newGalleryInput = useRef<HTMLInputElement | null>(null);
@@ -364,7 +368,7 @@ export default function Images({
                                                 </span>
                                             </div>
                                             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                                                {gallery.map((item) => (
+                                                {galleryPagination.pageItems.map((item) => (
                                                     <div
                                                         key={item.id}
                                                         className="border border-gray-200 rounded-lg overflow-hidden"
@@ -561,6 +565,15 @@ export default function Images({
                                                     </button>
                                                 </div>
                                             </div>
+                                            <AdminPagination
+                                                currentPage={
+                                                    galleryPagination.currentPage
+                                                }
+                                                totalItems={gallery.length}
+                                                onPageChange={
+                                                    galleryPagination.setCurrentPage
+                                                }
+                                            />
                                         </section>
                                     )}
                                 </section>
