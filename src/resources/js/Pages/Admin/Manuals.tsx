@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { router } from "@inertiajs/react";
+import ReactMarkdown from "react-markdown";
 import AdminLayout from "../../Components/Admin/Layout";
 import {
     FaBook,
@@ -235,9 +236,75 @@ export default function Manuals({ manuals }: { manuals: Manual[] }) {
                                 </button>
                             </div>
                             <div className="px-6 py-4 overflow-y-auto">
-                                <pre className="text-sm text-gray-700 whitespace-pre-wrap font-sans">
+                                <article className="text-sm leading-7 text-gray-700 break-words">
+                                    <ReactMarkdown
+                                        components={{
+                                            h1: ({ children }) => (
+                                                <h1 className="mb-4 border-b border-gray-200 pb-2 text-2xl font-bold leading-tight text-gray-900">
+                                                    {children}
+                                                </h1>
+                                            ),
+                                            h2: ({ children }) => (
+                                                <h2 className="mb-3 mt-6 border-b border-gray-100 pb-1 text-lg font-semibold text-gray-900">
+                                                    {children}
+                                                </h2>
+                                            ),
+                                            h3: ({ children }) => (
+                                                <h3 className="mb-2 mt-4 text-base font-semibold text-gray-900">
+                                                    {children}
+                                                </h3>
+                                            ),
+                                            p: ({ children }) => (
+                                                <p className="mb-4 whitespace-pre-wrap">
+                                                    {children}
+                                                </p>
+                                            ),
+                                            ul: ({ children }) => (
+                                                <ul className="mb-4 list-disc space-y-1 pl-6">
+                                                    {children}
+                                                </ul>
+                                            ),
+                                            ol: ({ children }) => (
+                                                <ol className="mb-4 list-decimal space-y-1 pl-6">
+                                                    {children}
+                                                </ol>
+                                            ),
+                                            blockquote: ({ children }) => (
+                                                <blockquote className="mb-4 border-l-4 border-emerald-700 pl-4 text-gray-600">
+                                                    {children}
+                                                </blockquote>
+                                            ),
+                                            a: ({ children, href }) => (
+                                                <a
+                                                    href={href}
+                                                    className="text-emerald-800 underline underline-offset-2 hover:text-emerald-950"
+                                                >
+                                                    {children}
+                                                </a>
+                                            ),
+                                            img: ({ src, alt }) =>
+                                                src ? (
+                                                    <img
+                                                        src={src}
+                                                        alt={alt ?? ""}
+                                                        className="my-4 h-auto max-h-[28rem] max-w-full rounded-lg border border-gray-200 object-contain"
+                                                    />
+                                                ) : null,
+                                            pre: ({ children }) => (
+                                                <pre className="mb-4 overflow-x-auto rounded-lg bg-gray-100 p-4 text-sm">
+                                                    {children}
+                                                </pre>
+                                            ),
+                                            code: ({ children }) => (
+                                                <code className="rounded bg-gray-100 px-1 py-0.5 font-mono text-[0.9em]">
+                                                    {children}
+                                                </code>
+                                            ),
+                                        }}
+                                    >
                                     {viewingItem.content}
-                                </pre>
+                                    </ReactMarkdown>
+                                </article>
                             </div>
                         </div>
                     </div>
