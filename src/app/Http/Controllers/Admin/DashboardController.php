@@ -19,7 +19,9 @@ class DashboardController extends Controller
             'newMembersThisMonth'  => User::whereBetween('created_at', [$monthStart, $monthEnd])->count(),
             'activeMembers'        => User::where('status', 'active')->count(),
             'paidReservations'     => Reservation::whereHas('billing', fn($query) => $query->where('status', 'paid'))->count(),
-            'reservationsThisMonth' => Reservation::whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->count(),
+            'reservationsThisMonth' => Reservation::whereDate('check_in', '<=', $monthEnd->toDateString())
+                ->whereDate('check_out', '>', $monthStart->toDateString())
+                ->count(),
         ];
 
         $recentReservations = Reservation::with('user')
@@ -40,6 +42,10 @@ class DashboardController extends Controller
             'stats' => $stats,
             'recentReservations' => $recentReservations,
             'memberRegistrationPeriod' => [
+                'from' => $monthStart->toDateString(),
+                'to' => $monthEnd->toDateString(),
+            ],
+            'reservationStayPeriod' => [
                 'from' => $monthStart->toDateString(),
                 'to' => $monthEnd->toDateString(),
             ],

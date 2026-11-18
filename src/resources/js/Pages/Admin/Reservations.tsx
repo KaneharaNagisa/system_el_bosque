@@ -698,6 +698,7 @@ export default function Reservations({
     bookedDates,
     experiences: experienceOptions,
     pricingSetting,
+    filters,
 }: {
     reservations: Reservation[];
     priceAdjustmentRules: PriceRule[];
@@ -706,11 +707,22 @@ export default function Reservations({
     bookedDates: string[];
     experiences: ExperienceOption[];
     pricingSetting: PricingSetting;
+    filters: {
+        stayFrom: string;
+        stayTo: string;
+        payment: "paid" | "unpaid" | "refunded" | "";
+    };
 }) {
     const [searchQuery, setSearchQuery] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
-    const [filterPayment, setFilterPayment] = useState("all");
-    const [showFilters, setShowFilters] = useState(false);
+    const [filterPayment, setFilterPayment] = useState(
+        filters.payment || "all",
+    );
+    const [stayFrom, setStayFrom] = useState(filters.stayFrom);
+    const [stayTo, setStayTo] = useState(filters.stayTo);
+    const [showFilters, setShowFilters] = useState(
+        Boolean(filters.stayFrom || filters.stayTo || filters.payment),
+    );
 
     // 詳細モーダル
     const [selectedRes, setSelectedRes] = useState<Reservation | null>(null);
@@ -786,9 +798,17 @@ export default function Reservations({
                     filterStatus === "all" || r.status === filterStatus;
                 const matchPayment =
                     filterPayment === "all" || r.payment === filterPayment;
-                return matchSearch && matchStatus && matchPayment;
+                const matchStayPeriod =
+                    (!stayFrom || r.checkOut > stayFrom) &&
+                    (!stayTo || r.checkIn <= stayTo);
+                return (
+                    matchSearch &&
+                    matchStatus &&
+                    matchPayment &&
+                    matchStayPeriod
+                );
             }),
-        [reservations, searchQuery, filterStatus, filterPayment],
+        [reservations, searchQuery, filterStatus, filterPayment, stayFrom, stayTo],
     );
     const pagination = useAdminPagination(filtered);
 
@@ -1143,6 +1163,34 @@ export default function Reservations({
                                                 返金済
                                             </option>
                                         </select>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-gray-600 mb-1 block">
+                                            宿泊期間（開始日）
+                                        </label>
+                                        <input
+                                            type="date"
+                                            value={stayFrom}
+                                            onChange={(e) => {
+                                                setStayFrom(e.target.value);
+                                                pagination.setCurrentPage(1);
+                                            }}
+                                            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded bg-white"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-gray-600 mb-1 block">
+                                            宿泊期間（終了日）
+                                        </label>
+                                        <input
+                                            type="date"
+                                            value={stayTo}
+                                            onChange={(e) => {
+                                                setStayTo(e.target.value);
+                                                pagination.setCurrentPage(1);
+                                            }}
+                                            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded bg-white"
+                                        />
                                     </div>
                                 </div>
                             )}

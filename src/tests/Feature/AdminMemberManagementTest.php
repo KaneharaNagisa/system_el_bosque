@@ -68,11 +68,44 @@ class AdminMemberManagementTest extends TestCase
             'password' => 'password',
         ]);
         $monthStart = now()->startOfMonth();
-        User::factory()->create([
+        $currentMonthMember = User::factory()->create([
             'created_at' => $monthStart,
         ]);
         User::factory()->create([
             'created_at' => $monthStart->copy()->subYear(),
+        ]);
+        Reservation::create([
+            'reservation_code' => 'RSV-MONTH-001',
+            'user_id' => $currentMonthMember->id,
+            'check_in' => $monthStart->copy()->subDay(),
+            'check_out' => $monthStart->copy()->addDay(),
+            'guests' => 2,
+            'has_pet' => 'none',
+            'support_fee' => false,
+            'experiences' => [],
+            'status' => 'confirmed',
+        ]);
+        Reservation::create([
+            'reservation_code' => 'RSV-MONTH-002',
+            'user_id' => $currentMonthMember->id,
+            'check_in' => $monthStart->copy()->addDay(),
+            'check_out' => $monthStart->copy()->addDays(2),
+            'guests' => 2,
+            'has_pet' => 'none',
+            'support_fee' => false,
+            'experiences' => [],
+            'status' => 'confirmed',
+        ]);
+        Reservation::create([
+            'reservation_code' => 'RSV-MONTH-003',
+            'user_id' => $currentMonthMember->id,
+            'check_in' => $monthStart->copy()->subDays(2)->toDateString(),
+            'check_out' => $monthStart->toDateString(),
+            'guests' => 2,
+            'has_pet' => 'none',
+            'support_fee' => false,
+            'experiences' => [],
+            'status' => 'confirmed',
         ]);
 
         $this->withSession(['admin_user' => $admin->id])
@@ -80,8 +113,11 @@ class AdminMemberManagementTest extends TestCase
             ->assertOk()
             ->assertInertia(fn(Assert $page) => $page
                 ->where('stats.newMembersThisMonth', 1)
+                ->where('stats.reservationsThisMonth', 2)
                 ->where('memberRegistrationPeriod.from', $monthStart->toDateString())
-                ->where('memberRegistrationPeriod.to', $monthStart->copy()->endOfMonth()->toDateString()));
+                ->where('memberRegistrationPeriod.to', $monthStart->copy()->endOfMonth()->toDateString())
+                ->where('reservationStayPeriod.from', $monthStart->toDateString())
+                ->where('reservationStayPeriod.to', $monthStart->copy()->endOfMonth()->toDateString()));
     }
 
     public function test_admin_can_update_member_profile(): void

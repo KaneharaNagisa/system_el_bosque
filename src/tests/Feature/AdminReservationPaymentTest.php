@@ -47,6 +47,24 @@ class AdminReservationPaymentTest extends TestCase
         $this->assertFalse($billing->breakdown['depositRefunded'] ?? false);
     }
 
+    public function test_reservation_list_receives_stay_period_filters(): void
+    {
+        $admin = Admin::create([
+            'name' => '管理者',
+            'email' => 'admin@example.com',
+            'password' => 'password',
+        ]);
+
+        $this->withSession(['admin_user' => $admin->id])
+            ->get('/admin/reservations?stay_from=2026-10-01&stay_to=2026-10-31&payment=paid')
+            ->assertOk()
+            ->assertInertia(fn(Assert $page) => $page
+                ->component('Admin/Reservations')
+                ->where('filters.stayFrom', '2026-10-01')
+                ->where('filters.stayTo', '2026-10-31')
+                ->where('filters.payment', 'paid'));
+    }
+
     private function registerReservation(string $payment): Billing
     {
         $admin = Admin::create([

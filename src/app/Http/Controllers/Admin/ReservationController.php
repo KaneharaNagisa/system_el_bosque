@@ -20,8 +20,14 @@ use Inertia\Response;
 
 class ReservationController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $filters = $request->validate([
+            'stay_from' => ['nullable', 'date_format:Y-m-d'],
+            'stay_to' => ['nullable', 'date_format:Y-m-d'],
+            'payment' => ['nullable', 'in:paid,unpaid,refunded'],
+        ]);
+
         $pricingSetting = PricingSetting::current();
         $reservations = Reservation::with(['user', 'billing'])
             ->orderBy('created_at', 'desc')
@@ -115,7 +121,20 @@ class ReservationController extends Controller
 
         $pricingSetting = $pricingSetting->toFrontend();
 
-        return Inertia::render('Admin/Reservations', compact('reservations', 'priceAdjustmentRules', 'members', 'availabilities', 'bookedDates', 'experiences', 'pricingSetting'));
+        return Inertia::render('Admin/Reservations', [
+            'reservations' => $reservations,
+            'priceAdjustmentRules' => $priceAdjustmentRules,
+            'members' => $members,
+            'availabilities' => $availabilities,
+            'bookedDates' => $bookedDates,
+            'experiences' => $experiences,
+            'pricingSetting' => $pricingSetting,
+            'filters' => [
+                'stayFrom' => $filters['stay_from'] ?? '',
+                'stayTo' => $filters['stay_to'] ?? '',
+                'payment' => $filters['payment'] ?? '',
+            ],
+        ]);
     }
 
     public function store(Request $request): RedirectResponse

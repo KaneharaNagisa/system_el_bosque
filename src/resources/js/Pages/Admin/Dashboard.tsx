@@ -32,6 +32,10 @@ interface Props {
         from: string;
         to: string;
     };
+    reservationStayPeriod: {
+        from: string;
+        to: string;
+    };
 }
 
 const statusBadge = (status: string) => {
@@ -75,6 +79,7 @@ export default function Dashboard({
     stats,
     recentReservations,
     memberRegistrationPeriod,
+    reservationStayPeriod,
 }: Props) {
     const { kpiEnabled } = usePage<SharedProps>().props;
     const menuCards = [
@@ -185,7 +190,9 @@ export default function Dashboard({
                     </div>
                     <div
                         className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow cursor-pointer"
-                        onClick={() => router.visit("/admin/reservations")}
+                        onClick={() =>
+                            router.visit("/admin/reservations?payment=paid")
+                        }
                     >
                         <p className="text-xs text-gray-500 mb-1">
                             現在の支払い済予約総数
@@ -202,7 +209,11 @@ export default function Dashboard({
                     </div>
                     <div
                         className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow cursor-pointer"
-                        onClick={() => router.visit("/admin/reservations")}
+                        onClick={() =>
+                            router.visit(
+                                `/admin/reservations?stay_from=${reservationStayPeriod.from}&stay_to=${reservationStayPeriod.to}`,
+                            )
+                        }
                     >
                         <p className="text-xs text-gray-500 mb-1">
                             今月の予約総数
@@ -214,7 +225,7 @@ export default function Dashboard({
                             <FaCalendarAlt className="w-6 h-6 text-amber-600 opacity-50" />
                         </div>
                         <p className="text-xs text-gray-400 mt-2">
-                            今月受け付けた予約
+                            今月の宿泊予約
                         </p>
                     </div>
                 </div>
