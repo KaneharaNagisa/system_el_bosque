@@ -28,6 +28,10 @@ interface Stats {
 interface Props {
     stats: Stats;
     recentReservations: Reservation[];
+    memberRegistrationPeriod: {
+        from: string;
+        to: string;
+    };
 }
 
 const statusBadge = (status: string) => {
@@ -70,6 +74,7 @@ const statusBadge = (status: string) => {
 export default function Dashboard({
     stats,
     recentReservations,
+    memberRegistrationPeriod,
 }: Props) {
     const { kpiEnabled } = usePage<SharedProps>().props;
     const menuCards = [
@@ -159,7 +164,11 @@ export default function Dashboard({
                     </div>
                     <div
                         className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow cursor-pointer"
-                        onClick={() => router.visit("/admin/kpi")}
+                        onClick={() =>
+                            router.visit(
+                                `/admin/members?registered_from=${memberRegistrationPeriod.from}&registered_to=${memberRegistrationPeriod.to}`,
+                            )
+                        }
                     >
                         <p className="text-xs text-gray-500 mb-1">
                             今月の新規登録

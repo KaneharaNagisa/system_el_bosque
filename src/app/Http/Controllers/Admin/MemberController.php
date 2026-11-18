@@ -16,8 +16,13 @@ use Inertia\Response;
 
 class MemberController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $filters = $request->validate([
+            'registered_from' => ['nullable', 'date_format:Y-m-d'],
+            'registered_to' => ['nullable', 'date_format:Y-m-d'],
+        ]);
+
         $members = User::query()
             ->select([
                 'id',
@@ -65,7 +70,13 @@ class MemberController extends Controller
                 'status'        => $u->status ?? 'active',
             ]);
 
-        return Inertia::render('Admin/Members', compact('members'));
+        return Inertia::render('Admin/Members', [
+            'members' => $members,
+            'filters' => [
+                'registeredFrom' => $filters['registered_from'] ?? '',
+                'registeredTo' => $filters['registered_to'] ?? '',
+            ],
+        ]);
     }
 
     public function store(Request $request): RedirectResponse

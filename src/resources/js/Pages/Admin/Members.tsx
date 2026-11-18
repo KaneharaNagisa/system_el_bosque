@@ -112,13 +112,22 @@ const emptyNewForm = {
 
 export default function Members({
     members: initialMembers,
+    filters,
 }: {
     members: Member[];
+    filters: {
+        registeredFrom: string;
+        registeredTo: string;
+    };
 }) {
     const [searchQuery, setSearchQuery] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
     const [filterPet, setFilterPet] = useState("all");
-    const [showFilters, setShowFilters] = useState(false);
+    const [registeredFrom, setRegisteredFrom] = useState(filters.registeredFrom);
+    const [registeredTo, setRegisteredTo] = useState(filters.registeredTo);
+    const [showFilters, setShowFilters] = useState(
+        Boolean(filters.registeredFrom || filters.registeredTo),
+    );
     const [selectedMember, setSelectedMember] = useState<Member | null>(null);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [editForm, setEditForm] = useState<MemberEditForm>({
@@ -267,9 +276,24 @@ export default function Members({
             const matchStatus =
                 filterStatus === "all" || m.status === filterStatus;
             const matchPet = filterPet === "all" || m.hasPet === filterPet;
-            return matchSearch && matchStatus && matchPet;
+            const matchRegistrationPeriod =
+                (!registeredFrom || m.registeredAt >= registeredFrom) &&
+                (!registeredTo || m.registeredAt <= registeredTo);
+            return (
+                matchSearch &&
+                matchStatus &&
+                matchPet &&
+                matchRegistrationPeriod
+            );
         });
-    }, [initialMembers, searchQuery, filterStatus, filterPet]);
+    }, [
+        initialMembers,
+        searchQuery,
+        filterStatus,
+        filterPet,
+        registeredFrom,
+        registeredTo,
+    ]);
 
     const sorted = useMemo(() => {
         if (!sortField) return filtered;
@@ -419,11 +443,15 @@ export default function Members({
                                     <FaFilter className="w-3 h-3" /> 絞り込み
                                 </button>
                                 {(filterStatus !== "all" ||
-                                    filterPet !== "all") && (
+                                    filterPet !== "all" ||
+                                    registeredFrom ||
+                                    registeredTo) && (
                                     <button
                                         onClick={() => {
                                             setFilterStatus("all");
                                             setFilterPet("all");
+                                            setRegisteredFrom("");
+                                            setRegisteredTo("");
                                             pagination.setCurrentPage(1);
                                         }}
                                         className="flex items-center gap-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded"
@@ -480,6 +508,34 @@ export default function Members({
                                                 大型犬1頭
                                             </option>
                                         </select>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-gray-600 mb-1 block">
+                                            登録期間（開始日）
+                                        </label>
+                                        <input
+                                            type="date"
+                                            value={registeredFrom}
+                                            onChange={(e) => {
+                                                setRegisteredFrom(e.target.value);
+                                                pagination.setCurrentPage(1);
+                                            }}
+                                            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded bg-white"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-gray-600 mb-1 block">
+                                            登録期間（終了日）
+                                        </label>
+                                        <input
+                                            type="date"
+                                            value={registeredTo}
+                                            onChange={(e) => {
+                                                setRegisteredTo(e.target.value);
+                                                pagination.setCurrentPage(1);
+                                            }}
+                                            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded bg-white"
+                                        />
                                     </div>
                                 </div>
                             )}

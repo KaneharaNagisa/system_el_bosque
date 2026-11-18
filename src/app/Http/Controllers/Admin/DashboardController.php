@@ -12,9 +12,11 @@ class DashboardController extends Controller
 {
     public function index(): Response
     {
+        $monthStart = now()->startOfMonth();
+        $monthEnd = $monthStart->copy()->endOfMonth();
         $stats = [
             'totalMembers'         => User::count(),
-            'newMembersThisMonth'  => User::whereMonth('created_at', now()->month)->count(),
+            'newMembersThisMonth'  => User::whereBetween('created_at', [$monthStart, $monthEnd])->count(),
             'activeMembers'        => User::where('status', 'active')->count(),
             'paidReservations'     => Reservation::whereHas('billing', fn($query) => $query->where('status', 'paid'))->count(),
             'reservationsThisMonth' => Reservation::whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->count(),
@@ -34,6 +36,13 @@ class DashboardController extends Controller
                 'payment'    => $r->billing?->status ?? 'unpaid',
             ]);
 
-        return Inertia::render('Admin/Dashboard', compact('stats', 'recentReservations'));
+        return Inertia::render('Admin/Dashboard', [
+            'stats' => $stats,
+            'recentReservations' => $recentReservations,
+            'memberRegistrationPeriod' => [
+                'from' => $monthStart->toDateString(),
+                'to' => $monthEnd->toDateString(),
+            ],
+        ]);
     }
 }

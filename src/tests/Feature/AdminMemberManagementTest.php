@@ -43,6 +43,47 @@ class AdminMemberManagementTest extends TestCase
                 ->missing('members.0.firstName'));
     }
 
+    public function test_admin_member_list_receives_registration_period_filters(): void
+    {
+        $admin = Admin::create([
+            'name' => '管理者',
+            'email' => 'admin@example.com',
+            'password' => 'password',
+        ]);
+
+        $this->withSession(['admin_user' => $admin->id])
+            ->get('/admin/members?registered_from=2026-10-01&registered_to=2026-10-31')
+            ->assertOk()
+            ->assertInertia(fn(Assert $page) => $page
+                ->component('Admin/Members')
+                ->where('filters.registeredFrom', '2026-10-01')
+                ->where('filters.registeredTo', '2026-10-31'));
+    }
+
+    public function test_dashboard_member_count_and_link_period_use_the_current_month(): void
+    {
+        $admin = Admin::create([
+            'name' => '管理者',
+            'email' => 'admin@example.com',
+            'password' => 'password',
+        ]);
+        $monthStart = now()->startOfMonth();
+        User::factory()->create([
+            'created_at' => $monthStart,
+        ]);
+        User::factory()->create([
+            'created_at' => $monthStart->copy()->subYear(),
+        ]);
+
+        $this->withSession(['admin_user' => $admin->id])
+            ->get('/admin/dashboard')
+            ->assertOk()
+            ->assertInertia(fn(Assert $page) => $page
+                ->where('stats.newMembersThisMonth', 1)
+                ->where('memberRegistrationPeriod.from', $monthStart->toDateString())
+                ->where('memberRegistrationPeriod.to', $monthStart->copy()->endOfMonth()->toDateString()));
+    }
+
     public function test_admin_can_update_member_profile(): void
     {
         $admin = Admin::create([
