@@ -18,6 +18,7 @@ import {
     FAMILY_BIRTH_YEAR_OPTIONS,
     getApproximateAge,
 } from "../data/familyBirthYears";
+import { normalizeNicknameInput } from "../../utils/normalizeNickname";
 
 const inputStyle: React.CSSProperties = {
     width: "100%",
@@ -181,6 +182,8 @@ export function Register() {
         >,
     ) => {
         const { name, value } = e.target;
+        const normalizedValue =
+            name === "nickname" ? normalizeNicknameInput(value) : value;
         if (name === "hasPet") {
             if (value === "none") {
                 setProfile((prev) => ({
@@ -210,7 +213,7 @@ export function Register() {
                         : [],
             }));
         } else {
-            setProfile((prev) => ({ ...prev, [name]: value }));
+            setProfile((prev) => ({ ...prev, [name]: normalizedValue }));
         }
     };
 
@@ -635,6 +638,15 @@ export function Register() {
                                                 required
                                                 style={focusedInputStyle("nickname")}
                                             />
+                                            <p
+                                                style={{
+                                                    marginTop: "0.35rem",
+                                                    fontSize: "0.75rem",
+                                                    color: "rgba(100,55,20,0.65)",
+                                                }}
+                                            >
+                                                英字は半角大文字のみ使用できます（小文字・全角英字は入力時に半角大文字へ自動変換されます）。
+                                            </p>
                                         </div>
                                         <div>
                                             <label style={labelStyle}>

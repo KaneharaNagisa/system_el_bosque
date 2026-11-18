@@ -11,7 +11,7 @@ class NicknameNormalizer
 
     public static function forStorage(string $nickname): string
     {
-        return mb_convert_kana($nickname, 'rKV', 'UTF-8');
+        return strtoupper(mb_convert_kana($nickname, 'rKV', 'UTF-8'));
     }
 
     public static function forComparison(string $nickname): string

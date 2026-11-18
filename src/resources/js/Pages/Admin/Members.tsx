@@ -27,6 +27,7 @@ import {
     FAMILY_BIRTH_YEAR_OPTIONS,
     getApproximateAge,
 } from "../../Public/data/familyBirthYears";
+import { normalizeNicknameInput } from "../../utils/normalizeNickname";
 
 interface Member {
     id: string;
@@ -700,10 +701,18 @@ export default function Members({
                                         <input
                                             value={editForm.nickname}
                                             onChange={(e) =>
-                                                setEF("nickname", e.target.value)
+                                                setEF(
+                                                    "nickname",
+                                                    normalizeNicknameInput(
+                                                        e.target.value,
+                                                    ),
+                                                )
                                             }
                                             className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                                         />
+                                        <p className="mt-1 text-[11px] text-gray-500">
+                                            英字は半角大文字のみ使用できます（小文字・全角英字は入力時に半角大文字へ自動変換されます）。
+                                        </p>
                                     </label>
                                     <label className="text-xs text-gray-600">
                                         メールアドレス
@@ -1138,10 +1147,18 @@ export default function Members({
                                                 type="text"
                                                 value={newForm.nickname}
                                                 onChange={(e) =>
-                                                    setNF("nickname", e.target.value)
+                                                    setNF(
+                                                        "nickname",
+                                                        normalizeNicknameInput(
+                                                            e.target.value,
+                                                        ),
+                                                    )
                                                 }
                                                 className={`mt-1 w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105] ${newErrors.nickname ? "border-red-400 bg-red-50" : "border-gray-300"}`}
                                             />
+                                            <p className="mt-1 text-[11px] text-gray-500">
+                                                英字は半角大文字のみ使用できます（小文字・全角英字は入力時に半角大文字へ自動変換されます）。
+                                            </p>
                                             {newErrors.nickname && (
                                                 <p className="text-xs text-red-500 mt-1">
                                                     {newErrors.nickname}

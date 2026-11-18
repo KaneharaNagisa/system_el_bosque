@@ -147,7 +147,7 @@ class MemberPortalTest extends TestCase
         $this->withSession(['pending_registration_id' => $pendingRegistration->id])
             ->from('/register')
             ->post('/register', [
-                'nickname' => 'ｶﾅＡBC',
+                'nickname' => 'ｶﾅａＢc',
                 'password' => 'ValidPass1!',
                 'password_confirmation' => 'ValidPass1!',
                 'phone' => '090-1234-5678',

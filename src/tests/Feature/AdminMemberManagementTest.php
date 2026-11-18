@@ -246,7 +246,7 @@ class AdminMemberManagementTest extends TestCase
 
         $this->withSession(['admin_user' => $admin->id])
             ->post('/admin/members', [
-                'nickname' => 'ﾃｽﾄＡ',
+                'nickname' => 'ﾃｽﾄａ',
                 'email' => 'new@example.com',
                 'password' => 'Abcdef1!',
                 'password_confirmation' => 'Abcdef1!',
@@ -259,7 +259,7 @@ class AdminMemberManagementTest extends TestCase
 
         $this->withSession(['admin_user' => $admin->id])
             ->patch("/admin/members/{$member->id}", [
-                'nickname' => 'ﾍﾝｺｳＢ',
+                'nickname' => 'ﾍﾝｺｳｂ',
                 'email' => $member->email,
                 'phone' => '090-1234-5678',
                 'has_pet' => 'none',
