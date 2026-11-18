@@ -210,11 +210,12 @@ export default function Members({
 
     const handleMemberSave = () => {
         if (!selectedMember) return;
+        const nickname = normalizeNicknameInput(editForm.nickname.trim());
 
         router.patch(
             `/admin/members/${selectedMember.dbId}`,
             {
-                nickname: editForm.nickname.trim(),
+                nickname,
                 email: editForm.email.trim(),
                 phone: editForm.phone.trim(),
                 prefecture: editForm.prefecture || null,
@@ -248,6 +249,7 @@ export default function Members({
                             ? {
                                   ...member,
                                   ...editForm,
+                                  nickname,
                                   lineId: editForm.lineId,
                                   familyBirthYears:
                                       editForm.hasFamily === "family"
@@ -258,6 +260,7 @@ export default function Members({
                               }
                             : member,
                     );
+                    setEditForm((form) => ({ ...form, nickname }));
                     setEditSaved(true);
                     setEditErrors({});
                 },
@@ -358,10 +361,11 @@ export default function Members({
 
     const handleNewSave = () => {
         if (!validateNew()) return;
+        const nickname = normalizeNicknameInput(newForm.nickname.trim());
         router.post(
             "/admin/members",
             {
-                nickname: newForm.nickname.trim(),
+                nickname,
                 email: newForm.email.trim(),
                 phone: newForm.phone.trim(),
                 prefecture: newForm.prefecture || null,
@@ -701,17 +705,12 @@ export default function Members({
                                         <input
                                             value={editForm.nickname}
                                             onChange={(e) =>
-                                                setEF(
-                                                    "nickname",
-                                                    normalizeNicknameInput(
-                                                        e.target.value,
-                                                    ),
-                                                )
+                                                setEF("nickname", e.target.value)
                                             }
                                             className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                                         />
                                         <p className="mt-1 text-[11px] text-gray-500">
-                                            英字は半角大文字のみ使用できます（小文字・全角英字は入力時に半角大文字へ自動変換されます）。
+                                            英字は半角大文字のみ使用できます（小文字・全角英字は半角大文字に、半角カタカナは全角カタカナに保存時に自動変換されます）。
                                         </p>
                                     </label>
                                     <label className="text-xs text-gray-600">
@@ -1147,17 +1146,12 @@ export default function Members({
                                                 type="text"
                                                 value={newForm.nickname}
                                                 onChange={(e) =>
-                                                    setNF(
-                                                        "nickname",
-                                                        normalizeNicknameInput(
-                                                            e.target.value,
-                                                        ),
-                                                    )
+                                                    setNF("nickname", e.target.value)
                                                 }
                                                 className={`mt-1 w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#0a2105] ${newErrors.nickname ? "border-red-400 bg-red-50" : "border-gray-300"}`}
                                             />
                                             <p className="mt-1 text-[11px] text-gray-500">
-                                                英字は半角大文字のみ使用できます（小文字・全角英字は入力時に半角大文字へ自動変換されます）。
+                                                英字は半角大文字のみ使用できます（小文字・全角英字は半角大文字に、半角カタカナは全角カタカナに保存時に自動変換されます）。
                                             </p>
                                             {newErrors.nickname && (
                                                 <p className="text-xs text-red-500 mt-1">

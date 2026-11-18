@@ -182,8 +182,6 @@ export function Register() {
         >,
     ) => {
         const { name, value } = e.target;
-        const normalizedValue =
-            name === "nickname" ? normalizeNicknameInput(value) : value;
         if (name === "hasPet") {
             if (value === "none") {
                 setProfile((prev) => ({
@@ -213,7 +211,7 @@ export function Register() {
                         : [],
             }));
         } else {
-            setProfile((prev) => ({ ...prev, [name]: normalizedValue }));
+            setProfile((prev) => ({ ...prev, [name]: value }));
         }
     };
 
@@ -261,8 +259,10 @@ export function Register() {
 
     // Step 4: Confirm → Complete
     const handleConfirm = () => {
+        const nickname = normalizeNicknameInput(profile.nickname);
+        setProfile((prev) => ({ ...prev, nickname }));
         const userData: UserProfile = {
-            nickname: profile.nickname,
+            nickname,
             email,
             phone: profile.phone,
             password: profile.password,
@@ -645,7 +645,7 @@ export function Register() {
                                                     color: "rgba(100,55,20,0.65)",
                                                 }}
                                             >
-                                                英字は半角大文字のみ使用できます（小文字・全角英字は入力時に半角大文字へ自動変換されます）。
+                                                英字は半角大文字のみ使用できます（小文字・全角英字は半角大文字に、半角カタカナは全角カタカナに保存時に自動変換されます）。
                                             </p>
                                         </div>
                                         <div>
