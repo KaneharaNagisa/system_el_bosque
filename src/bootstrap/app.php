@@ -13,10 +13,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->trustProxies(at: '*');
 
-        $middleware->prepend([
-            \App\Http\Middleware\StagingBasicAuth::class,
-        ]);
-
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
         ]);

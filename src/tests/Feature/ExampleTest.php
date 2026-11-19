@@ -45,22 +45,12 @@ class ExampleTest extends TestCase
             ->assertSeeText("User-agent: *\nDisallow:\n");
     }
 
-    public function test_staging_environment_requires_http_basic_auth(): void
+    public function test_staging_environment_does_not_require_application_basic_auth(): void
     {
-        config([
-            'app.env' => 'staging',
-            'staging_basic_auth.username' => 'staging-admin',
-            'staging_basic_auth.password' => 'staging-pass',
-        ]);
+        config(['app.env' => 'staging']);
 
         $this->get('/')
-            ->assertStatus(401)
-            ->assertHeader('WWW-Authenticate', 'Basic realm="Staging"');
-
-        $this->withServerVariables([
-            'PHP_AUTH_USER' => 'staging-admin',
-            'PHP_AUTH_PW' => 'staging-pass',
-        ])->get('/')
-            ->assertStatus(200);
+            ->assertStatus(200)
+            ->assertHeaderMissing('WWW-Authenticate');
     }
 }
